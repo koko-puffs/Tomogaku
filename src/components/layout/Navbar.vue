@@ -102,7 +102,7 @@ const handleDiscordSignIn = () => {
               :class="isDropdownOpen ? 'button-active' : 'button'"
           >
           <span class="pr-2 pl-0.5 text-sm">{{ authStore.user?.user_metadata.full_name }}</span>
-            <UserCircle2 size="24" />
+            <UserCircle2 :size="24" />
           </button>
           
           <div v-if="isDropdownOpen" 
@@ -110,18 +110,18 @@ const handleDiscordSignIn = () => {
             <router-link to="/profile" 
                          @click="closeDropdown"
                          class="flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
-              <UserCircle2 size="16" class="mr-2" />
+              <UserCircle2 :size="16" class="mr-2" />
               Profile
             </router-link>
             <router-link to="/settings" 
                          @click="closeDropdown"
                          class="flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
-              <Settings size="16" class="mr-2" />
+              <Settings :size="16" class="mr-2" />
               Settings
             </router-link>
             <button @click="() => handleMenuClick(handleLogout)" 
                     class="flex items-center w-full px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
-              <LogOut size="16" class="mr-2" />
+              <LogOut :size="16" class="mr-2" />
               Sign out
             </button>
           </div>
