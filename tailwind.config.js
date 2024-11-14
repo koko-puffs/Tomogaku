@@ -3,9 +3,15 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{vue,js,ts,jsx,tsx}",
+    "./node_modules/flyonui/dist/js/*.js",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'custom-pink': '#f5426c',
+        'custom-mint': '#42f5a1',
+      }
+    },
     fontFamily: {
       'roboto': ['Roboto', 'sans-serif'],
       'roboto-mono': ['Roboto Mono', 'monospace'],
@@ -13,5 +19,9 @@ export default {
       'roboto-condensed-mono': ['Roboto Condensed Mono', 'monospace'],
     }
   },
-  plugins: [],
+  plugins: [
+    require("flyonui"),
+    require("flyonui/plugin"),
+    require("tailwindcss-motion")
+  ],
 }

@@ -1,10 +1,45 @@
 <script setup lang="ts">
 import { useAuthStore } from '../../stores/authStore.ts'
-import {useRouter} from "vue-router";
+import {useRouter, useRoute} from "vue-router";
 import LoadingSpinner from "../common/LoadingSpinner.vue";
+import { ref, onMounted, onUnmounted } from 'vue'
+import { UserCircle2, Settings, LogOut } from 'lucide-vue-next'
 
 const authStore = useAuthStore()
 const router = useRouter()
+const route = useRoute() 
+
+const isDropdownOpen = ref(false)
+const dropdownRef = ref<HTMLElement | null>(null)
+
+const closeDropdown = () => {
+  isDropdownOpen.value = false
+}
+
+const toggleDropdown = () => {
+  isDropdownOpen.value = !isDropdownOpen.value
+  console.log(authStore.user)
+}
+
+const handleClickOutside = (event: MouseEvent) => {
+  if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
+    closeDropdown()
+  }
+}
+
+// Handle menu item clicks
+const handleMenuClick = async (action: () => void) => {
+  await action()
+  closeDropdown()
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 
 const handleLogout = async () => {
   await authStore.logout()
@@ -12,31 +47,36 @@ const handleLogout = async () => {
 }
 
 const handleDiscordSignIn = () => {
-  authStore.signInWithDiscord()
+  authStore.signInWithDiscord() 
 }
 </script>
 
 <template>
   <nav>
-    <div class="flex items-center justify-between flex-shrink-0 px-6 py-4 mx-auto space-x-4 select-none h-18">
+    <div class="flex items-center justify-between flex-shrink-0 h-16 px-6 py-4 mx-auto space-x-4">
       <!-- Left section -->
       <div class="flex items-center justify-start flex-1">
-        <router-link to="/" class="mr-6 text-2xl font-bold h-9 hover:border-b border-neutral-200">tomogaku</router-link>
-        <router-link
-            v-if="authStore.user"
-            to="/dashboard"
-            class="w-24 h-10 button"
-        >
-          <span>Dashboard</span>
-        </router-link>
-        <router-link
-            v-if="authStore.user"
-            to="/discover"
-            class="w-24 h-10 button"
-        >
-          <span>Discover</span>
-        </router-link>
-      </div>
+  <router-link
+    to="/" 
+    class="relative flex items-center h-10 mr-6 text-2xl font-bold" 
+    style="top: -2px;" 
+  >tomogaku
+  </router-link>
+  <router-link 
+  v-if="authStore.user"
+    to="/dashboard" 
+    class="relative flex items-center w-24 h-10 mr-1 text-sm" 
+    :class="route.path.startsWith('/dashboard') ? 'button-active' : 'button'"
+  >Dashboard
+  </router-link>
+  <router-link 
+  v-if="authStore.user"
+    to="/discover" 
+    class="relative flex items-center w-24 h-10 mr-1 text-sm" 
+    :class="route.path.startsWith('/discover') ? 'button-active' : 'button'"
+  >Discover
+  </router-link>
+</div>
 
       <!-- Center section -->
       <div class="flex items-center justify-center flex-1">
@@ -47,22 +87,45 @@ const handleDiscordSignIn = () => {
         <button
             v-if="!authStore.user"
             @click="handleDiscordSignIn"
-            class="w-40 h-10 button-visible"
-            :class="{ 'button-accept-visible': authStore.loading }"
+            class="relative flex items-center w-40 h-10 text-sm button-accept-visible" 
+            :class="{ 'opacity-0': authStore.loading }"
             :disabled="authStore.loading"
         >
-          <span>Sign in with Discord</span>
-        </button>
-        <button
-            v-else
-            @click="handleLogout"
-            class="w-20 h-10 button-visible"
-            :class="{ 'button-visible': authStore.loading }"
-            :disabled="authStore.loading"
-        >
-          <span v-if="!authStore.loading">Logout</span>
+          <span v-if="!authStore.loading">Sign in with Discord</span>
           <LoadingSpinner v-else />
         </button>
+        
+        <div v-else class="relative" ref="dropdownRef">
+          <button
+              @click.stop="toggleDropdown"
+              class="relative flex items-center justify-center h-10 px-2.5 rounded-full"
+              :class="isDropdownOpen ? 'button-active' : 'button'"
+          >
+          <span class="pr-2 pl-0.5 text-sm">{{ authStore.user?.user_metadata.full_name }}</span>
+            <UserCircle2 size="24" />
+          </button>
+          
+          <div v-if="isDropdownOpen" 
+               class="absolute right-0 w-48 py-2 mt-2 border rounded-lg shadow-xl bg-neutral-900 border-neutral-800 motion-translate-x-in-[0%] motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.15s] motion-duration-[0.15s]/opacity">
+            <router-link to="/profile" 
+                         @click="closeDropdown"
+                         class="flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
+              <UserCircle2 size="16" class="mr-2" />
+              Profile
+            </router-link>
+            <router-link to="/settings" 
+                         @click="closeDropdown"
+                         class="flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
+              <Settings size="16" class="mr-2" />
+              Settings
+            </router-link>
+            <button @click="() => handleMenuClick(handleLogout)" 
+                    class="flex items-center w-full px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
+              <LogOut size="16" class="mr-2" />
+              Sign out
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </nav>

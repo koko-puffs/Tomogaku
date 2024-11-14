@@ -6,12 +6,28 @@ const getRedirectTo = () => {
     return import.meta.env.VITE_REDIRECT_URL || 'http://localhost:5173'
 }
 
-interface AuthState {
-    user: User | null
+interface UserMetadata {
+    avatar_url: string
+    email: string
+    email_verified: boolean
+    full_name: string
+    iss: string
+    name: string
+    phone_verified: boolean
+    picture: string
+    provider_id: string
+    sub: string
+    custom_claims?: {
+      global_name: string
+    }
+  }
+
+  interface AuthState {
+    user: User & { user_metadata: UserMetadata } | null
     error: string | null
     loading: boolean
     initialized: boolean
-}
+  }
 
 export const useAuthStore = defineStore('auth', {
     state: (): AuthState => ({
@@ -68,7 +84,7 @@ export const useAuthStore = defineStore('auth', {
                     }
 
                     if (data.session && data.user) {
-                        this.user = data.user
+                        this.user = data.user as User & { user_metadata: UserMetadata }
                         return data.user
                     }
                 }
