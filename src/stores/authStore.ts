@@ -3,10 +3,7 @@ import { User} from '@supabase/supabase-js'
 import { supabase } from '../supabase'
 
 const getRedirectTo = () => {
-    const isProd = import.meta.env.PROD
-    return isProd
-        ? 'https://tomogaku.space'
-        : 'http://localhost:5174'
+    return import.meta.env.VITE_REDIRECT_URL || 'http://localhost:5173'
 }
 
 interface AuthState {
