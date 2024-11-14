@@ -3,8 +3,8 @@
 </script>
 
 <template>
-  <div>
-    <h1>Coming soon...</h1>
+  <div class="flex items-center justify-center mt-36">
+    <h1 class="text-4xl font-bold">Coming soon...</h1>
   </div>
 </template>
 
