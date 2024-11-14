@@ -10,6 +10,7 @@ interface AuthState {
     user: User | null
     error: string | null
     loading: boolean
+    initialized: boolean
 }
 
 export const useAuthStore = defineStore('auth', {
@@ -17,6 +18,7 @@ export const useAuthStore = defineStore('auth', {
         user: null,
         error: null,
         loading: false,
+        initialized: false
     }),
 
     actions: {
@@ -40,11 +42,12 @@ export const useAuthStore = defineStore('auth', {
         },
 
         async handleAuthRedirect(): Promise<User | null> {
+            if (this.initialized) return this.user
+            
             this.loading = true
             this.error = null
 
             try {
-                // First, get the current session
                 const { data: { session }, error: sessionError } = await supabase.auth.getSession()
 
                 if (sessionError) {
@@ -55,11 +58,9 @@ export const useAuthStore = defineStore('auth', {
                 }
 
                 if (session) {
-                    // If there's a session, try to refresh it
                     const { data, error: refreshError } = await supabase.auth.refreshSession()
 
                     if (refreshError) {
-                        // If refresh fails, it might mean the session is invalid
                         console.warn('Session refresh failed:', refreshError)
                         this.error = 'Your session has expired. Please log in again.'
                         this.user = null
@@ -72,17 +73,16 @@ export const useAuthStore = defineStore('auth', {
                     }
                 }
 
-                // If there's no session or refresh didn't return a user
                 this.user = null
                 return null
 
             } catch (error) {
-                // This catch block is for unexpected errors that weren't handled above
                 console.error('Unexpected error during auth check:', error)
                 this.error = 'An unexpected error occurred'
                 this.user = null
                 return null
             } finally {
+                this.initialized = true
                 this.loading = false
             }
         },
