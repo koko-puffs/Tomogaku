@@ -23,25 +23,6 @@ export const useAuthStore = defineStore('auth', {
     }),
 
     actions: {
-        async signInWithGoogle(): Promise<void> {
-            this.loading = true
-            this.error = null
-
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider: 'google',
-                options: {
-                    redirectTo: getRedirectTo()
-                }
-            })
-
-            if (error) {
-                this.error = error.message
-                console.error('Google sign-in error:', error)
-            }
-
-            this.loading = false
-        },
-
         async signInWithDiscord(): Promise<void> {
             this.loading = true
             this.error = null

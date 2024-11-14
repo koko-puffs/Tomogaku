@@ -14,10 +14,6 @@ const handleLogout = async () => {
 const handleDiscordSignIn = () => {
   authStore.signInWithDiscord()
 }
-
-const handleGoogleSignIn = () => {
-  authStore.signInWithGoogle()
-}
 </script>
 
 <template>
