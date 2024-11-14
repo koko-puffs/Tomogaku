@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAuthStore } from '../../stores/authStore.ts'
 import {useRouter} from "vue-router";
-import LoadingSpinner from "./LoadingSpinner.vue";
+import LoadingSpinner from "../common/LoadingSpinner.vue";
 
 const authStore = useAuthStore()
 const router = useRouter()
