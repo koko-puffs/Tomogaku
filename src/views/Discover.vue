@@ -7,6 +7,3 @@
     <h1 class="text-4xl font-bold">Discover</h1>
   </div>
 </template>
-
-<style scoped>
-</style>

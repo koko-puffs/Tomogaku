@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useAuthStore } from '../../stores/authStore.ts'
-import {useRouter, useRoute} from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import LoadingSpinner from "../common/LoadingSpinner.vue";
 import { ref, onMounted, onUnmounted } from 'vue'
 import { UserCircle2, Settings, LogOut } from 'lucide-vue-next'
 
 const authStore = useAuthStore()
 const router = useRouter()
-const route = useRoute() 
+const route = useRoute()
 
 const isDropdownOpen = ref(false)
 const dropdownRef = ref<HTMLElement | null>(null)
@@ -46,7 +46,7 @@ const handleLogout = async () => {
 }
 
 const handleDiscordSignIn = () => {
-  authStore.signInWithDiscord() 
+  authStore.signInWithDiscord()
 }
 </script>
 
@@ -55,27 +55,15 @@ const handleDiscordSignIn = () => {
     <div class="flex items-center justify-between flex-shrink-0 px-6 py-4 mx-auto space-x-4 h-14">
       <!-- Left section -->
       <div class="flex items-center justify-start flex-1">
-  <router-link
-    to="/" 
-    class="relative flex items-center h-10 mr-5 text-xl font-bold" 
-    style="top: -1px;" 
-  >tomogaku
-  </router-link>
-  <router-link 
-  v-if="authStore.user"
-    to="/learn" 
-    class="w-24 h-10 mr-2 text-sm" 
-    :class="route.path.startsWith('/learn') ? 'button-active' : 'button-visible'"
-  >Learn
-  </router-link>
-  <router-link 
-  v-if="authStore.user"
-    to="/discover" 
-    class="w-24 h-10 mr-2 text-sm" 
-    :class="route.path.startsWith('/discover') ? 'button-active' : 'button-visible'"
-  >Discover
-  </router-link>
-</div>
+        <router-link to="/" class="relative flex items-center h-10 mr-5 text-xl font-bold" style="top: -1px;">tomogaku
+        </router-link>
+        <router-link v-if="authStore.user" to="/learn" class="w-24 h-10 mr-2 text-sm"
+          :class="route.path.startsWith('/learn') ? 'button-active' : 'button-visible'">Learn
+        </router-link>
+        <router-link v-if="authStore.user" to="/discover" class="w-24 h-10 mr-2 text-sm"
+          :class="route.path.startsWith('/discover') ? 'button-active' : 'button-visible'">Discover
+        </router-link>
+      </div>
 
       <!-- Center section -->
       <div class="flex items-center justify-center flex-1">
@@ -83,56 +71,42 @@ const handleDiscordSignIn = () => {
 
       <!-- Right section -->
       <div class="flex items-center justify-end flex-1 space-x-2">
-        <button
-            v-if="!authStore.user"
-            @click="handleDiscordSignIn"
-            class="w-40 h-10 text-sm button-accept-visible" 
-            :class="{ 'opacity-0': authStore.loading }"
-            :disabled="authStore.loading"
-        >
+        <button v-if="!authStore.user" @click="handleDiscordSignIn" class="w-40 h-10 text-sm button-accept-visible"
+          :class="{ 'opacity-0': authStore.loading }" :disabled="authStore.loading">
           <span v-if="!authStore.loading">Sign in with Discord</span>
           <LoadingSpinner v-else />
         </button>
-        
-        <div v-else class="relative" ref="dropdownRef">
-          <button
-    @click.stop="toggleDropdown"
-    class="flex items-center h-10 px-2 text-sm"
-    :class="isDropdownOpen ? 'button-active' : 'button-visible'"
->
-<span class="pl-1 pr-2">
-        {{ 
-            (authStore.user?.user_metadata?.custom_claims?.global_name ?? '').length > 20 
-            ? (authStore.user?.user_metadata?.custom_claims?.global_name ?? '').substring(0, 20) + '...' 
-            : authStore.user?.user_metadata?.custom_claims?.global_name ?? 'User'
-        }}
-    </span>
-    <img 
-        v-if="authStore.user?.user_metadata.avatar_url"
-        :src="authStore.user.user_metadata.avatar_url"
-        class="rounded-full w-7 h-7"
-        alt="User avatar"
-    />
-    <UserCircle2 v-else :size="24" />
-</button>
 
-          
-          <div v-if="isDropdownOpen" 
-               class="absolute right-0 w-48 py-2 mt-1.5 border rounded-lg shadow-xl bg-neutral-900 border-neutral-800 motion-translate-x-in-[0%] motion-translate-y-in-[-8%] motion-opacity-in-[0%] motion-duration-[0.15s] motion-duration-[0.15s]/opacity">
-            <router-link to="/profile" 
-                         @click="closeDropdown"
-                         class="flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
+        <div v-else class="relative" ref="dropdownRef">
+          <button @click.stop="toggleDropdown" class="flex items-center h-10 px-2 text-sm"
+            :class="isDropdownOpen ? 'button-active' : 'button-visible'">
+            <span class="pl-1 pr-2">
+              {{
+                (authStore.user?.user_metadata?.custom_claims?.global_name ?? '').length > 20
+                  ? (authStore.user?.user_metadata?.custom_claims?.global_name ?? '').substring(0, 20) + '...'
+                  : authStore.user?.user_metadata?.custom_claims?.global_name ?? 'User'
+              }}
+            </span>
+            <img v-if="authStore.user?.user_metadata.avatar_url" :src="authStore.user.user_metadata.avatar_url"
+              class="rounded-full w-7 h-7" alt="User avatar" />
+            <UserCircle2 v-else :size="24" />
+          </button>
+
+
+          <div v-if="isDropdownOpen"
+            class="absolute right-0 w-48 py-2 mt-1 border rounded-lg shadow-xl bg-neutral-900 border-neutral-800 motion-translate-x-in-[0%] motion-translate-y-in-[-6%] motion-opacity-in-[0%] motion-duration-[0.15s] motion-duration-[0.15s]/opacity">
+            <router-link to="/profile" @click="closeDropdown"
+              class="flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
               <UserCircle2 :size="16" class="mr-2" />
               Profile
             </router-link>
-            <router-link to="/settings" 
-                         @click="closeDropdown"
-                         class="flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
+            <router-link to="/settings" @click="closeDropdown"
+              class="flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
               <Settings :size="16" class="mr-2" />
               Settings
             </router-link>
-            <button @click="() => handleMenuClick(handleLogout)" 
-                    class="flex items-center w-full px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
+            <button @click="() => handleMenuClick(handleLogout)"
+              class="flex items-center w-full px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
               <LogOut :size="16" class="mr-2" />
               Sign out
             </button>
