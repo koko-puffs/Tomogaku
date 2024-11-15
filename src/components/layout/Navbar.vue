@@ -65,14 +65,14 @@ const handleDiscordSignIn = () => {
   <router-link 
   v-if="authStore.user"
     to="/learn" 
-    class="relative flex items-center w-24 h-10 mr-2 text-sm" 
+    class="w-24 h-10 mr-2 text-sm" 
     :class="route.path.startsWith('/learn') ? 'button-active' : 'button-visible'"
   >Learn
   </router-link>
   <router-link 
   v-if="authStore.user"
     to="/discover" 
-    class="relative flex items-center w-24 h-10 mr-2 text-sm" 
+    class="w-24 h-10 mr-2 text-sm" 
     :class="route.path.startsWith('/discover') ? 'button-active' : 'button-visible'"
   >Discover
   </router-link>
@@ -87,7 +87,7 @@ const handleDiscordSignIn = () => {
         <button
             v-if="!authStore.user"
             @click="handleDiscordSignIn"
-            class="relative flex items-center w-40 h-10 text-sm button-accept-visible" 
+            class="w-40 h-10 text-sm button-accept-visible" 
             :class="{ 'opacity-0': authStore.loading }"
             :disabled="authStore.loading"
         >
@@ -98,10 +98,10 @@ const handleDiscordSignIn = () => {
         <div v-else class="relative" ref="dropdownRef">
           <button
               @click.stop="toggleDropdown"
-              class="relative flex items-center justify-center h-10 px-3"
+              class="h-10 px-3 text-sm"
               :class="isDropdownOpen ? 'button-active' : 'button-visible'"
           >
-          <span class="pr-2 pl-0.5 text-sm">{{ authStore.user?.user_metadata.full_name }}</span>
+          <span class="pr-2 pl-0.5">{{ authStore.user?.user_metadata.full_name }}</span>
             <UserCircle2 :size="24" />
           </button>
           
