@@ -94,7 +94,7 @@ const handleDiscordSignIn = () => {
 
 
           <div v-if="isDropdownOpen"
-            class="absolute right-0 w-48 py-2 mt-1 border rounded-lg shadow-xl bg-neutral-900 border-neutral-800 motion-translate-x-in-[0%] motion-translate-y-in-[-6%] motion-opacity-in-[0%] motion-duration-[0.15s] motion-duration-[0.15s]/opacity">
+            class="absolute right-0 w-48 py-2 mt-1 border rounded-lg shadow-xl bg-neutral-900 border-neutral-800 motion-translate-x-in-[0%] motion-translate-y-in-[-5%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.15s]/opacity">
             <router-link to="/profile" @click="closeDropdown"
               class="flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
               <UserCircle2 :size="16" class="mr-2" />
