@@ -16,7 +16,7 @@ onMounted(async () => {
   <div class="flex flex-col min-h-screen select-none motion-preset-fade">
     <Navbar />
 
-    <div class="h-16"></div>
+    <div class="h-14"></div>
     
     <main class="flex-grow bg-black">
       <RouterView />

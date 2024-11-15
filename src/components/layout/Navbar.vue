@@ -53,27 +53,27 @@ const handleDiscordSignIn = () => {
 
 <template>
   <nav class="fixed top-0 left-0 right-0 z-50 border-b border-neutral-800">
-    <div class="flex items-center justify-between flex-shrink-0 h-16 px-6 py-4 mx-auto space-x-4">
+    <div class="flex items-center justify-between flex-shrink-0 px-8 py-4 mx-auto space-x-4 h-14">
       <!-- Left section -->
       <div class="flex items-center justify-start flex-1">
   <router-link
     to="/" 
-    class="relative flex items-center h-10 mr-6 text-2xl font-bold" 
-    style="top: -2px;" 
+    class="relative flex items-center h-10 mr-5 text-xl font-bold" 
+    style="top: -1px;" 
   >tomogaku
   </router-link>
   <router-link 
   v-if="authStore.user"
     to="/learn" 
-    class="relative flex items-center w-24 h-10 mr-1 text-sm" 
-    :class="route.path.startsWith('/learn') ? 'button-active' : 'button'"
+    class="relative flex items-center w-24 h-10 mr-2 text-sm" 
+    :class="route.path.startsWith('/learn') ? 'button-active' : 'button-visible'"
   >Learn
   </router-link>
   <router-link 
   v-if="authStore.user"
     to="/discover" 
-    class="relative flex items-center w-24 h-10 mr-1 text-sm" 
-    :class="route.path.startsWith('/discover') ? 'button-active' : 'button'"
+    class="relative flex items-center w-24 h-10 mr-2 text-sm" 
+    :class="route.path.startsWith('/discover') ? 'button-active' : 'button-visible'"
   >Discover
   </router-link>
 </div>
@@ -98,8 +98,8 @@ const handleDiscordSignIn = () => {
         <div v-else class="relative" ref="dropdownRef">
           <button
               @click.stop="toggleDropdown"
-              class="relative flex items-center justify-center h-10 px-2.5 rounded-full"
-              :class="isDropdownOpen ? 'button-active' : 'button'"
+              class="relative flex items-center justify-center h-10 px-3 rounded-full"
+              :class="isDropdownOpen ? 'button-active' : 'button-visible'"
           >
           <span class="pr-2 pl-0.5 text-sm">{{ authStore.user?.user_metadata.full_name }}</span>
             <UserCircle2 :size="24" />
