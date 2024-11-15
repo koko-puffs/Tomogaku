@@ -64,10 +64,10 @@ const handleDiscordSignIn = () => {
   </router-link>
   <router-link 
   v-if="authStore.user"
-    to="/dashboard" 
+    to="/learn" 
     class="relative flex items-center w-24 h-10 mr-1 text-sm" 
-    :class="route.path.startsWith('/dashboard') ? 'button-active' : 'button'"
-  >Dashboard
+    :class="route.path.startsWith('/learn') ? 'button-active' : 'button'"
+  >Learn
   </router-link>
   <router-link 
   v-if="authStore.user"

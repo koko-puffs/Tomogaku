@@ -15,9 +15,9 @@ const router = createRouter({
       component: () => import('./views/Landing.vue')
     },
     {
-      path: '/dashboard',
-      name: 'dashboard',
-      component: () => import('./views/Dashboard.vue'),
+      path: '/learn',
+      name: 'learn',
+      component: () => import('./views/Learn.vue'),
       meta: { requiresAuth: true }
     },
     {
@@ -42,7 +42,7 @@ router.beforeEach(async (to, _from, next) => {
     next('/')
   }
   else if (authStore.user && to.path === '/') {
-    next('/dashboard')
+    next('/learn')
   }
   else {
     next()

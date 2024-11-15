@@ -12,7 +12,6 @@
     "@formkit/auto-animate": "^0.8.2",
     "@supabase/supabase-js": "^2.45.3",
     "@vercel/node": "^3.2.12",
-    "flyonui": "^1.1.0",
     "lucide-vue-next": "^0.438.0",
     "node-fetch": "^3.3.2",
     "pinia": "^2.2.2",

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import NavBar from './components/layout/Navbar.vue'
+import Navbar from './components/layout/Navbar.vue'
+import Footer from './components/layout/Footer.vue'
 import {onMounted} from "vue";
 import {useAuthStore} from "./stores/authStore.ts";
 
@@ -13,11 +14,13 @@ onMounted(async () => {
 
 <template>
   <div class="flex flex-col min-h-screen select-none motion-preset-fade">
-    <NavBar />
+    <Navbar />
     
     <main class="flex-grow">
       <RouterView />
     </main>
+    
+    <Footer />
   </div>
 </template>
 
