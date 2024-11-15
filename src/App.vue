@@ -18,7 +18,7 @@ onMounted(async () => {
 
     <div class="h-14"></div>
     
-    <main class="flex-grow bg-black">
+    <main class="flex-grow">
       <RouterView />
     </main>
     

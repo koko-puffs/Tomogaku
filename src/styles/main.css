@@ -6,7 +6,7 @@
 
 @layer base {
   html, body, #app {
-    @apply bg-neutral-950;
+    @apply bg-black;
     @apply text-neutral-200;
     @apply font-roboto;
   }

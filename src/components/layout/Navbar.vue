@@ -51,7 +51,7 @@ const handleDiscordSignIn = () => {
 </script>
 
 <template>
-  <nav class="fixed top-0 left-0 right-0 z-50 border-b border-neutral-800">
+  <nav class="fixed top-0 left-0 right-0 z-50 border-b border-neutral-800 bg-neutral-950">
     <div class="flex items-center justify-between flex-shrink-0 px-6 py-4 mx-auto space-x-4 h-14">
       <!-- Left section -->
       <div class="flex items-center justify-start flex-1">
