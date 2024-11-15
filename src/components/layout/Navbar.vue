@@ -100,7 +100,13 @@ const handleDiscordSignIn = () => {
     class="flex items-center h-10 px-2 text-sm"
     :class="isDropdownOpen ? 'button-active' : 'button-visible'"
 >
-    <span class="pl-1 pr-2">{{ authStore.user?.user_metadata.custom_claims?.global_name }}</span>
+<span class="pl-1 pr-2">
+        {{ 
+            (authStore.user?.user_metadata?.custom_claims?.global_name ?? '').length > 20 
+            ? (authStore.user?.user_metadata?.custom_claims?.global_name ?? '').substring(0, 20) + '...' 
+            : authStore.user?.user_metadata?.custom_claims?.global_name ?? 'User'
+        }}
+    </span>
     <img 
         v-if="authStore.user?.user_metadata.avatar_url"
         :src="authStore.user.user_metadata.avatar_url"
