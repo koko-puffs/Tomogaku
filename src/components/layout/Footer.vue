@@ -31,10 +31,10 @@
               <h4 class="text-sm font-semibold">Legal</h4>
               <ul class="space-y-1">
                 <li>
-                  <router-link to="/privacy" class="text-sm text-neutral-400 hover:text-white">Privacy Policy</router-link>
+                  <router-link to="/privacy" class="text-sm text-neutral-400 hover:text-white">Privacy policy</router-link>
                 </li>
                 <li>
-                  <router-link to="/terms" class="text-sm text-neutral-400 hover:text-white">Terms of Service</router-link>
+                  <router-link to="/terms" class="text-sm text-neutral-400 hover:text-white">Terms of Use</router-link>
                 </li>
               </ul>
             </div>
