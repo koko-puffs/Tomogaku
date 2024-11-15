@@ -18,7 +18,6 @@ const closeDropdown = () => {
 
 const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value
-  console.log(authStore.user)
 }
 
 const handleClickOutside = (event: MouseEvent) => {
@@ -97,13 +96,20 @@ const handleDiscordSignIn = () => {
         
         <div v-else class="relative" ref="dropdownRef">
           <button
-              @click.stop="toggleDropdown"
-              class="h-10 px-3 text-sm"
-              :class="isDropdownOpen ? 'button-active' : 'button-visible'"
-          >
-          <span class="pr-2 pl-0.5">{{ authStore.user?.user_metadata.full_name }}</span>
-            <UserCircle2 :size="24" />
-          </button>
+    @click.stop="toggleDropdown"
+    class="flex items-center h-10 px-2 text-sm"
+    :class="isDropdownOpen ? 'button-active' : 'button-visible'"
+>
+    <span class="pl-1 pr-2">{{ authStore.user?.user_metadata.custom_claims?.global_name }}</span>
+    <img 
+        v-if="authStore.user?.user_metadata.avatar_url"
+        :src="authStore.user.user_metadata.avatar_url"
+        class="rounded-full w-7 h-7"
+        alt="User avatar"
+    />
+    <UserCircle2 v-else :size="24" />
+</button>
+
           
           <div v-if="isDropdownOpen" 
                class="absolute right-0 w-48 py-2 mt-1.5 border rounded-lg shadow-xl bg-neutral-900 border-neutral-800 motion-translate-x-in-[0%] motion-translate-y-in-[-8%] motion-opacity-in-[0%] motion-duration-[0.15s] motion-duration-[0.15s]/opacity">
