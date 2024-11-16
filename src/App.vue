@@ -2,14 +2,6 @@
 import { RouterView } from 'vue-router'
 import Navbar from './components/layout/Navbar.vue'
 import Footer from './components/layout/Footer.vue'
-import { onMounted } from "vue";
-import { useAuthStore } from "./stores/authStore.ts";
-
-const authStore = useAuthStore()
-
-onMounted(async () => {
-  await authStore.handleAuthRedirect()
-})
 </script>
 
 <template>
@@ -18,7 +10,7 @@ onMounted(async () => {
 
     <div class="h-14"></div>
 
-    <main class="flex-grow">
+    <main class="flex items-start justify-center flex-grow p-4">
       <RouterView />
     </main>
 

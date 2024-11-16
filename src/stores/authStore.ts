@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
-import { User } from "@supabase/supabase-js";
 import { supabase } from "../supabase";
+import { User } from "@supabase/supabase-js";
+import { useUsersStore } from "./usersStore";
 
 const getRedirectTo = () => {
   return import.meta.env.VITE_REDIRECT_URL || "http://localhost:5173";
@@ -57,6 +58,51 @@ export const useAuthStore = defineStore("auth", {
       this.loading = false;
     },
 
+    async initializeUserProfile(
+      user: User & { user_metadata: UserMetadata }
+    ): Promise<void> {
+      const usersStore = useUsersStore();
+
+      try {
+        // Try to fetch existing profile
+        const existingProfile = await usersStore.fetchUserProfile(user.id);
+
+        // If no profile exists, create one with default values
+        if (!existingProfile) {
+          console.log("Creating new user profile for:", user.id);
+          await usersStore.createUserProfile({
+            id: user.id,
+            language: "en",
+            account_type: "free",
+            is_verified: false,
+            reputation_score: 0,
+            followers_count: 0,
+            following_count: 0,
+            decks_created_count: 0,
+            total_cards_studied: 0,
+            total_study_time_minutes: 0,
+            streak_days: 0,
+            longest_streak: 0,
+            storage_used_bytes: 0,
+            joined_at: new Date().toISOString(),
+            last_active_at: new Date().toISOString(),
+          });
+          console.log("Successfully created profile for:", user.id);
+        } else {
+          console.log("Found existing profile for:", user.id);
+        }
+      } catch (error) {
+        console.error("Error in initializeUserProfile:", error);
+        if (error instanceof Error) {
+          console.error("Error details:", {
+            message: error.message,
+            stack: error.stack,
+            user: user.id,
+          });
+        }
+      }
+    },
+
     async handleAuthRedirect(): Promise<User | null> {
       if (this.initialized) return this.user;
 
@@ -89,6 +135,10 @@ export const useAuthStore = defineStore("auth", {
 
           if (data.session && data.user) {
             this.user = data.user as User & { user_metadata: UserMetadata };
+
+            // Initialize user profile after successful authentication
+            await this.initializeUserProfile(this.user);
+
             return data.user;
           }
         }
