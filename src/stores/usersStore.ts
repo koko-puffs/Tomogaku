@@ -5,8 +5,8 @@ import { useAuthStore } from "./authStore";
 
 type UserProfile = Database["public"]["Tables"]["user_profiles"]["Row"];
 type Comment = Database["public"]["Tables"]["comments"]["Row"];
-type CommentLike = Database["public"]["Tables"]["comment_likes"]["Row"];
-type Follower = Database["public"]["Tables"]["user_followers"]["Row"];
+//type CommentLike = Database["public"]["Tables"]["comment_likes"]["Row"];
+//type Follower = Database["public"]["Tables"]["user_followers"]["Row"];
 
 interface UsersState {
   profiles: Map<string, UserProfile>;
