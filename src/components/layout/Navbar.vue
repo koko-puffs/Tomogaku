@@ -48,6 +48,13 @@ const handleLogout = async () => {
 const handleDiscordSignIn = () => {
   authStore.signInWithDiscord()
 }
+
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+};
 </script>
 
 <template>
@@ -58,10 +65,10 @@ const handleDiscordSignIn = () => {
         <router-link to="/" class="relative flex items-center h-10 mr-5 text-xl font-bold" style="top: -1px;">tomogaku
         </router-link>
         <router-link v-if="authStore.user" to="/learn" class="w-24 h-10 mr-2 text-sm"
-          :class="route.path.startsWith('/learn') ? 'button-active' : 'button-visible'">Learn
+          :class="route.path.startsWith('/learn') ? 'button-active' : 'button-visible'" @click="scrollToTop">Learn
         </router-link>
         <router-link v-if="authStore.user" to="/discover" class="w-24 h-10 mr-2 text-sm"
-          :class="route.path.startsWith('/discover') ? 'button-active' : 'button-visible'">Discover
+          :class="route.path.startsWith('/discover') ? 'button-active' : 'button-visible'" @click="scrollToTop">Discover
         </router-link>
       </div>
 
