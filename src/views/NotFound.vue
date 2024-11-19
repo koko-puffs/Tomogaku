@@ -17,7 +17,7 @@
 
             <div class="flex justify-center">
                 <router-link to="/"
-                    class="w-24 h-10 button-visible">
+                    class="w-24 h-10 text-sm button-visible">
                     Return
                 </router-link>
             </div>
