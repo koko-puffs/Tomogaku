@@ -1,0 +1,193 @@
+# Privacy Policy
+
+## 1. Introduction
+
+This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our flashcard learning platform ("the Service"). Please read this privacy policy carefully. If you do not agree with the terms of this privacy policy, please do not access the Service.
+
+## 2. Information We Collect
+
+### 2.1. Personal Information
+We collect information that you voluntarily provide when using the Service:
+- Account information (name, email address, password)
+- Profile information (username, avatar, bio)
+- User preferences and settings
+- Payment information (for Premium subscriptions)
+
+### 2.2. Learning Data
+To provide and improve our spaced repetition learning system, we collect:
+- Flashcard responses and performance data
+- Study patterns and habits
+- Learning progress and statistics
+- Created and saved deck information
+
+### 2.3. Usage Information
+We automatically collect certain information when you visit, use, or navigate the Service:
+- Browser and device information
+- IP address
+- Usage patterns and preferences
+- Access times and dates
+- Pages viewed
+- Features used
+
+### 2.4. Social Interaction Data
+When using social features, we collect:
+- Comments and ratings you provide
+- Interactions with other users' content
+- Sharing preferences
+- Collection lists and saved decks
+
+## 3. How We Use Your Information
+
+### 3.1. Core Functionality
+- Provide the spaced repetition learning system
+- Manage your account and preferences
+- Process payments for Premium features
+- Maintain your learning progress and statistics
+
+### 3.2. Platform Features
+- Enable deck sharing and discovery
+- Facilitate social interactions
+- Display user profiles and activity
+- Generate learning statistics and visualizations
+
+### 3.3. Service Improvement
+- Analyze usage patterns
+- Optimize learning algorithms
+- Enhance user experience
+- Develop new features
+
+### 3.4. Communication
+- Send system notifications
+- Provide customer support
+- Share updates and announcements
+- Respond to user inquiries
+
+## 4. Information Sharing and Disclosure
+
+### 4.1. Public Information
+The following information may be visible to other users:
+- Username and profile information
+- Public decks and collections
+- Comments and ratings
+- Public learning statistics (if enabled)
+
+### 4.2. Private Information
+We never share the following without your explicit consent:
+- Email address
+- Payment information
+- Private decks and collections
+- Personal learning statistics (when private)
+
+### 4.3. Third-Party Service Providers
+We may share information with trusted third parties for:
+- Payment processing
+- Analytics
+- Hosting services
+- Customer support
+
+## 5. Data Storage and Security
+
+### 5.1. Data Storage
+- Information is stored on secure servers
+- Learning data is regularly backed up
+- Personal information is encrypted
+
+### 5.2. Security Measures
+- Industry-standard encryption protocols
+- Regular security audits
+- Access controls and authentication
+- Monitoring for unauthorized access
+
+## 6. User Rights and Controls
+
+### 6.1. Account Settings
+You can:
+- Update personal information
+- Modify privacy settings
+- Control deck visibility
+- Manage social interactions
+
+### 6.2. Data Access and Export
+You have the right to:
+- Access your personal data
+- Export your learning data
+- Download your created content
+- Request data deletion
+
+### 6.3. Communication Preferences
+You can control:
+- Email notifications
+- System alerts
+- Marketing communications
+- Social interaction notifications
+
+## 7. Children's Privacy
+
+The Service is not intended for users under 13 years of age. We do not knowingly collect information from children under 13.
+
+## 8. Cookies and Tracking
+
+### 8.1. Cookies Used
+We use cookies for:
+- Authentication
+- Preferences
+- Analytics
+- Feature functionality
+
+### 8.2. Cookie Controls
+Users can:
+- Accept or decline cookies
+- Delete existing cookies
+- Set browser preferences
+
+## 9. International Data Transfer
+
+Your information may be transferred and maintained on computers located outside your state, province, country, or governmental jurisdiction where privacy laws may differ.
+
+## 10. Data Retention
+
+### 10.1. Active Accounts
+- Account information retained while active
+- Learning data maintained for functionality
+- Social interactions preserved
+
+### 10.2. Account Deletion
+Upon account deletion:
+- Personal information is removed
+- Public content remains unless explicitly deleted
+- Learning data is anonymized
+
+## 11. Changes to Privacy Policy
+
+We reserve the right to update this privacy policy at any time. Users will be notified of significant changes.
+
+## 12. Contact Information
+
+For questions about this Privacy Policy, please contact:
+tomogaku.space@gmail.com
+
+## 13. Legal Basis for Processing
+
+We process your information based on:
+- Contract fulfillment
+- Legitimate interests
+- Legal obligations
+- User consent
+
+## 14. Data Protection Rights
+
+Depending on your jurisdiction, you may have rights to:
+- Access your data
+- Correct your data
+- Delete your data
+- Port your data
+- Withdraw consent
+- Object to processing
+
+## 15. Security Breach Procedures
+
+In case of a data breach:
+- Users will be promptly notified
+- Authorities will be informed if required
+- Remedial actions will be taken
+- Impact will be assessed and communicated

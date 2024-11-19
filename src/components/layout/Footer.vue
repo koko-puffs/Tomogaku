@@ -18,7 +18,8 @@
             <h4 class="text-sm font-semibold">Support</h4>
             <ul class="space-y-1">
               <li>
-                <router-link to="/contact" class="text-sm text-neutral-400 hover:text-white">Contact</router-link>
+                <router-link to="/contact" class="text-sm text-neutral-400 hover:text-white"
+                  @click="scrollToTop">Contact</router-link>
               </li>
               <li>
                 <a href="https://discord.gg/tomogaku" target="_blank"
@@ -32,11 +33,13 @@
             <h4 class="text-sm font-semibold">Legal</h4>
             <ul class="space-y-1">
               <li>
-                <router-link to="/privacy" class="text-sm text-neutral-400 hover:text-white">Privacy
+                <router-link to="/privacy" class="text-sm text-neutral-400 hover:text-white"
+                  @click="scrollToTop">Privacy
                   policy</router-link>
               </li>
               <li>
-                <router-link to="/terms" class="text-sm text-neutral-400 hover:text-white">Terms of Use</router-link>
+                <router-link to="/terms" class="text-sm text-neutral-400 hover:text-white" @click="scrollToTop">Terms of
+                  Use</router-link>
               </li>
             </ul>
           </div>
@@ -45,3 +48,12 @@
     </div>
   </footer>
 </template>
+
+<script setup lang="ts">
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+};
+</script>
