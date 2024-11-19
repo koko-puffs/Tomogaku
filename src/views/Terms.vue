@@ -1,5 +1,5 @@
 <template>
-    <div class="max-w-3xl px-6 py-8 mx-auto">
+    <div class="max-w-3xl px-6 py-8 mx-auto motion-preset-fade motion-duration-150">
         <div class="prose prose-lg prose-slate max-w-none" v-html="formattedTerms"></div>
     </div>
 </template>
