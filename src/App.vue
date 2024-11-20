@@ -10,7 +10,7 @@ import Footer from './components/layout/Footer.vue'
 
     <div class="h-14"></div>
 
-    <main class="flex items-start justify-center flex-grow p-4 min-h-[calc(100vh-6rem)]">
+    <main class="flex items-start justify-center flex-grow min-h-[calc(100vh-6rem)]">
       <RouterView />
     </main>
 

@@ -2,6 +2,7 @@
 import { useAuthStore } from '../../stores/authStore.ts'
 import { useRouter, useRoute } from "vue-router";
 import LoadingSpinner from "../common/LoadingSpinner.vue";
+import SettingsModal from '../features/settings/SettingsModal.vue'
 import { ref, onMounted, onUnmounted } from 'vue'
 import { UserCircle2, Settings, LogOut } from 'lucide-vue-next'
 
@@ -11,6 +12,12 @@ const route = useRoute()
 
 const isDropdownOpen = ref(false)
 const dropdownRef = ref<HTMLElement | null>(null)
+const settingsModalRef = ref<InstanceType<typeof SettingsModal> | null>(null)
+
+const openSettings = () => {
+  settingsModalRef.value?.openModal()
+  closeDropdown()
+}
 
 const closeDropdown = () => {
   isDropdownOpen.value = false
@@ -90,13 +97,12 @@ const scrollToTop = () => {
             :class="isDropdownOpen ? 'button-active' : 'button-visible'">
             <span class="pl-1 pr-2">
               {{
-                (authStore.user?.user_metadata?.custom_claims?.global_name ?? '').length > 20
-                  ? (authStore.user?.user_metadata?.custom_claims?.global_name ?? '').substring(0, 20) + '...'
-                  : authStore.user?.user_metadata?.custom_claims?.global_name ?? 'User'
+                (authStore.username ?? '').length > 20
+                  ? (authStore.username ?? '').substring(0, 20) + '...'
+                  : authStore.username ?? 'User'
               }}
             </span>
-            <img v-if="authStore.user?.user_metadata.avatar_url" :src="authStore.user.user_metadata.avatar_url"
-              class="rounded-full w-7 h-7" alt="User avatar" />
+            <img v-if="authStore.avatarUrl" :src="authStore.avatarUrl" class="rounded-full w-7 h-7" alt="User avatar" />
             <UserCircle2 v-else :size="24" />
           </button>
 
@@ -108,11 +114,11 @@ const scrollToTop = () => {
               <UserCircle2 :size="16" class="mr-2" />
               Profile
             </router-link>
-            <router-link to="/settings" @click="closeDropdown"
-              class="flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
+            <button @click="openSettings"
+              class="flex items-center w-full px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
               <Settings :size="16" class="mr-2" />
               Settings
-            </router-link>
+            </button>
             <button @click="() => handleMenuClick(handleLogout)"
               class="flex items-center w-full px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
               <LogOut :size="16" class="mr-2" />
@@ -123,4 +129,6 @@ const scrollToTop = () => {
       </div>
     </div>
   </nav>
+
+  <SettingsModal ref="settingsModalRef" />
 </template>

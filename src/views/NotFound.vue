@@ -6,11 +6,11 @@
                 404
             </h1>
 
-            <h2 class="mb-4 text-3xl font-bold md:text-4xl">
+            <h2 class="mb-2 text-3xl font-bold md:text-4xl">
                 Oops! Could not find that page.
             </h2>
 
-            <p class="mb-8 text-lg text-neutral-500 motion-preset-typewriter ">
+            <p class="mb-10 text-lg text-neutral-500 motion-preset-typewriter ">
                 The page you are looking for might have been removed, had its name changed,
                 or is temporarily unavailable.
             </p>

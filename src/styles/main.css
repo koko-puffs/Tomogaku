@@ -1,4 +1,6 @@
 @import "./buttons.css";
+@import "./inputs.css";
+@import "./panels.css";
 
 @tailwind base;
 @tailwind components;
@@ -12,4 +14,39 @@
     @apply text-neutral-200;
     @apply font-roboto;
   }
+}
+
+/* For Webkit browsers (Chrome, Safari, etc.) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #262626; /* Neutral-900 equivalent */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #404040; /* Neutral-700 equivalent */
+  border-radius: 4px;
+  border: 2px solid #262626; /* Border color matching track */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #525252; /* Neutral-600 equivalent */
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #404040 #262626; /* thumb track */
+}
+
+/* Optional: Style for specific element only */
+.settings-content {
+  /* Add these classes to your content div in SettingsModal */
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #404040 #262626;
 }

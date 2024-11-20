@@ -2,10 +2,13 @@ import { defineStore } from "pinia";
 import { supabase } from "../supabase";
 import { User } from "@supabase/supabase-js";
 import { useUsersStore } from "./usersStore";
+import { Database } from "../types/supabase";
 
 const getRedirectTo = () => {
   return import.meta.env.VITE_REDIRECT_URL || "http://localhost:5173";
 };
+
+type UserProfile = Database['public']['Tables']['user_profiles']['Row']
 
 interface UserMetadata {
   avatar_url: string;
@@ -25,6 +28,7 @@ interface UserMetadata {
 
 interface AuthState {
   user: (User & { user_metadata: UserMetadata }) | null;
+  userProfile: UserProfile | null;
   error: string | null;
   loading: boolean;
   initialized: boolean;
@@ -33,10 +37,18 @@ interface AuthState {
 export const useAuthStore = defineStore("auth", {
   state: (): AuthState => ({
     user: null,
+    userProfile: null,
     error: null,
     loading: false,
     initialized: false,
   }),
+
+  getters: {
+    // Convenience getters for commonly used profile data
+    username: (state): string | null => state.userProfile?.username ?? null,
+    avatarUrl: (state): string | null => state.userProfile?.avatar_url ?? null,
+    email: (state): string | null => state.userProfile?.email ?? null,
+  },
 
   actions: {
     async signInWithDiscord(): Promise<void> {
@@ -70,8 +82,16 @@ export const useAuthStore = defineStore("auth", {
         // If no profile exists, create one with default values
         if (!existingProfile) {
           console.log("Creating new user profile for:", user.id);
-          await usersStore.createUserProfile({
+          const newProfile = await usersStore.createUserProfile({
             id: user.id,
+            username:
+              user.user_metadata.custom_claims?.global_name ||
+              user.email?.split("@")[0] ||
+              `user_${user.id.slice(0, 8)}`,
+            avatar_url:
+              user.user_metadata.avatar_url ||
+              user.user_metadata.picture,
+            email: user.email!,
             language: "en",
             account_type: "free",
             is_verified: false,
@@ -87,8 +107,10 @@ export const useAuthStore = defineStore("auth", {
             joined_at: new Date().toISOString(),
             last_active_at: new Date().toISOString(),
           });
+          this.userProfile = newProfile;
           console.log("Successfully created profile for:", user.id);
         } else {
+          this.userProfile = existingProfile;
           console.log("Found existing profile for:", user.id);
         }
       } catch (error) {
@@ -119,6 +141,7 @@ export const useAuthStore = defineStore("auth", {
           console.error("Error getting session:", sessionError);
           this.error = sessionError.message;
           this.user = null;
+          this.userProfile = null;
           return null;
         }
 
@@ -130,6 +153,7 @@ export const useAuthStore = defineStore("auth", {
             console.warn("Session refresh failed:", refreshError);
             this.error = "Your session has expired. Please log in again.";
             this.user = null;
+            this.userProfile = null;
             return null;
           }
 
@@ -144,11 +168,13 @@ export const useAuthStore = defineStore("auth", {
         }
 
         this.user = null;
+        this.userProfile = null;
         return null;
       } catch (error) {
         console.error("Unexpected error during auth check:", error);
         this.error = "An unexpected error occurred";
         this.user = null;
+        this.userProfile = null;
         return null;
       } finally {
         this.initialized = true;
@@ -174,9 +200,26 @@ export const useAuthStore = defineStore("auth", {
       } finally {
         // Always clear local state, even if server-side logout fails
         this.user = null;
+        this.userProfile = null;
         localStorage.removeItem("supabase.auth.token");
         this.loading = false;
       }
     },
+
+    // New method to update profile
+    async updateProfile(updates: Partial<UserProfile>): Promise<void> {
+      if (!this.user) throw new Error("Must be logged in to update profile");
+
+      const usersStore = useUsersStore();
+      try {
+        const updatedProfile = await usersStore.updateUserProfile(updates);
+        if (updatedProfile) {
+          this.userProfile = updatedProfile;
+        }
+      } catch (error) {
+        console.error("Error updating profile:", error);
+        throw error;
+      }
+    }
   },
 });

@@ -5,8 +5,6 @@ import { useAuthStore } from "./authStore";
 
 type UserProfile = Database["public"]["Tables"]["user_profiles"]["Row"];
 type Comment = Database["public"]["Tables"]["comments"]["Row"];
-//type CommentLike = Database["public"]["Tables"]["comment_likes"]["Row"];
-//type Follower = Database["public"]["Tables"]["user_followers"]["Row"];
 
 interface UsersState {
   profiles: Map<string, UserProfile>;
@@ -36,63 +34,49 @@ export const useUsersStore = defineStore("users", {
   }),
 
   getters: {
-    getUserProfile:
-      (state) =>
-      (userId: string): UserProfile | undefined =>
-        state.profiles.get(userId),
+    getUserProfile: (state) => (userId: string): UserProfile | undefined =>
+      state.profiles.get(userId),
 
+    // Updated to use authStore's userProfile
     getCurrentUserProfile(): UserProfile | undefined {
       const authStore = useAuthStore();
-      // @ts-ignore - Ignoring deep type instantiation error
-      // TODO: Fix this
-      return authStore.user ? this.profiles.get(authStore.user.id) : undefined;
+      // @ts-ignore
+      return authStore.userProfile || undefined;
     },
 
-    getDeckComments:
-      (state) =>
-      (deckId: string): Comment[] =>
-        state.comments.get(deckId) || [],
+    getDeckComments: (state) => (deckId: string): Comment[] =>
+      state.comments.get(deckId) || [],
 
-    isFollowing:
-      (state) =>
-      (userId: string): boolean =>
-        state.following.has(userId),
+    isFollowing: (state) => (userId: string): boolean =>
+      state.following.has(userId),
 
-    hasLikedComment:
-      (state) =>
-      (commentId: string): boolean => {
-        const authStore = useAuthStore();
-        return authStore.user
-          ? state.commentLikes.get(commentId)?.has(authStore.user.id) || false
-          : false;
-      },
+    // Updated to use authStore's userProfile
+    hasLikedComment: (state) => (commentId: string): boolean => {
+      const authStore = useAuthStore();
+      return authStore.userProfile
+        ? state.commentLikes.get(commentId)?.has(authStore.userProfile.id) || false
+        : false;
+    },
 
-    // Get threaded comments for a deck
-    getThreadedComments:
-      (state) =>
-      (deckId: string): Comment[] => {
-        const comments = state.comments.get(deckId) || [];
-        return comments
-          .filter((comment) => !comment.parent_id)
-          .sort(
-            (a, b) =>
-              new Date(b.created_at).getTime() -
-              new Date(a.created_at).getTime()
-          );
-      },
+    getThreadedComments: (state) => (deckId: string): Comment[] => {
+      const comments = state.comments.get(deckId) || [];
+      return comments
+        .filter((comment) => !comment.parent_id)
+        .sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+    },
 
-    getCommentReplies:
-      (state) =>
-      (commentId: string, deckId: string): Comment[] => {
-        const comments = state.comments.get(deckId) || [];
-        return comments
-          .filter((comment) => comment.parent_id === commentId)
-          .sort(
-            (a, b) =>
-              new Date(a.created_at).getTime() -
-              new Date(b.created_at).getTime()
-          );
-      },
+    getCommentReplies: (state) => (commentId: string, deckId: string): Comment[] => {
+      const comments = state.comments.get(deckId) || [];
+      return comments
+        .filter((comment) => comment.parent_id === commentId)
+        .sort(
+          (a, b) =>
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
+    },
   },
 
   actions: {
@@ -118,9 +102,7 @@ export const useUsersStore = defineStore("users", {
         return undefined;
       } catch (error) {
         this.error =
-          error instanceof Error
-            ? error.message
-            : "Error fetching user profile";
+          error instanceof Error ? error.message : "Error fetching user profile";
         throw error;
       } finally {
         this.loading.profiles = false;
@@ -129,8 +111,7 @@ export const useUsersStore = defineStore("users", {
 
     async createUserProfile(profileData: Partial<UserProfile>) {
       const authStore = useAuthStore();
-      if (!authStore.user)
-        throw new Error("Must be logged in to create profile");
+      if (!authStore.user) throw new Error("Must be logged in to create profile");
 
       this.loading.profiles = true;
       try {
@@ -149,13 +130,13 @@ export const useUsersStore = defineStore("users", {
 
         if (profile) {
           this.profiles.set(profile.id, profile);
+          // Update authStore's userProfile
+          authStore.userProfile = profile;
           return profile;
         }
       } catch (error) {
         this.error =
-          error instanceof Error
-            ? error.message
-            : "Error creating user profile";
+          error instanceof Error ? error.message : "Error creating user profile";
         throw error;
       } finally {
         this.loading.profiles = false;
@@ -164,28 +145,27 @@ export const useUsersStore = defineStore("users", {
 
     async updateUserProfile(updates: Partial<UserProfile>) {
       const authStore = useAuthStore();
-      if (!authStore.user)
-        throw new Error("Must be logged in to update profile");
+      if (!authStore.userProfile) throw new Error("Must be logged in to update profile");
 
       this.loading.profiles = true;
       try {
         const { data, error } = await supabase
           .from("user_profiles")
           .update(updates)
-          .eq("id", authStore.user.id)
+          .eq("id", authStore.userProfile.id)
           .select()
           .single();
 
         if (error) throw error;
         if (data) {
           this.profiles.set(data.id, data);
+          // Update authStore's userProfile
+          authStore.userProfile = data;
           return data;
         }
       } catch (error) {
         this.error =
-          error instanceof Error
-            ? error.message
-            : "Error updating user profile";
+          error instanceof Error ? error.message : "Error updating user profile";
         throw error;
       } finally {
         this.loading.profiles = false;
@@ -193,36 +173,9 @@ export const useUsersStore = defineStore("users", {
     },
 
     // Comment Actions
-    async fetchDeckComments(deckId: string) {
-      this.loading.comments = true;
-      try {
-        const { data, error } = await supabase
-          .from("comments")
-          .select("*")
-          .eq("deck_id", deckId)
-          .eq("status", "active")
-          .order("created_at", { ascending: false });
-
-        if (error) throw error;
-        if (data) {
-          this.comments.set(deckId, data);
-
-          // Fetch likes for these comments
-          const commentIds = data.map((comment) => comment.id);
-          await this.fetchCommentLikes(commentIds);
-        }
-      } catch (error) {
-        this.error =
-          error instanceof Error ? error.message : "Error fetching comments";
-        throw error;
-      } finally {
-        this.loading.comments = false;
-      }
-    },
-
     async createComment(deckId: string, content: string, parentId?: string) {
       const authStore = useAuthStore();
-      if (!authStore.user) throw new Error("Must be logged in to comment");
+      if (!authStore.userProfile) throw new Error("Must be logged in to comment");
 
       this.loading.comments = true;
       try {
@@ -231,7 +184,7 @@ export const useUsersStore = defineStore("users", {
           .insert([
             {
               deck_id: deckId,
-              user_id: authStore.user.id,
+              user_id: authStore.userProfile.id,
               content,
               parent_id: parentId,
             },
@@ -256,7 +209,7 @@ export const useUsersStore = defineStore("users", {
 
     async updateComment(commentId: string, content: string) {
       const authStore = useAuthStore();
-      if (!authStore.user)
+      if (!authStore.userProfile)
         throw new Error("Must be logged in to update comment");
 
       this.loading.comments = true;
@@ -268,7 +221,7 @@ export const useUsersStore = defineStore("users", {
             edited_at: new Date().toISOString(),
           })
           .eq("id", commentId)
-          .eq("user_id", authStore.user.id) // Ensure user owns comment
+          .eq("user_id", authStore.userProfile.id) // Ensure user owns comment
           .select()
           .single();
 
@@ -297,7 +250,7 @@ export const useUsersStore = defineStore("users", {
 
     async deleteComment(commentId: string, deckId: string) {
       const authStore = useAuthStore();
-      if (!authStore.user)
+      if (!authStore.userProfile)
         throw new Error("Must be logged in to delete comment");
 
       this.loading.comments = true;
@@ -306,7 +259,7 @@ export const useUsersStore = defineStore("users", {
           .from("comments")
           .delete()
           .eq("id", commentId)
-          .eq("user_id", authStore.user.id); // Ensure user owns comment
+          .eq("user_id", authStore.userProfile.id); // Ensure user owns comment
 
         if (error) throw error;
 
@@ -328,7 +281,7 @@ export const useUsersStore = defineStore("users", {
     // Comment Likes
     async fetchCommentLikes(commentIds: string[]) {
       const authStore = useAuthStore();
-      if (!authStore.user) return;
+      if (!authStore.userProfile) return;
 
       try {
         const { data, error } = await supabase
@@ -355,7 +308,7 @@ export const useUsersStore = defineStore("users", {
 
     async toggleCommentLike(commentId: string) {
       const authStore = useAuthStore();
-      if (!authStore.user)
+      if (!authStore.userProfile)
         throw new Error("Must be logged in to like comments");
 
       const hasLiked = this.hasLikedComment(commentId);
@@ -366,12 +319,12 @@ export const useUsersStore = defineStore("users", {
             .from("comment_likes")
             .delete()
             .eq("comment_id", commentId)
-            .eq("user_id", authStore.user.id);
+            .eq("user_id", authStore.userProfile.id);
 
           if (error) throw error;
           const likes = this.commentLikes.get(commentId);
           if (likes) {
-            likes.delete(authStore.user.id);
+            likes.delete(authStore.userProfile.id);
             this.commentLikes.set(commentId, likes);
           }
         } else {
@@ -379,13 +332,13 @@ export const useUsersStore = defineStore("users", {
           const { error } = await supabase.from("comment_likes").insert([
             {
               comment_id: commentId,
-              user_id: authStore.user.id,
+              user_id: authStore.userProfile.id,
             },
           ]);
 
           if (error) throw error;
           const likes = this.commentLikes.get(commentId) || new Set();
-          likes.add(authStore.user.id);
+          likes.add(authStore.userProfile.id);
           this.commentLikes.set(commentId, likes);
         }
       } catch (error) {
@@ -400,14 +353,14 @@ export const useUsersStore = defineStore("users", {
     // Following Actions
     async fetchFollowing() {
       const authStore = useAuthStore();
-      if (!authStore.user) return;
+      if (!authStore.userProfile) return;
 
       this.loading.following = true;
       try {
         const { data, error } = await supabase
           .from("user_followers")
           .select("following_id")
-          .eq("follower_id", authStore.user.id);
+          .eq("follower_id", authStore.userProfile.id);
 
         if (error) throw error;
         if (data) {
@@ -423,8 +376,8 @@ export const useUsersStore = defineStore("users", {
 
     async toggleFollow(userId: string) {
       const authStore = useAuthStore();
-      if (!authStore.user) throw new Error("Must be logged in to follow users");
-      if (userId === authStore.user.id)
+      if (!authStore.userProfile) throw new Error("Must be logged in to follow users");
+      if (userId === authStore.userProfile.id)
         throw new Error("Cannot follow yourself");
 
       this.loading.following = true;
@@ -434,7 +387,7 @@ export const useUsersStore = defineStore("users", {
           const { error } = await supabase
             .from("user_followers")
             .delete()
-            .eq("follower_id", authStore.user.id)
+            .eq("follower_id", authStore.userProfile.id)
             .eq("following_id", userId);
 
           if (error) throw error;
@@ -443,7 +396,7 @@ export const useUsersStore = defineStore("users", {
           // Follow
           const { error } = await supabase.from("user_followers").insert([
             {
-              follower_id: authStore.user.id,
+              follower_id: authStore.userProfile.id,
               following_id: userId,
             },
           ]);

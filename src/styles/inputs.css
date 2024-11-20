@@ -1,0 +1,58 @@
+@layer components {
+  .input {
+    @apply bg-transparent border border-neutral-800 rounded-lg px-3 py-2 h-10 text-sm
+      focus:outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-200
+      hover:border-neutral-700 transition-all duration-75
+      placeholder:text-neutral-600;
+  }
+
+  .input-lighter {
+    @apply bg-transparent border border-neutral-700 rounded-lg px-3 py-2 h-10 text-sm
+      focus:outline-none focus:border-neutral-500 focus:ring-1 focus:ring-neutral-200
+      hover:border-neutral-600 transition-all duration-75
+      placeholder:text-neutral-500;
+  }
+
+  .input-error {
+    @apply bg-transparent border border-red-800 rounded-lg px-3 py-2 h-10 text-sm
+      focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-400
+      hover:border-red-700 transition-all duration-75
+      placeholder:text-neutral-600;
+  }
+
+  .input-success {
+    @apply bg-transparent border border-green-800 rounded-lg px-3 py-2 h-10 text-sm
+      focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-400
+      hover:border-green-700 transition-all duration-75
+      placeholder:text-neutral-600;
+  }
+
+  .input-filled {
+    @apply bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 h-10 text-sm
+      focus:outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-200
+      hover:border-neutral-700 transition-all duration-75
+      placeholder:text-neutral-600;
+  }
+
+  .input-lighter-filled {
+    @apply bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 h-10 text-sm
+      focus:outline-none focus:border-neutral-500 focus:ring-1 focus:ring-neutral-200
+      hover:border-neutral-600 transition-all duration-75
+      placeholder:text-neutral-500;
+  }
+
+  /* Disabled state for all inputs */
+  .input:disabled,
+  .input-lighter:disabled,
+  .input-error:disabled,
+  .input-success:disabled,
+  .input-filled:disabled,
+  .input-lighter-filled:disabled {
+    @apply opacity-50 cursor-not-allowed hover:border-current;
+  }
+
+  /* For textarea variants */
+  .input-textarea {
+    @apply resize-none min-h-[100px];
+  }
+}

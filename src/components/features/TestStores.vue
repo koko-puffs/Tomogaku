@@ -12,6 +12,7 @@ const deckStore = useDeckStore()
 const usersStore = useUsersStore()
 
 // Get reactive refs from stores
+// @ts-ignore - Ignoring deep type instantiation error
 const { user } = storeToRefs(authStore)
 // @ts-ignore - Ignoring deep type instantiation error
 // TODO: Fix this
@@ -60,7 +61,7 @@ const selectDeck = async (deckId: string) => {
     deckStore.currentDeck = deck
     await Promise.all([
       deckStore.fetchCards(deckId),
-      usersStore.fetchDeckComments(deckId)
+      /* usersStore.fetchDeckComments(deckId) */
     ])
   }
 }

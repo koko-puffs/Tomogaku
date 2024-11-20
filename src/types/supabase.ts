@@ -222,6 +222,9 @@ export interface Database {
       user_profiles: {
         Row: {
           id: string
+          username?: string
+          email?: string
+          avatar_url?: string
           bio: string | null
           gender: 'male' | 'female' | 'non_binary' | 'prefer_not_to_say' | null
           birthday: string | null
@@ -255,6 +258,9 @@ export interface Database {
         }
         Insert: {
           id: string
+          username?: string
+          email?: string
+          avatar_url?: string
           bio?: string | null
           gender?: 'male' | 'female' | 'non_binary' | 'prefer_not_to_say' | null
           birthday?: string | null
@@ -288,6 +294,9 @@ export interface Database {
         }
         Update: {
           id?: string
+          username?: string
+          email?: string
+          avatar_url?: string
           bio?: string | null
           gender?: 'male' | 'female' | 'non_binary' | 'prefer_not_to_say' | null
           birthday?: string | null
