@@ -76,7 +76,8 @@ const scrollToTop = () => {
           :class="route.path.startsWith('/learn') ? 'button-active-white' : 'button-visible'" @click="scrollToTop">Learn
         </router-link>
         <router-link v-if="authStore.user" to="/discover" class="w-24 h-10 mr-2 text-sm"
-          :class="route.path.startsWith('/discover') ? 'button-active-white' : 'button-visible'" @click="scrollToTop">Discover
+          :class="route.path.startsWith('/discover') ? 'button-active-white' : 'button-visible'"
+          @click="scrollToTop">Discover
         </router-link>
       </div>
 

@@ -1,6 +1,7 @@
 <template>
   <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-    <div class="relative w-[500px] bg-neutral-900 rounded-lg shadow-xl border border-neutral-800 motion-translate-y-in-[3%] motion-opacity-in-[0%] motion-duration-[0.2s]">
+    <div
+      class="relative w-[500px] bg-neutral-900 rounded-lg shadow-xl border border-neutral-800 motion-translate-y-in-[3%] motion-opacity-in-[0%] motion-duration-[0.2s]">
       <!-- Header -->
       <div class="flex items-center justify-between px-5 py-3 border-b border-neutral-800">
         <h2 class="text-xl font-semibold">Create a new deck</h2>
@@ -15,60 +16,36 @@
           <div class="space-y-2">
             <label for="deckTitle" class="block text-sm">Title</label>
             <div class="relative">
-              <input
-                id="deckTitle"
-                v-model="title"
-                type="text"
-                class="w-full input-lighter-filled"
-                :class="{ 'border-red-500': error }"
-                placeholder="Enter deck title"
-                :disabled="loading"
-              />
+              <input id="deckTitle" v-model="title" type="text" class="w-full input-lighter-filled"
+                :class="{ 'border-red-500': error }" placeholder="Enter deck title" :disabled="loading" />
               <span v-if="error" class="absolute text-sm text-red-500 -bottom-6">
                 {{ error }}
               </span>
             </div>
           </div>
-          
+
           <div class="space-y-2">
             <label for="deckDescription" class="block text-sm">Description (optional)</label>
-            <textarea
-              id="deckDescription"
-              v-model="description"
-              rows="3"
-              class="w-full h-24 resize-none input-lighter-filled !-mb-1"
-              placeholder="Enter deck description"
-              :disabled="loading"
-            />
+            <textarea id="deckDescription" v-model="description" rows="3"
+              class="w-full h-24 resize-none input-lighter-filled !-mb-1" placeholder="Enter deck description"
+              :disabled="loading" />
           </div>
-          
+
           <!-- Tags Section -->
           <div class="space-y-2">
             <label for="deckTags" class="block text-sm">Tags (optional)</label>
             <div class="relative space-y-2">
-              <input
-                v-model="newTag"
-                @keydown.enter.prevent="addTag"
-                type="text"
-                class="w-full input-lighter-filled"
-                placeholder="Type a tag and press Enter"
-                :disabled="loading"
-              />
+              <input v-model="newTag" @keydown.enter.prevent="addTag" type="text" class="w-full input-lighter-filled"
+                placeholder="Type a tag and press Enter" :disabled="loading" />
               <p v-if="tagError" class="text-sm text-red-500">
                 {{ tagError }}
               </p>
             </div>
             <div class="flex flex-wrap gap-2 mb-2">
-              <span 
-                v-for="tag in tags" 
-                :key="tag"
-                class="flex items-center gap-1 px-2 py-1 text-sm rounded-md bg-neutral-800"
-              >
+              <span v-for="tag in tags" :key="tag"
+                class="flex items-center gap-1 px-2 py-1 text-sm rounded-md bg-neutral-800">
                 {{ tag }}
-                <button 
-                  @click="removeTag(tag)"
-                  class="pl-1 transition-colors rounded-full hover:text-red-400"
-                >
+                <button @click="removeTag(tag)" class="pl-1 transition-colors rounded-full hover:text-red-400">
                   <X :size="14" />
                 </button>
               </span>
@@ -79,18 +56,10 @@
 
       <!-- Footer -->
       <div class="flex justify-end gap-2 px-5 py-3 border-t border-neutral-800">
-        <button 
-          @click="closeModal" 
-          class="w-24 button-lighter-visible"
-          :disabled="loading"
-        >
+        <button @click="closeModal" class="w-24 button-lighter-visible" :disabled="loading">
           Cancel
         </button>
-        <button 
-          @click="handleCreate" 
-          :disabled="!title || loading"
-          class="w-24 button-accept-visible"
-        >
+        <button @click="handleCreate" :disabled="!title || loading" class="w-24 button-accept-visible">
           <LoadingSpinner v-if="loading" class="w-5 h-5" />
           <span v-else>Create</span>
         </button>
@@ -119,7 +88,7 @@ const tagError = ref('');
 
 const addTag = () => {
   const tag = newTag.value.trim().toLowerCase();
-  
+
   // Validation
   if (!tag) return;
   if (tag.includes(' ')) {
@@ -172,10 +141,10 @@ const closeModal = () => {
 
 const handleCreate = async () => {
   if (!title.value || loading.value) return;
-  
+
   loading.value = true;
   error.value = '';
-  
+
   try {
     await deckStore.createDeck({
       title: title.value,

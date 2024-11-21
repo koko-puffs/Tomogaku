@@ -32,7 +32,7 @@ const handleDeleteDeck = async () => {
 
 const confirmDeleteDeck = async () => {
   if (!selectedDeck.value) return;
-  
+
   try {
     await deckStore.deleteDeck(selectedDeck.value);
     selectedDeck.value = null;
@@ -61,22 +61,14 @@ const handleStudyDeck = () => {
   <div class="motion-preset-fade motion-duration-150">
     <PageLayout>
       <template #sidebar>
-        <DeckList 
-          :selected-deck="selectedDeck"
-          @select-deck="selectDeck"
-          @create-deck="openCreateDeckModal"
-        />
+        <DeckList :selected-deck="selectedDeck" @select-deck="selectDeck" @create-deck="openCreateDeckModal" />
       </template>
 
       <template #content>
         <div v-if="selectedDeck" class="space-y-2">
-          <DeckDetails
-            :deck="deckStore.getDeckById(selectedDeck)"
-            @edit="handleEditDeck"
-            @delete="handleDeleteDeck"
-            @study="handleStudyDeck"
-          />
-          
+          <DeckDetails :deck="deckStore.getDeckById(selectedDeck)" @edit="handleEditDeck" @delete="handleDeleteDeck"
+            @study="handleStudyDeck" />
+
           <CommentSection :deck-id="selectedDeck" />
         </div>
 
