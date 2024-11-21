@@ -55,7 +55,8 @@
                 <!-- Birthday -->
                 <div class="space-y-2">
                     <label class="text-sm">Birthday</label>
-                    <input v-model="formData.birthday" type="date" class="w-full input-lighter-filled [color-scheme:dark]" />
+                    <input v-model="formData.birthday" type="date"
+                        class="w-full input-lighter-filled [color-scheme:dark]" />
                 </div>
 
                 <!-- Language -->

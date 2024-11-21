@@ -42,11 +42,3 @@
   scrollbar-width: thin;
   scrollbar-color: #404040 #262626; /* thumb track */
 }
-
-/* Optional: Style for specific element only */
-.settings-content {
-  /* Add these classes to your content div in SettingsModal */
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #404040 #262626;
-}

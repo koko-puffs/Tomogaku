@@ -2,7 +2,7 @@
   .panel-clickable {
     @apply border bg-neutral-900 border-neutral-800 select-none rounded-lg text-sm
         hover:bg-neutral-800 hover:border-neutral-700 transition-all duration-75
-        active:hover:text-white active:hover:border-neutral-400 cursor-pointer;
+         cursor-pointer;
   }
   .panel {
     @apply border bg-neutral-900 border-neutral-800 select-none rounded-lg text-sm;
@@ -10,6 +10,6 @@
   .panel-active {
     @apply border bg-neutral-800 border-neutral-700 select-none rounded-lg text-sm
     hover:bg-neutral-800 hover:border-neutral-700 transition-all duration-75
-    active:hover:text-white active:hover:border-neutral-400 cursor-pointer;
+     cursor-pointer;
   }
 }

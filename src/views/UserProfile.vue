@@ -15,101 +15,90 @@
         <template #sidebar>
           <div class="space-y-4">
             <!-- Profile Header -->
-            <div class="p-6 space-y-3 panel">
+            <div class="p-4 pt-6 space-y-3 panel">
               <!-- Avatar and Name -->
               <div class="text-center">
-                <div class="flex justify-center mb-4">
-                  <img 
-                    v-if="userProfile.avatar_url" 
-                    :src="userProfile.avatar_url" 
-                    class="w-24 h-24 rounded-full"
-                    alt="Profile avatar" 
-                  />
-                  <div 
-                    v-else 
-                    class="flex items-center justify-center w-24 h-24 rounded-full bg-neutral-800"
-                  >
+                <div class="flex justify-center mb-3">
+                  <img v-if="userProfile.avatar_url" :src="userProfile.avatar_url" class="w-24 h-24 rounded-full"
+                    alt="Profile avatar" />
+                  <div v-else class="flex items-center justify-center w-24 h-24 rounded-full bg-neutral-800">
                     <UserCircle2 :size="48" />
                   </div>
                 </div>
                 <h1 class="text-xl font-bold">{{ displayName }}</h1>
               </div>
 
-              <!-- Bio section -->
-              <div v-if="userProfile.bio" class="text-sm text-left break-words text-neutral-400">
-                {{ userProfile.bio }}
-              </div>
-
               <!-- Follow Button -->
-              <div v-if="canFollow" class="flex justify-center">
+              <div class="flex justify-center">
                 <button 
                   @click="handleFollowToggle" 
-                  :disabled="followLoading"
+                  :disabled="followLoading || !canFollow"
                   class="w-full h-10 px-4 transition-colors duration-200 rounded-lg" 
                   :class="{
-                    'button-accept-visible': !isFollowing,
-                    'button-lighter-visible': isFollowing
-                  }"
-                >
+                    'button-accept-visible': !isFollowing && canFollow,
+                    'button-lighter-visible': isFollowing && canFollow,
+                    'button-disabled': !canFollow
+                  }">
                   {{ isFollowing ? 'Unfollow' : 'Follow' }}
                 </button>
+              </div>
+
+              <!-- Account Details -->
+              <div class="p-1 space-y-3 text-sm">
+                <div v-if="userProfile.bio">
+                  <span class="text-sm text-neutral-400">Bio</span>
+                  <p class="text-sm break-words">{{ userProfile.bio }}</p>
+                </div>
+                <div v-if="userProfile.birthday">
+                  <span class="text-neutral-400">Birthday</span>
+                  <p>{{ formatDate(userProfile.birthday) }}</p>
+                </div>
+                <div>
+                  <span class="text-neutral-400">Language</span>
+                  <p>{{ getLanguageName(userProfile.language) }}</p>
+                </div>
+                <div v-if="userProfile.gender">
+                  <span class="text-neutral-400">Gender</span>
+                  <p class="capitalize">{{ userProfile.gender }}</p>
+                </div>
+                <div>
+                  <span class="text-neutral-400">Account Type</span>
+                  <p class="capitalize">{{ userProfile.account_type }}</p>
+                </div>
+                <div>
+                  <span class="text-neutral-400">Joined</span>
+                  <p>{{ formatDate(userProfile.joined_at) }}</p>
+                </div>
               </div>
             </div>
 
             <!-- Stats -->
-            <div class="p-6 panel">
-              <h2 class="mb-4 font-bold text-md text-neutral-200">Stats</h2>
-              <div class="space-y-4">
-                <div>
-                  <span class="text-sm text-neutral-400">Followers</span>
-                  <p class="text-sm">{{ userProfile.followers_count }}</p>
+            <div class="p-3 panel">
+              <h2 class="mx-1 mb-2 font-bold text-md text-neutral-200">Stats</h2>
+              <div class="grid grid-cols-2 gap-2">
+                <div class="p-4 rounded-lg bg-neutral-800/50">
+                  <span class="block text-sm text-neutral-400">Followers</span>
+                  <p class="text-lg font-semibold">{{ userProfile.followers_count }}</p>
                 </div>
-                <div>
-                  <span class="text-sm text-neutral-400">Following</span>
-                  <p class="text-sm">{{ userProfile.following_count }}</p>
+                <div class="p-4 rounded-lg bg-neutral-800/50">
+                  <span class="block text-sm text-neutral-400">Following</span>
+                  <p class="text-lg font-semibold">{{ userProfile.following_count }}</p>
                 </div>
-                <div>
-                  <span class="text-sm text-neutral-400">Decks Created</span>
-                  <p class="text-sm">{{ userProfile.decks_created_count }}</p>
+                <div class="p-4 rounded-lg bg-neutral-800/50">
+                  <span class="block text-sm text-neutral-400">Decks Created</span>
+                  <p class="text-lg font-semibold">{{ userProfile.decks_created_count }}</p>
                 </div>
-                <div>
-                  <span class="text-sm text-neutral-400">Cards Studied</span>
-                  <p class="text-sm">{{ userProfile.total_cards_studied }}</p>
+                <div class="p-4 rounded-lg bg-neutral-800/50">
+                  <span class="block text-sm text-neutral-400">Cards Studied</span>
+                  <p class="text-lg font-semibold">{{ userProfile.total_cards_studied }}</p>
                 </div>
-                <div>
-                  <span class="text-sm text-neutral-400">Current Streak</span>
-                  <p class="text-sm">{{ userProfile.streak_days }} days</p>
+                <div class="p-4 rounded-lg bg-neutral-800/50">
+                  <span class="block text-sm text-neutral-400">Current Streak</span>
+                  <p class="text-lg font-semibold">{{ userProfile.streak_days }} days</p>
                 </div>
-                <div>
-                  <span class="text-sm text-neutral-400">Longest Streak</span>
-                  <p class="text-sm">{{ userProfile.longest_streak }} days</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Account Info -->
-            <div class="p-6 panel">
-              <h2 class="mb-4 font-bold text-md text-neutral-200">Account Info</h2>
-              <div class="space-y-4">
-                <div>
-                  <span class="text-sm text-neutral-400">Joined</span>
-                  <p class="text-sm">{{ formatDate(userProfile.joined_at) }}</p>
-                </div>
-                <div v-if="userProfile.gender">
-                  <span class="text-sm text-neutral-400">Gender</span>
-                  <p class="text-sm capitalize">{{ userProfile.gender }}</p>
-                </div>
-                <div v-if="userProfile.birthday">
-                  <span class="text-sm text-neutral-400">Birthday</span>
-                  <p class="text-sm">{{ formatDate(userProfile.birthday) }}</p>
-                </div>
-                <div>
-                  <span class="text-sm text-neutral-400">Account Type</span>
-                  <p class="text-sm capitalize">{{ userProfile.account_type }}</p>
-                </div>
-                <div>
-                  <span class="text-sm text-neutral-400">Language</span>
-                  <p class="text-sm">{{ getLanguageName(userProfile.language) }}</p>
+                <div class="p-4 rounded-lg bg-neutral-800/50">
+                  <span class="block text-sm text-neutral-400">Longest Streak</span>
+                  <p class="text-lg font-semibold">{{ userProfile.longest_streak }} days</p>
                 </div>
               </div>
             </div>
