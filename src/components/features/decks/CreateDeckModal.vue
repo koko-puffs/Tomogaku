@@ -45,7 +45,7 @@
       </div>
 
       <!-- Footer -->
-      <div class="flex justify-end gap-3 px-5 py-3 border-t border-neutral-800">
+      <div class="flex justify-end gap-2 px-5 py-3 border-t border-neutral-800">
         <button 
           @click="closeModal" 
           class="w-24 button-lighter-visible"
