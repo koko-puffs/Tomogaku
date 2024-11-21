@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useDeckStore } from '../stores/deckStore';
 import { useUsersStore } from '../stores/usersStore';
 import { useAuthStore } from '../stores/authStore';
@@ -76,6 +76,10 @@ const handleEditDeck = () => {
 const handleStudyDeck = () => {
   // Implement study functionality
 };
+
+const currentDeck = computed(() => 
+  selectedDeck.value ? deckStore.getDeckById(selectedDeck.value) : null
+);
 </script>
 
 <template>
@@ -89,14 +93,14 @@ const handleStudyDeck = () => {
         <div v-if="isLoading" class="flex items-center justify-center mt-16 text-neutral-500">
           <LoadingSpinner :size="36" />
         </div>
-        <div v-else-if="selectedDeck && deckStore.getDeckById(selectedDeck)" class="space-y-2">
+        <div v-else-if="currentDeck" class="space-y-2">
           <DeckDetails 
-            :deck="deckStore.getDeckById(selectedDeck)" 
+            :deck="currentDeck" 
             @edit="handleEditDeck" 
             @delete="handleDeleteDeck"
             @study="handleStudyDeck" 
           />
-          <CommentSection :deck-id="selectedDeck" />
+          <CommentSection :deck-id="currentDeck.id" />
         </div>
         <div v-else class="flex items-center justify-center mt-16 text-neutral-500">
           Select a deck to view details
