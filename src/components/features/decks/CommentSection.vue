@@ -146,7 +146,7 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                         </button>
                         <button @click="toggleCommentLike(comment.id)" class="flex items-center gap-1.5 p-1" :class="{
                             'text-pink-400': usersStore.hasLikedComment(comment.id),
-                            'text-neutral-400 hover:text-red-400': !usersStore.hasLikedComment(comment.id)
+                            'text-neutral-400 hover:text-neutral-300': !usersStore.hasLikedComment(comment.id)
                         }">
                             <Heart :size="17" />
                             <span class="text-sm leading-none">{{ usersStore.commentLikes.get(comment.id)?.size || 0
