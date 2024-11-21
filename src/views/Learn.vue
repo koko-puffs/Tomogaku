@@ -76,12 +76,22 @@ const openCreateDeckModal = () => {
   createDeckModalRef.value?.openModal();
 };
 
-const handleEditDeck = () => {
-  // Implement edit functionality
+const handleEditDeck = async (updates: { title: string, description: string | null, tags: string[] | null }) => {
+  if (!selectedDeck.value) return;
+  
+  try {
+    await deckStore.updateDeck(selectedDeck.value, updates);
+  } catch (error) {
+    console.error('Failed to update deck:', error);
+  }
 };
 
 const handleStudyDeck = () => {
   // Implement study functionality
+};
+
+const handleViewCards = () => {
+  // Implement view cards functionality
 };
 
 const currentDeck = computed(() => 
@@ -103,9 +113,10 @@ const currentDeck = computed(() =>
         <div v-else-if="currentDeck" class="space-y-2">
           <DeckDetails 
             :deck="currentDeck" 
-            @edit="handleEditDeck" 
+            @update="handleEditDeck" 
             @delete="handleDeleteDeck"
             @study="handleStudyDeck" 
+            @cards="handleViewCards"
           />
           <div v-if="usersStore.loading.comments" class="flex items-center justify-center py-8 text-neutral-500">
             <LoadingSpinner :size="24" />

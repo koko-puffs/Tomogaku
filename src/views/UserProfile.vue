@@ -54,7 +54,7 @@
                   <span class="text-neutral-400">Birthday</span>
                   <p>{{ formatDate(userProfile.birthday) }}</p>
                 </div>
-                <div v-if="userProfile.gender">
+                <div v-if="userProfile.gender && userProfile.gender !== 'prefer_not_to_say'">
                   <span class="text-neutral-400">Gender</span>
                   <p class="capitalize">{{ userProfile.gender }}</p>
                 </div>

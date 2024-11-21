@@ -27,7 +27,7 @@
           <div class="space-y-2">
             <label for="deckDescription" class="block text-sm">Description (optional)</label>
             <textarea id="deckDescription" v-model="description" rows="3"
-              class="w-full h-24 resize-none input-lighter-filled !-mb-1" placeholder="Enter deck description"
+              class="w-full h-24 resize-none input-lighter-filled !-mb-2" placeholder="Enter deck description"
               :disabled="loading" />
           </div>
 
