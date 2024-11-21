@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useDeckStore } from '../stores/deckStore';
 import { useUsersStore } from '../stores/usersStore';
-import { useAuthStore } from '../stores/authStore';
 import PageLayout from '../components/common/PageLayout.vue';
 import { useRoute, useRouter } from 'vue-router';
 import CreateDeckModal from '../components/features/decks/CreateDeckModal.vue';
@@ -20,7 +19,6 @@ const router = useRouter();
 const route = useRoute();
 const deckStore = useDeckStore();
 const usersStore = useUsersStore();
-const authStore = useAuthStore();
 const selectedDeck = ref<string | null>(null);
 const isLoading = ref(true);
 
@@ -32,16 +30,28 @@ onMounted(async () => {
   isLoading.value = false;
 });
 
+watch(
+  () => route.params.deckId,
+  async (newDeckId) => {
+    if (newDeckId) {
+      selectedDeck.value = newDeckId as string;
+      deckStore.fetchCards(newDeckId as string);
+      usersStore.fetchDeckCommentsWithProfiles(newDeckId as string);
+    } else {
+      selectedDeck.value = null;
+    }
+  }
+);
+
 const selectDeck = async (deckId: string) => {
-  isLoading.value = true;
   selectedDeck.value = deckId;
   await router.push(`/learn/${deckId}`);
-  await Promise.all([
-    deckStore.fetchDecksByUserId(authStore.user?.id || ''),
-    deckStore.fetchCards(deckId),
-    usersStore.fetchDeckCommentsWithProfiles(deckId)
-  ]);
+  
   isLoading.value = false;
+  
+/*   deckStore.fetchDecksByUserId(authStore.user?.id || ''); */
+  deckStore.fetchCards(deckId);
+  usersStore.fetchDeckCommentsWithProfiles(deckId);
 };
 
 const deleteDeckModalRef = ref();
@@ -100,7 +110,10 @@ const currentDeck = computed(() =>
             @delete="handleDeleteDeck"
             @study="handleStudyDeck" 
           />
-          <CommentSection :deck-id="currentDeck.id" />
+          <div v-if="usersStore.loading.comments" class="flex items-center justify-center py-8 text-neutral-500">
+            <LoadingSpinner :size="24" />
+          </div>
+          <CommentSection v-else :deck-id="currentDeck.id" />
         </div>
         <div v-else class="flex items-center justify-center mt-16 text-neutral-500">
           Select a deck to view details

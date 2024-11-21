@@ -10,7 +10,11 @@ interface DeckState {
   decks: Deck[];
   currentDeck: Deck | null;
   cards: Record<string, Card[]>; // Keyed by deck_id
-  loading: boolean;
+  loading: {
+    decks: boolean;
+    cards: boolean;
+    operations: boolean;
+  };
   error: string | null;
   currentCard: Card | null;
   studySession: {
@@ -25,7 +29,11 @@ export const useDeckStore = defineStore("decks", {
     decks: [],
     currentDeck: null,
     cards: {},
-    loading: false,
+    loading: {
+      decks: false,
+      cards: false,
+      operations: false
+    },
     error: null,
     currentCard: null,
     studySession: {
@@ -79,7 +87,7 @@ export const useDeckStore = defineStore("decks", {
 
   actions: {
     async fetchDecks() {
-      this.loading = true;
+      this.loading.decks = true;
       try {
         const { data, error } = await supabase
           .from("decks")
@@ -93,7 +101,7 @@ export const useDeckStore = defineStore("decks", {
         this.error =
           error instanceof Error ? error.message : "Error fetching decks";
       } finally {
-        this.loading = false;
+        this.loading.decks = false;
       }
     },
 
@@ -101,7 +109,7 @@ export const useDeckStore = defineStore("decks", {
       const authStore = useAuthStore();
       if (!authStore.user) throw new Error("Please sign in to create a deck");
 
-      this.loading = true;
+      this.loading.operations = true;
       try {
         const { data, error } = await supabase
           .from("decks")
@@ -120,7 +128,7 @@ export const useDeckStore = defineStore("decks", {
           error instanceof Error ? error.message : "Error creating deck";
         throw error;
       } finally {
-        this.loading = false;
+        this.loading.operations = false;
       }
     },
 
@@ -135,7 +143,7 @@ export const useDeckStore = defineStore("decks", {
         throw new Error("You do not have permission to update this deck");
       }
 
-      this.loading = true;
+      this.loading.operations = true;
       try {
         const { data, error } = await supabase
           .from("decks")
@@ -160,7 +168,7 @@ export const useDeckStore = defineStore("decks", {
           error instanceof Error ? error.message : "Error updating deck";
         throw error;
       } finally {
-        this.loading = false;
+        this.loading.operations = false;
       }
     },
 
@@ -176,7 +184,7 @@ export const useDeckStore = defineStore("decks", {
         throw new Error("You do not have permission to delete this deck");
       }
 
-      this.loading = true;
+      this.loading.operations = true;
       try {
         // Soft delete by updating deleted_at
         const { error } = await supabase
@@ -202,12 +210,12 @@ export const useDeckStore = defineStore("decks", {
         this.error = error instanceof Error ? error.message : "Error deleting deck";
         throw error;
       } finally {
-        this.loading = false;
+        this.loading.operations = false;
       }
     },
 
     async fetchCards(deckId: string) {
-      this.loading = true;
+      this.loading.cards = true;
       try {
         const { data, error } = await supabase
           .from("cards")
@@ -221,7 +229,7 @@ export const useDeckStore = defineStore("decks", {
         this.error =
           error instanceof Error ? error.message : "Error fetching cards";
       } finally {
-        this.loading = false;
+        this.loading.cards = false;
       }
     },
 
@@ -236,7 +244,7 @@ export const useDeckStore = defineStore("decks", {
         throw new Error("You do not have permission to add cards to this deck");
       }
 
-      this.loading = true;
+      this.loading.operations = true;
       try {
         const { data, error } = await supabase
           .from("cards")
@@ -255,12 +263,12 @@ export const useDeckStore = defineStore("decks", {
           error instanceof Error ? error.message : "Error creating card";
         throw error;
       } finally {
-        this.loading = false;
+        this.loading.operations = false;
       }
     },
 
     async updateCard(id: string, updates: Partial<Card>) {
-      this.loading = true;
+      this.loading.operations = true;
       try {
         const { data, error } = await supabase
           .from("cards")
@@ -284,12 +292,12 @@ export const useDeckStore = defineStore("decks", {
           error instanceof Error ? error.message : "Error updating card";
         throw error;
       } finally {
-        this.loading = false;
+        this.loading.operations = false;
       }
     },
 
     async deleteCard(deckId: string, cardId: string) {
-      this.loading = true;
+      this.loading.operations = true;
       try {
         const { error } = await supabase
           .from("cards")
@@ -307,7 +315,7 @@ export const useDeckStore = defineStore("decks", {
           error instanceof Error ? error.message : "Error deleting card";
         throw error;
       } finally {
-        this.loading = false;
+        this.loading.operations = false;
       }
     },
 
@@ -377,7 +385,7 @@ export const useDeckStore = defineStore("decks", {
     },
 
     async fetchDecksByUserId(userId: string) {
-      this.loading = true;
+      this.loading.decks = true;
       try {
         const { data, error } = await supabase
           .from("decks")
@@ -394,7 +402,7 @@ export const useDeckStore = defineStore("decks", {
           : "Error fetching user's decks";
         throw error;
       } finally {
-        this.loading = false;
+        this.loading.decks = false;
       }
     },
   },
