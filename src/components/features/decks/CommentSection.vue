@@ -61,6 +61,28 @@ const addReply = async () => {
         console.error('Failed to create reply:', error);
     }
 };
+
+// Add these new methods
+const handleNewCommentKeydown = (event: KeyboardEvent) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        addComment();
+    }
+};
+
+const handleEditKeydown = (event: KeyboardEvent) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        updateComment();
+    }
+};
+
+const handleReplyKeydown = (event: KeyboardEvent) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        addReply();
+    }
+};
 </script>
 
 <template>
@@ -68,6 +90,7 @@ const addReply = async () => {
         <!-- Add Comment -->
         <div class="p-3 space-y-1 panel">
             <textarea v-model="newComment" placeholder="Add a comment..."
+                @keydown="handleNewCommentKeydown"
                 class="w-full h-20 resize-none input-lighter-filled" rows="3" />
             <div class="flex justify-end">
                 <button @click="addComment" :disabled="!newComment" class="w-24 button-lighter-visible">
@@ -135,8 +158,8 @@ const addReply = async () => {
                 <!-- Comment Content -->
                 <div>
                     <div v-if="editingComment === comment.id">
-                        <textarea v-model="editCommentContent" class="w-full h-20 resize-none input-lighter-filled"
-                            rows="3" />
+                        <textarea v-model="editCommentContent" @keydown="handleEditKeydown"
+                            class="w-full h-20 resize-none input-lighter-filled" rows="3" />
                         <div class="flex justify-end gap-2 mt-1">
                             <button @click="editingComment = null" class="w-24 button-lighter-visible">
                                 Cancel
@@ -154,6 +177,7 @@ const addReply = async () => {
                 <!-- Reply Input -->
                 <div v-if="replyingTo === comment.id">
                     <textarea v-model="replyContent" placeholder="Write a reply..."
+                        @keydown="handleReplyKeydown"
                         class="w-full h-20 resize-none input-lighter-filled" rows="3" />
                     <div class="flex justify-end gap-2 mt-1">
                         <button @click="replyingTo = null" class="w-24 button-lighter-visible">
@@ -211,8 +235,8 @@ const addReply = async () => {
 
                         <!-- Reply Content -->
                         <div v-if="editingComment === reply.id">
-                            <textarea v-model="editCommentContent" class="w-full h-20 resize-none input-lighter-filled"
-                                rows="3" />
+                            <textarea v-model="editCommentContent" @keydown="handleEditKeydown"
+                                class="w-full h-20 resize-none input-lighter-filled" rows="3" />
                             <div class="flex justify-end gap-2 mt-1">
                                 <button @click="editingComment = null" class="w-24 button-lighter-visible">
                                     Cancel
