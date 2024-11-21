@@ -2,7 +2,7 @@
 import { Pencil, Trash2, NotepadText } from 'lucide-vue-next';
 
 const props = defineProps<{
-    deck: any; // Replace with proper type
+    deck: any;
 }>();
 
 const emit = defineEmits<{
@@ -13,7 +13,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-    <div class="space-y-2">
+    <div class="space-y-2 motion-preset-fade motion-duration-100">
         <!-- Deck Header -->
         <div class="flex items-center justify-between w-full">
             <h1 class="relative flex items-center gap-1.5 text-xl font-bold group pl-1">

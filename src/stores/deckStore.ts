@@ -375,5 +375,27 @@ export const useDeckStore = defineStore("decks", {
           return currentInterval;
       }
     },
+
+    async fetchDecksByUserId(userId: string) {
+      this.loading = true;
+      try {
+        const { data, error } = await supabase
+          .from("decks")
+          .select("*")
+          .eq("user_id", userId)
+          .is("deleted_at", null)
+          .order("created_at", { ascending: false });
+
+        if (error) throw error;
+        this.decks = data;
+      } catch (error) {
+        this.error = error instanceof Error 
+          ? error.message 
+          : "Error fetching user's decks";
+        throw error;
+      } finally {
+        this.loading = false;
+      }
+    },
   },
 });

@@ -15,10 +15,11 @@ const router = createRouter({
       component: () => import("./views/Landing.vue"),
     },
     {
-      path: "/learn",
+      path: "/learn/:deckId?",
       name: "learn",
       component: () => import("./views/Learn.vue"),
       meta: { requiresAuth: true },
+      props: true,
     },
     {
       path: "/discover",

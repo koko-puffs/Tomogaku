@@ -2,6 +2,7 @@
 import { onMounted } from 'vue';
 import { Plus } from 'lucide-vue-next';
 import { useDeckStore } from '../../../stores/deckStore';
+import { useAuthStore } from '../../../stores/authStore';
 
 defineProps<{
     selectedDeck: string | null;
@@ -13,10 +14,13 @@ const emit = defineEmits<{
 }>();
 
 const deckStore = useDeckStore();
+const authStore = useAuthStore();
 
 // Load decks when component mounts
-onMounted(() => {
-  deckStore.fetchDecks();
+onMounted(async () => {
+  if (authStore.user) {
+    await deckStore.fetchDecksByUserId(authStore.user.id);
+  }
 });
 </script>
 
