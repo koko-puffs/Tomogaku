@@ -46,13 +46,13 @@
                   <span class="text-sm text-neutral-400">Bio</span>
                   <p class="text-sm break-words">{{ userProfile.bio }}</p>
                 </div>
-                <div v-if="userProfile.birthday">
-                  <span class="text-neutral-400">Birthday</span>
-                  <p>{{ formatDate(userProfile.birthday) }}</p>
-                </div>
                 <div>
                   <span class="text-neutral-400">Language</span>
                   <p>{{ getLanguageName(userProfile.language) }}</p>
+                </div>
+                <div v-if="userProfile.birthday">
+                  <span class="text-neutral-400">Birthday</span>
+                  <p>{{ formatDate(userProfile.birthday) }}</p>
                 </div>
                 <div v-if="userProfile.gender">
                   <span class="text-neutral-400">Gender</span>

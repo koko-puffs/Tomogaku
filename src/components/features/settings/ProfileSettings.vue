@@ -1,9 +1,16 @@
 <template>
     <div class="space-y-8 motion-preset-fade motion-duration-100">
-        <!-- Header -->
-        <div>
-            <h3 class="font-bold text-md">Profile Settings</h3>
-            <p class="text-sm text-neutral-400">Manage your personal information and profile preferences</p>
+        <!-- Header with Sync Button -->
+        <div class="flex items-center justify-between">
+            <div>
+                <h3 class="font-bold text-md">Profile Settings</h3>
+                <p class="text-sm text-neutral-400">Manage your personal information and profile preferences</p>
+            </div>
+            <button @click="handleSync" class="flex items-center h-10 gap-2 px-4 button-lighter-visible"
+                :disabled="syncLoading">
+                <RefreshCw :class="{ 'animate-spin': syncLoading }" :size=18 />
+                Refresh Discord Data
+            </button>
         </div>
 
         <form @submit.prevent="handleSubmit" class="space-y-8">
@@ -14,13 +21,8 @@
                 <!-- Username -->
                 <div class="space-y-2">
                     <label class="text-sm">Username</label>
-                    <div class="relative">
-                        <input v-model="formData.username" type="text" class="w-full input-lighter-filled"
-                            :class="{ 'border-red-500': errors.username }" />
-                        <span v-if="errors.username" class="absolute text-sm text-red-500 -bottom-6">
-                            {{ errors.username }}
-                        </span>
-                    </div>
+                    <input v-model="formData.username" type="username" class="w-full input-lighter-filled" disabled />
+                    <p class="text-sm text-neutral-400">Username cannot be changed</p>
                 </div>
 
                 <!-- Email -->
@@ -144,7 +146,7 @@ import { ref, reactive, computed } from 'vue'
 import { useAuthStore } from '../../../stores/authStore'
 import { useUsersStore } from '../../../stores/usersStore'
 import LoadingSpinner from '../../common/LoadingSpinner.vue'
-import { ChevronDown } from 'lucide-vue-next'
+import { ChevronDown, RefreshCw } from 'lucide-vue-next'
 
 const authStore = useAuthStore()
 const usersStore = useUsersStore()
@@ -153,6 +155,19 @@ const loading = ref(false)
 const errors = reactive({
     username: ''
 })
+
+const syncLoading = ref(false)
+
+const handleSync = async () => {
+    syncLoading.value = true
+    try {
+        await authStore.syncDiscordProfile()
+    } catch (error) {
+        console.error('Failed to sync with Discord:', error)
+    } finally {
+        syncLoading.value = false
+    }
+}
 
 // Form data
 const formData = reactive({
@@ -173,7 +188,6 @@ const formData = reactive({
 
 // Initial data for comparison
 const initialData = {
-    username: authStore.userProfile?.username || '',
     bio: authStore.userProfile?.bio || '',
     gender: authStore.userProfile?.gender || 'prefer_not_to_say',
     birthday: authStore.userProfile?.birthday || '',
@@ -181,8 +195,7 @@ const initialData = {
 }
 
 const hasChanges = computed(() => {
-    return formData.username !== initialData.username ||
-        formData.bio !== initialData.bio ||
+    return formData.bio !== initialData.bio ||
         formData.gender !== initialData.gender ||
         formData.birthday !== initialData.birthday ||
         formData.language !== initialData.language
@@ -192,26 +205,24 @@ const hasChanges = computed(() => {
 const handleSubmit = async () => {
     errors.username = ''
 
-    if (formData.username.length < 3) {
-        errors.username = 'Username must be at least 3 characters long'
-        return
-    }
-
     loading.value = true
     try {
+        // Check if birthday is the default value or empty, set to null in those cases
+        const birthdayToSubmit = (formData.birthday === 'mm/dd/yyyy' || formData.birthday === '')
+            ? null
+            : formData.birthday
+
         await usersStore.updateUserProfile({
-            username: formData.username,
             bio: formData.bio,
             gender: formData.gender,
-            birthday: formData.birthday,
+            birthday: birthdayToSubmit,
             language: formData.language
         })
 
         Object.assign(initialData, {
-            username: formData.username,
             bio: formData.bio,
             gender: formData.gender,
-            birthday: formData.birthday,
+            birthday: birthdayToSubmit,
             language: formData.language
         })
     } catch (error) {

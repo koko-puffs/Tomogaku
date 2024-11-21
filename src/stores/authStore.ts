@@ -206,6 +206,32 @@ export const useAuthStore = defineStore("auth", {
       }
     },
 
+    async syncDiscordProfile(): Promise<void> {
+      if (!this.user) throw new Error("Must be logged in to refresh profile");
+      
+      try {
+        // Force a new OAuth sign-in to get fresh Discord data
+        const { error: signInError } = await supabase.auth.signInWithOAuth({
+          provider: "discord",
+          options: {
+            redirectTo: getRedirectTo(),
+            // Force a new OAuth flow to get fresh data
+            queryParams: {
+              prompt: 'consent'
+            }
+          }
+        });
+
+        if (signInError) throw signInError;
+        
+        // Note: The actual profile update will happen in handleAuthRedirect
+        // after the OAuth redirect completes
+      } catch (error) {
+        console.error("Error refreshing Discord profile:", error);
+        throw error;
+      }
+    },
+
     // New method to update profile
     async updateProfile(updates: Partial<UserProfile>): Promise<void> {
       if (!this.user) throw new Error("Must be logged in to update profile");
