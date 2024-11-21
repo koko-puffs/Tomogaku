@@ -86,7 +86,7 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
 </script>
 
 <template>
-    <div class="!mt-8 space-y-2 motion-preset-fade motion-duration-100">
+    <div class="!mt-8 space-y-2 motion-translate-x-in-[0%] motion-translate-y-in-[-1%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.10s]/opacity">
         <!-- Add Comment -->
         <div class="p-3 space-y-1 panel">
             <textarea v-model="newComment" placeholder="Add a comment..."
