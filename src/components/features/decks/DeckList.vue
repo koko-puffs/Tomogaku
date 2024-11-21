@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { Plus } from 'lucide-vue-next';
 import { useDeckStore } from '../../../stores/deckStore';
 import { useAuthStore } from '../../../stores/authStore';
@@ -16,10 +16,26 @@ const emit = defineEmits<{
 const deckStore = useDeckStore();
 const authStore = useAuthStore();
 
-// Load decks when component mounts
+const refreshInterval = ref<number | null>(null);
+
+// Load decks when component mounts and set up refresh interval
 onMounted(async () => {
   if (authStore.user) {
     await deckStore.fetchDecksByUserId(authStore.user.id);
+    
+    // Set up refresh interval
+    refreshInterval.value = setInterval(async () => {
+      if (authStore.user) {
+        await deckStore.fetchDecksByUserId(authStore.user.id);
+      }
+    }, 60000) as unknown as number;
+  }
+});
+
+// Clean up interval when component unmounts
+onUnmounted(() => {
+  if (refreshInterval.value) {
+    clearInterval(refreshInterval.value);
   }
 });
 </script>

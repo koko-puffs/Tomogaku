@@ -226,7 +226,6 @@ export const useUsersStore = defineStore("users", {
       const authStore = useAuthStore();
       if (!authStore.userProfile) throw new Error("Must be logged in to comment");
 
-      this.loading.comments = true;
       try {
         const { data, error } = await supabase
           .from("comments")
@@ -243,13 +242,12 @@ export const useUsersStore = defineStore("users", {
         if (data) {
           const deckComments = this.comments.get(deckId) || [];
           this.comments.set(deckId, [data, ...deckComments]);
+          this.commentLikes.set(data.id, new Set());
           return data;
         }
       } catch (error) {
         this.error = error instanceof Error ? error.message : "Error creating comment";
         throw error;
-      } finally {
-        this.loading.comments = false;
       }
     },
 
@@ -257,7 +255,6 @@ export const useUsersStore = defineStore("users", {
       const authStore = useAuthStore();
       if (!authStore.userProfile) throw new Error("Must be logged in to update comment");
 
-      this.loading.comments = true;
       try {
         const { data, error } = await supabase
           .from("comments")
@@ -286,8 +283,6 @@ export const useUsersStore = defineStore("users", {
       } catch (error) {
         this.error = error instanceof Error ? error.message : "Error updating comment";
         throw error;
-      } finally {
-        this.loading.comments = false;
       }
     },
 
@@ -295,27 +290,30 @@ export const useUsersStore = defineStore("users", {
       const authStore = useAuthStore();
       if (!authStore.userProfile) throw new Error("Must be logged in to delete comment");
 
-      this.loading.comments = true;
       try {
-        const { error } = await supabase
-          .from("comments")
-          .delete()
-          .eq("id", commentId)
-          .eq("user_id", authStore.userProfile.id);
-
-        if (error) throw error;
-
+        // Update local state first (optimistically)
         const deckComments = this.comments.get(deckId) || [];
         this.comments.set(
           deckId,
           deckComments.filter(c => c.id !== commentId && c.parent_id !== commentId)
         );
         this.commentLikes.delete(commentId);
+
+        // Then send request to backend
+        const { error } = await supabase
+          .from("comments")
+          .delete()
+          .eq("id", commentId)
+          .eq("user_id", authStore.userProfile.id);
+
+        if (error) {
+          // If there's an error, rollback the optimistic update
+          this.comments.set(deckId, deckComments);
+          throw error;
+        }
       } catch (error) {
         this.error = error instanceof Error ? error.message : "Error deleting comment";
         throw error;
-      } finally {
-        this.loading.comments = false;
       }
     },
 

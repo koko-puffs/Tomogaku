@@ -86,11 +86,11 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
 </script>
 
 <template>
-    <div class="!mt-8 space-y-2 motion-translate-x-in-[0%] motion-translate-y-in-[-1%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.10s]/opacity">
+    <div
+        class="!mt-8 space-y-2 motion-translate-x-in-[0%] motion-translate-y-in-[-1%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.10s]/opacity">
         <!-- Add Comment -->
         <div class="p-3 space-y-1 panel">
-            <textarea v-model="newComment" placeholder="Add a comment..."
-                @keydown="handleNewCommentKeydown"
+            <textarea v-model="newComment" placeholder="Add a comment..." @keydown="handleNewCommentKeydown"
                 class="w-full h-20 resize-none input-lighter-filled" rows="3" />
             <div class="flex justify-end">
                 <button @click="addComment" :disabled="!newComment" class="w-24 button-lighter-visible">
@@ -120,7 +120,7 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                                 {{ new Date(comment.created_at).toLocaleDateString(undefined, {
                                     year: 'numeric',
                                     month: 'short',
-                                day: 'numeric',
+                                    day: 'numeric',
                                 }) }}
                                 at
                                 {{ new Date(comment.created_at).toLocaleTimeString(undefined, {
@@ -176,8 +176,7 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
 
                 <!-- Reply Input -->
                 <div v-if="replyingTo === comment.id">
-                    <textarea v-model="replyContent" placeholder="Write a reply..."
-                        @keydown="handleReplyKeydown"
+                    <textarea v-model="replyContent" placeholder="Write a reply..." @keydown="handleReplyKeydown"
                         class="w-full h-20 resize-none input-lighter-filled" rows="3" />
                     <div class="flex justify-end gap-2 mt-1">
                         <button @click="replyingTo = null" class="w-24 button-lighter-visible">
@@ -209,7 +208,7 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                                     {{ new Date(reply.created_at).toLocaleDateString(undefined, {
                                         year: 'numeric',
                                         month: 'short',
-                                    day: 'numeric'
+                                        day: 'numeric'
                                     }) }}
                                     at
                                     {{ new Date(reply.created_at).toLocaleTimeString(undefined, {

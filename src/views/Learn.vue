@@ -35,8 +35,6 @@ watch(
   async (newDeckId) => {
     if (newDeckId) {
       selectedDeck.value = newDeckId as string;
-      deckStore.fetchCards(newDeckId as string);
-      usersStore.fetchDeckCommentsWithProfiles(newDeckId as string);
     } else {
       selectedDeck.value = null;
     }
@@ -49,7 +47,6 @@ const selectDeck = async (deckId: string) => {
   
   isLoading.value = false;
   
-/*   deckStore.fetchDecksByUserId(authStore.user?.id || ''); */
   deckStore.fetchCards(deckId);
   usersStore.fetchDeckCommentsWithProfiles(deckId);
 };
