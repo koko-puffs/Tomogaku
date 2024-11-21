@@ -169,22 +169,24 @@ const removeTag = (tagToRemove: string) => {
         </div>
 
         <!-- Deck Stats -->
-        <div class="p-4 space-y-2 panel">
-            <div class="flex justify-between">
-                <span class="text-neutral-400">New:</span>
-                <span>10</span>
-            </div>
-            <div class="flex justify-between">
-                <span class="text-neutral-400">Learning:</span>
-                <span>25</span>
-            </div>
-            <div class="flex justify-between">
-                <span class="text-neutral-400">Graduated:</span>
-                <span>60</span>
-            </div>
-            <div class="flex justify-between">
-                <span class="text-neutral-400">Total:</span>
-                <span>243</span>
+        <div class="p-3 space-y-2 panel">
+            <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-neutral-400">New:</span>
+                    <span class="text-cyan-400">10</span>
+                </div>
+                <div class="h-px bg-neutral-800"></div>
+                
+                <div class="flex items-center justify-between py-0.5">
+                    <span class="text-neutral-400">To-review:</span>
+                    <span class="text-green-400">25</span>
+                </div>
+                <div class="h-px bg-neutral-800"></div>
+                
+                <div class="flex items-center justify-between">
+                    <span class="text-neutral-400">Learning:</span>
+                    <span class="text-orange-400">60</span>
+                </div>
             </div>
         </div>
     </div>
