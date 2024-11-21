@@ -84,6 +84,7 @@ export const useDeckStore = defineStore("decks", {
         const { data, error } = await supabase
           .from("decks")
           .select("*")
+          .is("deleted_at", null)  // Only fetch non-deleted decks
           .order("created_at", { ascending: false });
 
         if (error) throw error;
@@ -165,8 +166,9 @@ export const useDeckStore = defineStore("decks", {
 
     async deleteDeck(id: string) {
       const authStore = useAuthStore();
-      if (!authStore.user)
+      if (!authStore.user) {
         throw new Error("Please sign in to delete this deck");
+      }
 
       // Check if user owns the deck
       const deck = this.getDeckById(id);
@@ -176,17 +178,28 @@ export const useDeckStore = defineStore("decks", {
 
       this.loading = true;
       try {
-        const { error } = await supabase.from("decks").delete().eq("id", id);
+        // Soft delete by updating deleted_at
+        const { error } = await supabase
+          .from("decks")
+          .update({ 
+            deleted_at: new Date().toISOString(),
+            // Also update visibility to prevent access
+            visibility: 'private' as const
+          })
+          .eq("id", id);
 
         if (error) throw error;
-        this.decks = this.decks.filter((deck) => deck.id !== id);
+
+        // Update local state
+        this.decks = this.decks.filter(deck => deck.id !== id);
         if (this.currentDeck?.id === id) {
           this.currentDeck = null;
         }
+        // Clear cards for this deck
         delete this.cards[id];
+
       } catch (error) {
-        this.error =
-          error instanceof Error ? error.message : "Error deleting deck";
+        this.error = error instanceof Error ? error.message : "Error deleting deck";
         throw error;
       } finally {
         this.loading = false;

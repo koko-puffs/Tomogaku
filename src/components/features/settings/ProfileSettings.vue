@@ -33,7 +33,7 @@
                 <!-- Bio -->
                 <div class="space-y-2">
                     <label class="text-sm">Bio</label>
-                    <textarea v-model="formData.bio" class="w-full h-24 input-lighter-filled"
+                    <textarea v-model="formData.bio" class="w-full h-24 resize-none input-lighter-filled"
                         placeholder="Tell others about yourself..."></textarea>
                 </div>
 
@@ -126,12 +126,12 @@
 
             <!-- Submit Button -->
             <div class="flex justify-end space-x-2">
-                <button type="button" @click="resetForm" class="h-10 px-4 button-lighter-visible" :disabled="loading">
+                <button type="button" @click="resetForm" class="w-24 button-lighter-visible" :disabled="loading">
                     Reset
                 </button>
-                <button type="submit" class="h-10 px-4 button-accept-visible" :disabled="loading || !hasChanges">
+                <button type="submit" class="w-24 button-accept-visible" :disabled="loading || !hasChanges">
                     <LoadingSpinner v-if="loading" class="w-5 h-5" />
-                    <span v-else>Save Changes</span>
+                    <span v-else>Save</span>
                 </button>
             </div>
         </form>

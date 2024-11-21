@@ -15,7 +15,7 @@
         <template #sidebar>
           <div class="space-y-4">
             <!-- Profile Header -->
-            <div class="p-6 space-y-3 border rounded-lg border-neutral-800 bg-neutral-950">
+            <div class="p-6 space-y-3 panel">
               <!-- Avatar and Name -->
               <div class="text-center">
                 <div class="flex justify-center mb-4">
@@ -51,13 +51,13 @@
                     'button-lighter-visible': isFollowing
                   }"
                 >
-                  {{ isFollowing ? 'Following' : 'Follow' }}
+                  {{ isFollowing ? 'Unfollow' : 'Follow' }}
                 </button>
               </div>
             </div>
 
             <!-- Stats -->
-            <div class="p-6 border rounded-lg border-neutral-800 bg-neutral-950">
+            <div class="p-6 panel">
               <h2 class="mb-4 font-bold text-md text-neutral-200">Stats</h2>
               <div class="space-y-4">
                 <div>
@@ -88,7 +88,7 @@
             </div>
 
             <!-- Account Info -->
-            <div class="p-6 border rounded-lg border-neutral-800 bg-neutral-950">
+            <div class="p-6 panel">
               <h2 class="mb-4 font-bold text-md text-neutral-200">Account Info</h2>
               <div class="space-y-4">
                 <div>
@@ -117,7 +117,7 @@
         </template>
 
         <template #content>
-          <div class="p-4 border rounded-lg border-neutral-800 bg-neutral-950">
+          <div class="p-4 panel">
             <p>Content will go here</p>
           </div>
         </template>

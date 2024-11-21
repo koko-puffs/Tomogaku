@@ -21,6 +21,13 @@ export interface Database {
           updated_at: string
           last_studied_at: string | null
           card_count: number
+          new_cards_count: number
+          learning_cards_count: number
+          review_cards_count: number
+          due_cards_count: number
+          next_due_date: string | null
+          daily_new_cards_limit: number
+          daily_review_limit: number
           rating_avg: number
           rating_count: number
           study_count: number
@@ -42,6 +49,13 @@ export interface Database {
           updated_at?: string
           last_studied_at?: string | null
           card_count?: number
+          new_cards_count?: number
+          learning_cards_count?: number
+          review_cards_count?: number
+          due_cards_count?: number
+          next_due_date?: string | null
+          daily_new_cards_limit?: number
+          daily_review_limit?: number
           rating_avg?: number
           rating_count?: number
           study_count?: number
@@ -63,6 +77,13 @@ export interface Database {
           updated_at?: string
           last_studied_at?: string | null
           card_count?: number
+          new_cards_count?: number
+          learning_cards_count?: number
+          review_cards_count?: number
+          due_cards_count?: number
+          next_due_date?: string | null
+          daily_new_cards_limit?: number
+          daily_review_limit?: number
           rating_avg?: number
           rating_count?: number
           study_count?: number

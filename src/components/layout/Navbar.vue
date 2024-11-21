@@ -65,7 +65,7 @@ const scrollToTop = () => {
 </script>
 
 <template>
-  <nav class="fixed top-0 left-0 right-0 z-50 border-b border-neutral-800 bg-neutral-950">
+  <nav class="fixed top-0 left-0 right-0 z-50 border-b border-neutral-800 bg-neutral-900">
     <div class="flex items-center justify-between flex-shrink-0 px-6 py-4 mx-auto space-x-4 h-14">
       <!-- Left section -->
       <div class="flex items-center justify-start flex-1">
@@ -73,10 +73,10 @@ const scrollToTop = () => {
           @click="scrollToTop">tomogaku
         </router-link>
         <router-link v-if="authStore.user" to="/learn" class="w-24 h-10 mr-2 text-sm"
-          :class="route.path.startsWith('/learn') ? 'button-active' : 'button-visible'" @click="scrollToTop">Learn
+          :class="route.path.startsWith('/learn') ? 'button-active-white' : 'button-lighter-visible'" @click="scrollToTop">Learn
         </router-link>
         <router-link v-if="authStore.user" to="/discover" class="w-24 h-10 mr-2 text-sm"
-          :class="route.path.startsWith('/discover') ? 'button-active' : 'button-visible'" @click="scrollToTop">Discover
+          :class="route.path.startsWith('/discover') ? 'button-active-white' : 'button-lighter-visible'" @click="scrollToTop">Discover
         </router-link>
       </div>
 
@@ -94,7 +94,7 @@ const scrollToTop = () => {
 
         <div v-else class="relative" ref="dropdownRef">
           <button @click.stop="toggleDropdown" class="flex items-center h-10 px-2 text-sm"
-            :class="isDropdownOpen ? 'button-active' : 'button-visible'">
+            :class="isDropdownOpen ? 'button-active-white' : 'button-lighter-visible'">
             <span class="pl-1 pr-2">
               {{
                 (authStore.username ?? '').length > 20

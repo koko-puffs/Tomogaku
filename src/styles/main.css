@@ -10,7 +10,7 @@
   html,
   body,
   #app {
-    @apply bg-black;
+    @apply bg-neutral-950;
     @apply text-neutral-200;
     @apply font-roboto;
   }
