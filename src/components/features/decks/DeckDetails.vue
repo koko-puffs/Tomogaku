@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Pencil, Trash2, NotepadText, X } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps<{
     deck: any;
@@ -20,6 +20,12 @@ const emit = defineEmits<{
     'cards': [];
     'update': [{ title: string, description: string | null, tags: string[] | null }];
 }>();
+
+// Watch for changes to the deck prop
+watch(() => props.deck, () => {
+    isEditing.value = false;
+    tagError.value = '';
+}, { deep: true });
 
 const startEdit = () => {
     isEditing.value = true;
@@ -76,11 +82,12 @@ const removeTag = (tagToRemove: string) => {
 </script>
 
 <template>
-    <div class="space-y-2 motion-preset-fade motion-duration-100">
+    <div class="space-y-2">
         <!-- Deck Header -->
         <div class="flex items-center justify-between w-full">
             <!-- Edit Mode -->
-            <div v-if="isEditing" class="flex-1">
+            <div v-if="isEditing" 
+                 class="flex-1 w-full motion-translate-y-in-[-2%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.20s]/opacity">
                 <div class="space-y-4">
                     <div class="space-y-2">
                         <label class="block text-sm">Title</label>
@@ -122,18 +129,21 @@ const removeTag = (tagToRemove: string) => {
 
             <!-- View Mode -->
             <template v-else>
-                <h1 class="relative flex items-center gap-1.5 text-xl font-bold group pl-1">
-                    {{ props.deck.title }}
-                    <NotepadText v-if="props.deck.description" :size="18" class="text-neutral-500" />
-                    <div v-if="props.deck.description"
-                        class="absolute invisible p-2 border border-neutral-800 text-sm transition-all font-medium -translate-x-1/2 translate-y-2 rounded-md opacity-0 left-1/2 top-full bg-neutral-900 group-hover:visible group-hover:opacity-100 min-w-[300px] max-w-[500px] text-neutral-400 shadow-lg">
-                        {{ props.deck.description }}
-                    </div>
-                </h1>
+                <div class="motion-translate-y-in-[-15%] motion-opacity-in-[0%] motion-duration-[0.4s] motion-duration-[0.2s]/opacity">
+                    <h1 class="relative flex items-center gap-1.5 text-xl font-bold group pl-1">
+                        {{ props.deck.title }}
+                        <NotepadText v-if="props.deck.description" :size="18" class="text-neutral-500" />
+                        <div v-if="props.deck.description"
+                            class="absolute invisible p-2 border border-neutral-800 text-sm transition-all font-medium -translate-x-1/2 translate-y-2 rounded-md opacity-0 left-1/2 top-full bg-neutral-900 group-hover:visible group-hover:opacity-100 min-w-[300px] max-w-[500px] text-neutral-400 shadow-lg">
+                            {{ props.deck.description }}
+                        </div>
+                    </h1>
+                </div>
             </template>
 
             <!-- Buttons -->
-            <div v-if="!isEditing" class="flex space-x-2">
+            <div v-if="!isEditing" 
+                 class="flex space-x-2 motion-translate-y-in-[-15%] motion-opacity-in-[0%] motion-duration-[0.4s] motion-duration-[0.2s]/opacity">
                 <button class="w-10 h-10 button-visible" @click="startEdit">
                     <Pencil :size="18" />
                 </button>
@@ -150,7 +160,8 @@ const removeTag = (tagToRemove: string) => {
         </div>
 
         <!-- Tags Section -->
-        <div v-if="props.deck.tags?.length && !isEditing" class="flex flex-wrap gap-2">
+        <div v-if="props.deck.tags?.length && !isEditing" 
+             class="flex flex-wrap gap-2">
             <span v-for="tag in props.deck.tags" :key="tag"
                 class="px-2 py-1 text-xs rounded-md bg-neutral-800 text-neutral-400">
                 {{ tag }}

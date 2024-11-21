@@ -49,6 +49,7 @@ const selectDeck = async (deckId: string) => {
   
   deckStore.fetchCards(deckId);
   usersStore.fetchDeckCommentsWithProfiles(deckId);
+  scrollToTop();
 };
 
 const deleteDeckModalRef = ref();
@@ -97,6 +98,13 @@ const handleViewCards = () => {
 const currentDeck = computed(() => 
   selectedDeck.value ? deckStore.getDeckById(selectedDeck.value) : null
 );
+
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+};
 </script>
 
 <template>
