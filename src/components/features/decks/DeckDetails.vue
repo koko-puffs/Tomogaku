@@ -2,6 +2,7 @@
 import { Pencil, Trash2, NotepadText, X, Globe2, Lock } from 'lucide-vue-next';
 import { ref, watch, computed } from 'vue';
 import ToggleSlider from '../../common/ToggleSlider.vue';
+import { RouterLink } from 'vue-router';
 
 const props = defineProps<{
     deck: any;
@@ -164,24 +165,34 @@ const removeTag = (tagToRemove: string) => {
             <!-- View Mode -->
             <template v-else>
                 <div class="motion-translate-y-in-[-12%] motion-opacity-in-[0%] motion-duration-[0.35s] motion-duration-[0.25s]/opacity">
-                    <h1 class="relative flex items-center gap-1.5 text-xl font-bold group pl-1 max-w-[300px]">
-                        <span class="truncate">{{ props.deck.title }}</span>
-                        <NotepadText v-if="props.deck.description" :size="18" class="flex-shrink-0 mb-0.5 text-neutral-500" />
-                        <div v-if="props.deck.description"
-                            class="absolute invisible p-2 border border-neutral-800 text-sm transition-all font-medium -translate-x-1/2 translate-y-2 rounded-md opacity-0 left-1/2 top-full bg-neutral-900 group-hover:visible group-hover:opacity-100 min-w-[300px] max-w-[500px] text-neutral-400 shadow-lg whitespace-pre-wrap"
-                            v-html="props.deck.description.replace(/\n/g, '<br />')">
-                        </div>
-                    </h1>
+                    <div class="space-y-1">
+                        <h1 class="relative flex items-center gap-1.5 text-xl font-bold group pl-1 max-w-[300px]">
+                            <span class="leading-none truncate">{{ props.deck.title }}</span>
+                            <NotepadText v-if="props.deck.description" :size="18" class="flex-shrink-0 mb-0.5 text-neutral-500" />
+                            <div v-if="props.deck.description"
+                                class="absolute invisible p-2 border border-neutral-800 text-sm transition-all font-medium -translate-x-1/2 translate-y-2 rounded-md opacity-0 left-1/2 top-full bg-neutral-900 group-hover:visible group-hover:opacity-100 min-w-[300px] max-w-[500px] text-neutral-400 shadow-lg whitespace-pre-wrap"
+                                v-html="props.deck.description.replace(/\n/g, '<br />')">
+                            </div>
+                        </h1>
+                        <RouterLink 
+                            v-if="props.deck.visibility === 'public'"
+                            :to="`/deck/${props.deck.id}`" 
+                            class="flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-200 transition-colors pl-1"
+                        >
+                            <Globe2 :size="14" />
+                            <span class="leading-none">View public page</span>
+                        </RouterLink>
+                    </div>
                 </div>
             </template>
 
             <!-- Buttons -->
             <div v-if="!isEditing" 
                  class="flex space-x-2 motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.35s] motion-duration-[0.25s]/opacity">
-                <button class="w-10 h-10 button-visible" @click="startEdit">
+                <button class="w-10 button-visible" @click="startEdit">
                     <Pencil :size="18" />
                 </button>
-                <button @click="emit('delete')" class="w-10 h-10 button-visible">
+                <button @click="emit('delete')" class="w-10 button-visible">
                     <Trash2 :size="18" />
                 </button>
                 <button class="w-28 button-visible" @click="emit('cards')">
