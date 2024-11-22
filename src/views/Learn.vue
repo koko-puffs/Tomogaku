@@ -29,7 +29,10 @@ const selectDeck = async (deckId: string) => {
   isLoading.value = false;
 
   deckStore.fetchCards(deckId);
-  usersStore.fetchDeckCommentsWithProfiles(deckId);
+  const deck = deckStore.getDeckById(deckId);
+  if (deck && deck.visibility !== 'private') {
+    usersStore.fetchDeckCommentsWithProfiles(deckId);
+  }
   scrollToTop();
 };
 
@@ -120,10 +123,12 @@ const scrollToTop = () => {
         <div v-else-if="currentDeck" class="space-y-2">
           <DeckDetails :deck="currentDeck" @update="handleEditDeck" @delete="handleDeleteDeck" @study="handleStudyDeck"
             @cards="handleViewCards" />
-          <div v-if="usersStore.loading.comments" class="flex items-center justify-center py-8 text-neutral-500">
-            <LoadingSpinner :size="24" />
-          </div>
-          <CommentSection v-else :deck-id="currentDeck.id" />
+          <template v-if="currentDeck.visibility !== 'private'">
+            <div v-if="usersStore.loading.comments" class="flex items-center justify-center py-8 text-neutral-500">
+              <LoadingSpinner :size="24" />
+            </div>
+            <CommentSection v-else :deck-id="currentDeck.id" />
+          </template>
         </div>
         <div v-else class="flex items-center justify-center mt-16 text-neutral-500">
           Select a deck to view details
