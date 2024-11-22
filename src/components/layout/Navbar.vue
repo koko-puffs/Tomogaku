@@ -77,8 +77,8 @@ const scrollToTop = () => {
       <!-- Center section -->
       <div class="flex items-center justify-center flex-1 space-x-2">
         <router-link v-if="authStore.user" to="/learn"
-          class="relative px-4 text-sm transition-all duration-150 h-14 group hover:text-white"
-          :class="route.path.startsWith('/learn') ? 'text-white' : 'text-neutral-400'"
+          class="relative px-4 text-sm transition-all duration-150 h-14 group"
+          :class="route.path.startsWith('/learn') ? 'text-white' : 'text-neutral-400 hover:text-white hover:bg-neutral-900'"
           @click="scrollToTop">
           <span class="flex items-center justify-center h-full mt-px">
             <BookOpen :size="16" class="mr-2" />
