@@ -121,11 +121,10 @@ const scrollToTop = () => {
               {{
                 (authStore.username ?? '').length > 20
                   ? (authStore.username ?? '').substring(0, 20) + '...'
-                  : authStore.username ?? 'User'
+                  : authStore.username
               }}
             </span>
             <img v-if="authStore.avatarUrl" :src="authStore.avatarUrl" class="w-8 h-8 rounded-full" alt="User avatar" />
-            <UserCircle2 v-else :size="24" />
           </button>
 
 
