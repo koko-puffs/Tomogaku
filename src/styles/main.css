@@ -17,6 +17,10 @@
     @apply text-neutral-200;
     @apply font-roboto;
   }
+
+  #app {
+    @apply isolation-auto;
+  }
 }
 
 /* For Webkit browsers (Chrome, Safari, etc.) */
