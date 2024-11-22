@@ -28,8 +28,7 @@ export interface Database {
           next_due_date: string | null
           daily_new_cards_limit: number
           daily_review_limit: number
-          rating_avg: number
-          rating_count: number
+          likes_count: number
           study_count: number
           fork_count: number
           is_forked: boolean
@@ -56,8 +55,7 @@ export interface Database {
           next_due_date?: string | null
           daily_new_cards_limit?: number
           daily_review_limit?: number
-          rating_avg?: number
-          rating_count?: number
+          likes_count?: number
           study_count?: number
           fork_count?: number
           is_forked?: boolean
@@ -84,8 +82,7 @@ export interface Database {
           next_due_date?: string | null
           daily_new_cards_limit?: number
           daily_review_limit?: number
-          rating_avg?: number
-          rating_count?: number
+          likes_count?: number
           study_count?: number
           fork_count?: number
           is_forked?: boolean

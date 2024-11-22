@@ -1,6 +1,8 @@
 <template>
   <div class="motion-preset-fade motion-duration-150">
-    <div v-if="loading">Loading...</div>
+    <div v-if="loading" class="flex justify-center py-8">
+      <LoadingSpinner size={24} />
+    </div>
 
     <div v-else-if="error">
       <NotFound />
@@ -73,27 +75,27 @@
             <div class="p-3 panel">
               <h2 class="mx-1 mb-2 font-bold text-md text-neutral-200">Stats</h2>
               <div class="grid grid-cols-2 gap-2">
-                <div class="p-4 rounded-lg bg-neutral-800/50">
+                <div class="p-4 rounded-lg bg-neutral-800/70">
                   <span class="block text-sm text-neutral-400">Followers</span>
                   <p class="text-lg font-semibold">{{ userProfile.followers_count }}</p>
                 </div>
-                <div class="p-4 rounded-lg bg-neutral-800/50">
+                <div class="p-4 rounded-lg bg-neutral-800/70">
                   <span class="block text-sm text-neutral-400">Following</span>
                   <p class="text-lg font-semibold">{{ userProfile.following_count }}</p>
                 </div>
-                <div class="p-4 rounded-lg bg-neutral-800/50">
+                <div class="p-4 rounded-lg bg-neutral-800/70">
                   <span class="block text-sm text-neutral-400">Decks Created</span>
                   <p class="text-lg font-semibold">{{ userProfile.decks_created_count }}</p>
                 </div>
-                <div class="p-4 rounded-lg bg-neutral-800/50">
+                <div class="p-4 rounded-lg bg-neutral-800/70">
                   <span class="block text-sm text-neutral-400">Cards Studied</span>
                   <p class="text-lg font-semibold">{{ userProfile.total_cards_studied }}</p>
                 </div>
-                <div class="p-4 rounded-lg bg-neutral-800/50">
+                <div class="p-4 rounded-lg bg-neutral-800/70">
                   <span class="block text-sm text-neutral-400">Current Streak</span>
                   <p class="text-lg font-semibold">{{ userProfile.streak_days }} days</p>
                 </div>
-                <div class="p-4 rounded-lg bg-neutral-800/50">
+                <div class="p-4 rounded-lg bg-neutral-800/70">
                   <span class="block text-sm text-neutral-400">Longest Streak</span>
                   <p class="text-lg font-semibold">{{ userProfile.longest_streak }} days</p>
                 </div>
@@ -103,8 +105,37 @@
         </template>
 
         <template #content>
-          <div class="p-4 panel">
-            <p>Content will go here</p>
+          <!-- Add navigation tabs -->
+          <div class="flex mb-4 border-b border-neutral-800">
+            <router-link v-for="tab in tabs" :key="tab.id" :to="{
+              name: 'userProfile',
+              params: { id: route.params.id },
+              query: { tab: tab.id }
+            }" class="relative px-6 py-3 text-sm transition-colors duration-150" :class="[
+                activeTab === tab.id
+                  ? 'text-white'
+                  : 'text-neutral-400 hover:text-white'
+              ]">
+              {{ tab.label }}
+              <div v-if="activeTab === tab.id" class="absolute bottom-0 left-0 w-full h-0.5 bg-white rounded-full">
+              </div>
+              <div v-else
+                class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-white rounded-full transition-all duration-150 group-hover:w-full -translate-x-1/2">
+              </div>
+            </router-link>
+          </div>
+
+          <!-- Tab content -->
+          <div v-if="activeTab === 'posts'">
+            <p class="text-neutral-400">Posts coming soon...</p>
+          </div>
+
+          <div v-else-if="activeTab === 'decks'">
+            <PublicDeckList :user-id="route.params.id as string" />
+          </div>
+
+          <div v-else-if="activeTab === 'stats'">
+            <p class="text-neutral-400">Stats coming soon...</p>
           </div>
         </template>
       </PageLayout>
@@ -121,6 +152,8 @@ import { UserCircle2 } from 'lucide-vue-next';
 import type { Database } from '../types/supabase';
 import NotFound from './NotFound.vue';
 import PageLayout from '../components/common/PageLayout.vue';
+import PublicDeckList from '../components/features/profile/PublicDeckList.vue';
+import LoadingSpinner from '../components/common/LoadingSpinner.vue';
 
 // Language mapping
 const LANGUAGES = {
@@ -236,4 +269,28 @@ watch(
 onMounted(() => {
   loadProfile();
 });
+
+// Add tabs data
+const tabs = [
+  { id: 'posts', label: 'Posts' },
+  { id: 'decks', label: 'Decks' },
+  { id: 'stats', label: 'Stats' }
+] as const;
+
+// Initialize activeTab based on route query
+const activeTab = ref<typeof tabs[number]['id']>(
+  (route.query.tab as typeof tabs[number]['id']) || 'posts'
+);
+
+// Watch for route query changes to update active tab
+watch(
+  () => route.query.tab,
+  (newTab) => {
+    if (newTab && tabs.some(tab => tab.id === newTab)) {
+      activeTab.value = newTab as typeof tabs[number]['id'];
+    } else {
+      activeTab.value = 'posts';
+    }
+  }
+);
 </script>

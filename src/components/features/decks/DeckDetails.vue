@@ -163,10 +163,10 @@ const removeTag = (tagToRemove: string) => {
 
             <!-- View Mode -->
             <template v-else>
-                <div class="motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.35s] motion-duration-[0.25s]/opacity">
-                    <h1 class="relative flex items-center gap-1.5 text-xl font-bold group pl-1">
-                        {{ props.deck.title }}
-                        <NotepadText v-if="props.deck.description" :size="18" class="text-neutral-500" />
+                <div class="motion-translate-y-in-[-12%] motion-opacity-in-[0%] motion-duration-[0.35s] motion-duration-[0.25s]/opacity">
+                    <h1 class="relative flex items-center gap-1.5 text-xl font-bold group pl-1 max-w-[300px]">
+                        <span class="truncate">{{ props.deck.title }}</span>
+                        <NotepadText v-if="props.deck.description" :size="18" class="flex-shrink-0 mb-0.5 text-neutral-500" />
                         <div v-if="props.deck.description"
                             class="absolute invisible p-2 border border-neutral-800 text-sm transition-all font-medium -translate-x-1/2 translate-y-2 rounded-md opacity-0 left-1/2 top-full bg-neutral-900 group-hover:visible group-hover:opacity-100 min-w-[300px] max-w-[500px] text-neutral-400 shadow-lg">
                             {{ props.deck.description }}

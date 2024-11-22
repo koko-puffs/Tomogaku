@@ -22,6 +22,7 @@ interface DeckState {
     remainingCards: Card[];
     completedCards: Card[];
   };
+  deckLikes: Map<string, boolean>;  // Keyed by deck_id
 }
 
 export const useDeckStore = defineStore("decks", {
@@ -41,6 +42,7 @@ export const useDeckStore = defineStore("decks", {
       remainingCards: [],
       completedCards: [],
     },
+    deckLikes: new Map(),
   }),
 
   getters: {
@@ -83,6 +85,9 @@ export const useDeckStore = defineStore("decks", {
         !!this.currentDeck && this.currentDeck.user_id === authStore.user?.id
       );
     },
+
+    isDeckLiked: (state) => (deckId: string): boolean => 
+      state.deckLikes.get(deckId) || false,
   },
 
   actions: {
@@ -403,6 +408,187 @@ export const useDeckStore = defineStore("decks", {
         throw error;
       } finally {
         this.loading.decks = false;
+      }
+    },
+
+    async fetchPublicDecksByUserId(userId: string) {
+      this.loading.decks = true;
+      try {
+        const { data, error } = await supabase
+          .from("decks")
+          .select("*")
+          .eq("user_id", userId)
+          .eq("visibility", "public")
+          .is("deleted_at", null)
+          .order("created_at", { ascending: false });
+
+        if (error) throw error;
+        this.decks = data;
+      } catch (error) {
+        this.error = error instanceof Error 
+          ? error.message 
+          : "Error fetching user's public decks";
+        throw error;
+      } finally {
+        this.loading.decks = false;
+      }
+    },
+
+    async forkDeck(deckId: string) {
+      const authStore = useAuthStore();
+      if (!authStore.user) throw new Error("Please sign in to fork this deck");
+
+      this.loading.operations = true;
+      try {
+        // First ensure we have the source deck data
+        const sourceDeck = this.getDeckById(deckId) || await this.fetchDeckById(deckId);
+        if (!sourceDeck) throw new Error("Deck not found");
+
+        // Create new deck as a fork
+        const { data: newDeck, error: deckError } = await supabase
+          .from("decks")
+          .insert([{
+            user_id: authStore.user.id,
+            title: `${sourceDeck.title} (forked)`,
+            description: sourceDeck.description,
+            tags: sourceDeck.tags,
+            visibility: 'private' as const,
+            is_forked: true,
+            original_deck_id: deckId,
+          }])
+          .select()
+          .single();
+
+        if (deckError) throw deckError;
+        if (!newDeck) throw new Error("Failed to create forked deck");
+
+        // Copy all cards from source deck
+        const { data: sourceCards } = await supabase
+          .from("cards")
+          .select("*")
+          .eq("deck_id", deckId);
+
+        if (sourceCards && sourceCards.length > 0) {
+          const newCards = sourceCards.map(card => ({
+            ...card,
+            id: undefined, // Let Supabase generate new IDs
+            deck_id: newDeck.id,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          }));
+
+          const { error: cardsError } = await supabase
+            .from("cards")
+            .insert(newCards);
+
+          if (cardsError) throw cardsError;
+        }
+
+        // Update fork count on original deck
+        await supabase
+          .from("decks")
+          .update({ fork_count: (sourceDeck.fork_count || 0) + 1 })
+          .eq("id", deckId);
+
+        // Update local state
+        this.decks.unshift(newDeck);
+        return newDeck;
+
+      } catch (error) {
+        this.error = error instanceof Error ? error.message : "Error forking deck";
+        throw error;
+      } finally {
+        this.loading.operations = false;
+      }
+    },
+
+    async fetchDeckLikes(deckIds: string[]) {
+      const authStore = useAuthStore();
+      if (!authStore.user) return;
+
+      try {
+        const { data, error } = await supabase
+          .from("deck_likes")
+          .select("deck_id")
+          .in("deck_id", deckIds)
+          .eq("user_id", authStore.user.id);
+
+        if (error) throw error;
+        
+        // Initialize all decks as not liked
+        deckIds.forEach(id => this.deckLikes.set(id, false));
+        
+        // Mark liked decks
+        if (data) {
+          data.forEach(like => {
+            this.deckLikes.set(like.deck_id, true);
+          });
+        }
+      } catch (error) {
+        this.error = error instanceof Error ? error.message : "Error fetching deck likes";
+      }
+    },
+
+    async toggleDeckLike(deckId: string) {
+      const authStore = useAuthStore();
+      if (!authStore.user) throw new Error("Must be logged in to like decks");
+
+      const isLiked = this.isDeckLiked(deckId);
+
+      try {
+        // Update local state optimistically
+        this.deckLikes.set(deckId, !isLiked);
+
+        if (isLiked) {
+          const { error } = await supabase
+            .from("deck_likes")
+            .delete()
+            .eq("deck_id", deckId)
+            .eq("user_id", authStore.user.id);
+
+          if (error) throw error;
+        } else {
+          const { error } = await supabase
+            .from("deck_likes")
+            .insert([{
+              deck_id: deckId,
+              user_id: authStore.user.id,
+            }]);
+
+          if (error) throw error;
+        }
+
+        // Return the delta to update the likes count
+        return isLiked ? -1 : 1;
+      } catch (error) {
+        // Rollback optimistic update on error
+        this.deckLikes.set(deckId, isLiked);
+        this.error = error instanceof Error ? error.message : "Error toggling deck like";
+        throw error;
+      }
+    },
+
+    // Add this new action to fetch a single deck
+    async fetchDeckById(deckId: string) {
+      try {
+        const { data, error } = await supabase
+          .from("decks")
+          .select("*")
+          .eq("id", deckId)
+          .is("deleted_at", null)
+          .single();
+
+        if (error) throw error;
+        if (!data) throw new Error("Deck not found");
+
+        // Add to local state if not already present
+        if (!this.decks.some(deck => deck.id === data.id)) {
+          this.decks.push(data);
+        }
+        return data;
+      } catch (error) {
+        this.error = error instanceof Error ? error.message : "Error fetching deck";
+        throw error;
       }
     },
   },

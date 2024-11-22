@@ -64,7 +64,7 @@ onUnmounted(() => {
                             :size="16"
                             class="text-neutral-500" />
                 </div>
-                <div class="text-sm">{{ deck.title }}</div>
+                <div class="text-sm truncate max-w-[160px]">{{ deck.title }}</div>
                 <!-- Divider -->
                 <div class="w-full h-px my-3 transition-all duration-75"
                     :class="[selectedDeck === deck.id ? 'bg-neutral-700' : 'bg-neutral-800 group-hover:bg-neutral-700']">

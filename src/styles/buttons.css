@@ -97,7 +97,7 @@
 
   .button-disabled {
     @apply border bg-neutral-800/75 border-neutral-700/30 select-none rounded-lg text-sm h-10
-      text-neutral-700 cursor-not-allowed transition-all duration-75
+      text-neutral-700 transition-all duration-75
       flex items-center justify-center text-nowrap overflow-hidden;
   }
 }

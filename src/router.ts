@@ -45,6 +45,12 @@ const router = createRouter({
       props: true,
     },
     {
+      path: "/deck/:id",
+      name: "deck",
+      component: () => import("./views/Deck.vue"),
+      props: true,
+    },
+    {
       path: "/:pathMatch(.*)*",
       name: "notFound",
       component: () => import("./views/NotFound.vue"),

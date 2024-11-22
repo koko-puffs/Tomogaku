@@ -153,7 +153,7 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                             'text-neutral-400 hover:text-neutral-300': !usersStore.hasLikedComment(comment.id)
                         }">
                             <Heart :size="17" />
-                            <span class="text-sm leading-none">{{ comment.likes_count }}</span>
+                            <span class="text-sm leading-none -mb-0.5">{{ comment.likes_count }}</span>
                         </button>
                     </div>
                 </div>
@@ -194,7 +194,7 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                 <!-- Replies -->
                 <div v-if="usersStore.getCommentReplies(comment.id, props.deckId).length > 0" class="space-y-2">
                     <div v-for="reply in usersStore.getCommentReplies(comment.id, props.deckId)" :key="reply.id"
-                        class="p-3 rounded-lg bg-neutral-800 motion-translate-y-in-[-5%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+                        class="p-3 rounded-lg bg-neutral-800/70 motion-translate-y-in-[-5%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
                         <!-- Reply Header -->
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center gap-2">
