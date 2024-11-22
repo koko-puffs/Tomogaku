@@ -22,35 +22,34 @@ const usersStore = useUsersStore();
 const selectedDeck = ref<string | null>(null);
 const isLoading = ref(true);
 
-onMounted(async () => {
-  const deckId = route.params.deckId as string;
-  if (deckId) {
-    await selectDeck(deckId);
-  }
-  isLoading.value = false;
-});
-
-watch(
-  () => route.params.deckId,
-  async (newDeckId) => {
-    if (newDeckId) {
-      selectedDeck.value = newDeckId as string;
-    } else {
-      selectedDeck.value = null;
-    }
-  }
-);
-
 const selectDeck = async (deckId: string) => {
   selectedDeck.value = deckId;
   await router.push(`/learn/${deckId}`);
-  
+
   isLoading.value = false;
-  
+
   deckStore.fetchCards(deckId);
   usersStore.fetchDeckCommentsWithProfiles(deckId);
   scrollToTop();
 };
+
+onMounted(async () => {
+  isLoading.value = false;
+});
+
+watch(
+  [() => route.params.deckId, () => deckStore.userDecks],
+  async ([newDeckId, decks]) => {
+    if (newDeckId) {
+      selectedDeck.value = newDeckId as string;
+    } else if (decks.length > 0 && !selectedDeck.value) {
+      await selectDeck(decks[0].id);
+    } else {
+      selectedDeck.value = null;
+    }
+  },
+  { immediate: true }
+);
 
 const deleteDeckModalRef = ref();
 
@@ -79,7 +78,7 @@ const openCreateDeckModal = () => {
 
 const handleEditDeck = async (updates: { title: string, description: string | null, tags: string[] | null }) => {
   if (!selectedDeck.value) return;
-  
+
   try {
     await deckStore.updateDeck(selectedDeck.value, updates);
   } catch (error) {
@@ -95,7 +94,7 @@ const handleViewCards = () => {
   // Implement view cards functionality
 };
 
-const currentDeck = computed(() => 
+const currentDeck = computed(() =>
   selectedDeck.value ? deckStore.getDeckById(selectedDeck.value) : null
 );
 
@@ -119,13 +118,8 @@ const scrollToTop = () => {
           <LoadingSpinner :size="36" />
         </div>
         <div v-else-if="currentDeck" class="space-y-2">
-          <DeckDetails 
-            :deck="currentDeck" 
-            @update="handleEditDeck" 
-            @delete="handleDeleteDeck"
-            @study="handleStudyDeck" 
-            @cards="handleViewCards"
-          />
+          <DeckDetails :deck="currentDeck" @update="handleEditDeck" @delete="handleDeleteDeck" @study="handleStudyDeck"
+            @cards="handleViewCards" />
           <div v-if="usersStore.loading.comments" class="flex items-center justify-center py-8 text-neutral-500">
             <LoadingSpinner :size="24" />
           </div>

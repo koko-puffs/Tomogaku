@@ -89,7 +89,7 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
     <div
         class="!mt-8 space-y-2">
         <!-- Add Comment -->
-        <div class="flex gap-2">
+        <div class="flex gap-2 motion-translate-y-in-[-4%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
             <textarea v-model="newComment" placeholder="Add a comment..." @keydown="handleNewCommentKeydown"
                 rows="1" @input="(e) => {
                     const target = e.target as HTMLTextAreaElement;
@@ -106,7 +106,7 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
         <!-- Comments List -->
         <div class="space-y-2">
             <div v-for="comment in usersStore.getThreadedComments(props.deckId)" :key="comment.id"
-                class="p-3 space-y-3 panel motion-translate-y-in-[-5%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+                class="p-3 space-y-3 panel motion-translate-y-in-[-4%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
                 <!-- Comment Header -->
                 <div class="flex items-start justify-between">
                     <div class="flex items-center gap-3">

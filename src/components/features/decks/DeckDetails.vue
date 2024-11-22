@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { Pencil, Trash2, NotepadText, X } from 'lucide-vue-next';
-import { ref, watch } from 'vue';
+import { Pencil, Trash2, NotepadText, X, Globe2, Lock } from 'lucide-vue-next';
+import { ref, watch, computed } from 'vue';
+import ToggleSlider from '../../common/ToggleSlider.vue';
 
 const props = defineProps<{
     deck: any;
@@ -12,26 +13,35 @@ const editDescription = ref('');
 const editTags = ref<string[]>([]);
 const newTag = ref('');
 const tagError = ref('');
+const editVisibility = ref<'private' | 'public'>('private');
+
+const isPublic = computed({
+    get: () => editVisibility.value === 'public',
+    set: (value: boolean) => {
+        editVisibility.value = value ? 'public' : 'private';
+    }
+});
 
 const emit = defineEmits<{
     'edit': [];
     'delete': [];
     'study': [];
     'cards': [];
-    'update': [{ title: string, description: string | null, tags: string[] | null }];
+    'update': [{ title: string, description: string | null, tags: string[] | null, visibility: 'private' | 'public' }];
 }>();
 
 // Watch for changes to the deck prop
-watch(() => props.deck, () => {
+watch(() => props.deck.id, () => {
     isEditing.value = false;
     tagError.value = '';
-}, { deep: true });
+});
 
 const startEdit = () => {
     isEditing.value = true;
     editTitle.value = props.deck.title;
     editDescription.value = props.deck.description || '';
     editTags.value = [...(props.deck.tags || [])];
+    editVisibility.value = props.deck.visibility === 'public' ? 'public' : 'private';
 };
 
 const cancelEdit = () => {
@@ -46,6 +56,7 @@ const handleUpdate = () => {
         title: editTitle.value,
         description: editDescription.value || null,
         tags: editTags.value.length > 0 ? editTags.value : null,
+        visibility: editVisibility.value,
     });
     isEditing.value = false;
 };
@@ -87,7 +98,7 @@ const removeTag = (tagToRemove: string) => {
         <div class="flex items-center justify-between w-full">
             <!-- Edit Mode -->
             <div v-if="isEditing" 
-                 class="flex-1 w-full motion-translate-y-in-[-2%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.20s]/opacity">
+                 class="flex-1 w-full motion-translate-y-in-[-1.4%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
                 <div class="space-y-4">
                     <div class="space-y-2">
                         <label class="block text-sm">Title</label>
@@ -118,9 +129,32 @@ const removeTag = (tagToRemove: string) => {
                         </div>
                     </div>
 
-                    <div class="flex justify-end gap-2">
-                        <button @click="cancelEdit" class="w-24 button-visible">Cancel</button>
-                        <button @click="handleUpdate" :disabled="!editTitle" class="w-24 button-accept-visible">Save</button>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-3">
+                                <span class="text-sm">Visibility:</span>
+                                <ToggleSlider
+                                    v-model="isPublic"
+                                />
+                                <div class="flex items-center gap-1.5">
+                                    <component 
+                                        :is="editVisibility === 'public' ? Globe2 : Lock"
+                                        :size="16"
+                                        class="text-neutral-400"
+                                    />
+                                    <span 
+                                        class="-mb-0.5 text-sm font-medium"
+                                        :class="editVisibility === 'public' ? 'text-green-400' : 'text-orange-400'"
+                                    >
+                                        {{ editVisibility === 'public' ? 'Public' : 'Private' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex justify-end gap-2">
+                            <button @click="cancelEdit" class="w-24 button-visible">Cancel</button>
+                            <button @click="handleUpdate" :disabled="!editTitle" class="w-24 button-accept-visible">Save</button>
+                        </div>
                     </div>
                 </div>
                 
@@ -129,7 +163,7 @@ const removeTag = (tagToRemove: string) => {
 
             <!-- View Mode -->
             <template v-else>
-                <div class="motion-translate-y-in-[-15%] motion-opacity-in-[0%] motion-duration-[0.4s] motion-duration-[0.2s]/opacity">
+                <div class="motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.35s] motion-duration-[0.25s]/opacity">
                     <h1 class="relative flex items-center gap-1.5 text-xl font-bold group pl-1">
                         {{ props.deck.title }}
                         <NotepadText v-if="props.deck.description" :size="18" class="text-neutral-500" />
@@ -143,7 +177,7 @@ const removeTag = (tagToRemove: string) => {
 
             <!-- Buttons -->
             <div v-if="!isEditing" 
-                 class="flex space-x-2 motion-translate-y-in-[-15%] motion-opacity-in-[0%] motion-duration-[0.4s] motion-duration-[0.2s]/opacity">
+                 class="flex space-x-2 motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.35s] motion-duration-[0.25s]/opacity">
                 <button class="w-10 h-10 button-visible" @click="startEdit">
                     <Pencil :size="18" />
                 </button>

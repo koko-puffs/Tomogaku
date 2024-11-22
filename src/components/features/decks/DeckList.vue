@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
-import { Plus } from 'lucide-vue-next';
+import { Plus, GitFork, Globe2 } from 'lucide-vue-next';
 import { useDeckStore } from '../../../stores/deckStore';
 import { useAuthStore } from '../../../stores/authStore';
 
@@ -28,7 +28,7 @@ onMounted(async () => {
       if (authStore.user) {
         await deckStore.fetchDecksByUserId(authStore.user.id);
       }
-    }, 60000) as unknown as number;
+    }, 10000) as unknown as number;
   }
 });
 
@@ -52,9 +52,18 @@ onUnmounted(() => {
 
         <!-- Deck List -->
         <div class="space-y-2">
-            <div v-for="deck in deckStore.userDecks" :key="deck.id" class="px-4 py-3 group"
+            <div v-for="deck in deckStore.userDecks" :key="deck.id" class="relative px-4 py-3 group"
                 :class="selectedDeck === deck.id ? 'panel-active' : 'panel-clickable'"
                 @click="emit('select-deck', deck.id)">
+                <!-- Icons container -->
+                <div class="absolute flex gap-2 top-3 right-3">
+                    <Globe2 v-if="deck.visibility === 'public'"
+                           :size="16"
+                           class="text-neutral-500" />
+                    <GitFork v-if="deck.is_forked"
+                            :size="16"
+                            class="text-neutral-500" />
+                </div>
                 <div class="text-sm">{{ deck.title }}</div>
                 <!-- Divider -->
                 <div class="w-full h-px my-3 transition-all duration-75"

@@ -4,7 +4,7 @@ import { useRouter, useRoute } from "vue-router";
 import LoadingSpinner from "../common/LoadingSpinner.vue";
 import SettingsModal from '../features/settings/SettingsModal.vue'
 import { ref, onMounted, onUnmounted } from 'vue'
-import { UserCircle2, Settings, LogOut } from 'lucide-vue-next'
+import { UserCircle2, Settings, LogOut, BookOpen, Compass } from 'lucide-vue-next'
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -66,23 +66,44 @@ const scrollToTop = () => {
 
 <template>
   <nav class="fixed top-0 left-0 right-0 z-50 border-b border-neutral-800 bg-neutral-950">
-    <div class="flex items-center justify-between flex-shrink-0 px-6 py-4 mx-auto space-x-4 h-14">
+    <div class="flex items-center justify-between flex-shrink-0 px-6 mx-auto space-x-4">
       <!-- Left section -->
       <div class="flex items-center justify-start flex-1">
-        <router-link to="/" class="relative flex items-center h-10 mr-5 text-xl font-bold" style="top: -1px;"
+        <router-link to="/" class="relative flex items-center h-10 text-xl font-bold" style="top: -1px;"
           @click="scrollToTop">tomogaku
-        </router-link>
-        <router-link v-if="authStore.user" to="/learn" class="w-24 h-10 mr-2 text-sm"
-          :class="route.path.startsWith('/learn') ? 'button-active-white' : 'button-visible'" @click="scrollToTop">Learn
-        </router-link>
-        <router-link v-if="authStore.user" to="/discover" class="w-24 h-10 mr-2 text-sm"
-          :class="route.path.startsWith('/discover') ? 'button-active-white' : 'button-visible'"
-          @click="scrollToTop">Discover
         </router-link>
       </div>
 
       <!-- Center section -->
-      <div class="flex items-center justify-center flex-1">
+      <div class="flex items-center justify-center flex-1 space-x-2">
+        <router-link v-if="authStore.user" to="/learn"
+          class="relative px-4 text-sm transition-all duration-150 h-14 group"
+          :class="route.path.startsWith('/learn') ? 'text-white' : 'text-neutral-400 hover:text-white hover:bg-neutral-900'"
+          @click="scrollToTop">
+          <span class="flex items-center justify-center h-full mt-px">
+            <BookOpen :size="16" class="mr-2" />
+            Learn
+          </span>
+          <div v-if="route.path.startsWith('/learn')"
+            class="absolute bottom-0 left-0 w-full h-0.5 bg-white rounded-full"></div>
+          <div v-else
+            class="absolute bottom-0 left-0 w-0 h-0.5 bg-white rounded-full transition-all duration-150 group-hover:w-full">
+          </div>
+        </router-link>
+        <router-link v-if="authStore.user" to="/discover"
+          class="relative px-4 text-sm transition-all duration-150 h-14 group"
+          :class="route.path.startsWith('/discover') ? 'text-white' : 'text-neutral-400 hover:text-white hover:bg-neutral-900'"
+          @click="scrollToTop">
+          <span class="flex items-center justify-center h-full mt-px">
+            <Compass :size="16" class="mr-2" />
+            Discover
+          </span>
+          <div v-if="route.path.startsWith('/discover')"
+            class="absolute bottom-0 left-0 w-full h-0.5 bg-white rounded-full"></div>
+          <div v-else
+            class="absolute bottom-0 left-0 w-0 h-0.5 bg-white rounded-full transition-all duration-150 group-hover:w-full">
+          </div>
+        </router-link>
       </div>
 
       <!-- Right section -->
@@ -95,7 +116,7 @@ const scrollToTop = () => {
 
         <div v-else class="relative" ref="dropdownRef">
           <button @click.stop="toggleDropdown" class="flex items-center h-10 px-2 text-sm"
-            :class="isDropdownOpen ? 'button-active-white' : 'button-visible'">
+            :class="isDropdownOpen ? 'button-active-noborder' : 'button-noborder'">
             <span class="pl-1 pr-2">
               {{
                 (authStore.username ?? '').length > 20
@@ -103,13 +124,13 @@ const scrollToTop = () => {
                   : authStore.username ?? 'User'
               }}
             </span>
-            <img v-if="authStore.avatarUrl" :src="authStore.avatarUrl" class="rounded-full w-7 h-7" alt="User avatar" />
+            <img v-if="authStore.avatarUrl" :src="authStore.avatarUrl" class="w-8 h-8 rounded-full" alt="User avatar" />
             <UserCircle2 v-else :size="24" />
           </button>
 
 
           <div v-if="isDropdownOpen"
-            class="absolute right-0 w-48 py-2 mt-1 border rounded-lg shadow-xl bg-neutral-900 border-neutral-800 motion-translate-x-in-[0%] motion-translate-y-in-[-5%] motion-opacity-in-[0%] motion-duration-[0.15s] motion-duration-[0.15s]/opacity">
+            class="absolute right-0 w-48 py-2 mt-1 border rounded-lg shadow-xl bg-neutral-900 border-neutral-800 motion-translate-x-in-[0%] motion-translate-y-in-[-4%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity">
             <router-link :to="{ name: 'userProfile', params: { id: authStore.user?.id } }" @click="closeDropdown"
               class="flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
               <UserCircle2 :size="16" class="mr-2" />
