@@ -74,21 +74,21 @@ onUnmounted(() => {
                     :class="[selectedDeck === deck.id ? 'bg-neutral-700' : 'bg-neutral-800']">
                 </div>
                 <div class="flex justify-between px-8 text-sm">
-                    <span class="relative group/tooltip">
-                        <span class="text-cyan-400">{{ 10 }}</span>
-                        <div class="absolute invisible p-2 text-sm font-medium transition-all -translate-x-1/2 -translate-y-1 border rounded-md shadow-lg opacity-0 border-neutral-800 left-1/2 bottom-full bg-neutral-900 w-max text-neutral-400 group-hover/tooltip:visible group-hover/tooltip:opacity-100">
+                    <span class="relative">
+                        <span class="peer text-cyan-400">{{ 10 }}</span>
+                        <div class="absolute invisible p-2 text-sm font-medium transition-all -translate-x-1/2 -translate-y-1 border rounded-md shadow-lg opacity-0 pointer-events-none border-neutral-800 left-1/2 bottom-full bg-neutral-900 w-max text-neutral-400 peer-hover:visible peer-hover:opacity-100">
                             New cards due
                         </div>
                     </span>
-                    <span class="relative group/tooltip">
-                        <span class="text-green-400">{{ 25 }}</span>
-                        <div class="absolute invisible p-2 text-sm font-medium transition-all -translate-x-1/2 -translate-y-1 border rounded-md shadow-lg opacity-0 border-neutral-800 left-1/2 bottom-full bg-neutral-900 w-max text-neutral-400 group-hover/tooltip:visible group-hover/tooltip:opacity-100">
+                    <span class="relative">
+                        <span class="text-green-400 peer">{{ 25 }}</span>
+                        <div class="absolute invisible p-2 text-sm font-medium transition-all -translate-x-1/2 -translate-y-1 border rounded-md shadow-lg opacity-0 pointer-events-none border-neutral-800 left-1/2 bottom-full bg-neutral-900 w-max text-neutral-400 peer-hover:visible peer-hover:opacity-100">
                             To-review cards due
                         </div>
                     </span>
-                    <span class="relative group/tooltip">
-                        <span class="text-orange-400">{{ 60 }}</span>
-                        <div class="absolute invisible p-2 text-sm font-medium transition-all -translate-x-1/2 -translate-y-1 border rounded-md shadow-lg opacity-0 border-neutral-800 left-1/2 bottom-full bg-neutral-900 w-max text-neutral-400 group-hover/tooltip:visible group-hover/tooltip:opacity-100">
+                    <span class="relative">
+                        <span class="text-orange-400 peer">{{ 60 }}</span>
+                        <div class="absolute invisible p-2 text-sm font-medium transition-all -translate-x-1/2 -translate-y-1 border rounded-md shadow-lg opacity-0 pointer-events-none border-neutral-800 left-1/2 bottom-full bg-neutral-900 w-max text-neutral-400 peer-hover:visible peer-hover:opacity-100">
                             Learning cards due
                         </div>
                     </span>

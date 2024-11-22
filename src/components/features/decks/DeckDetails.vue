@@ -145,7 +145,7 @@ const removeTag = (tagToRemove: string) => {
                                     />
                                     <span 
                                         class="-mb-0.5 text-sm font-medium"
-                                        :class="editVisibility === 'public' ? 'text-green-400' : 'text-orange-400'"
+                                        :class="editVisibility === 'public' ? 'text-green-400' : 'text-neutral-400'"
                                     >
                                         {{ editVisibility === 'public' ? 'Public' : 'Private' }}
                                     </span>
@@ -166,11 +166,15 @@ const removeTag = (tagToRemove: string) => {
             <template v-else>
                 <div class="motion-translate-y-in-[-12%] motion-opacity-in-[0%] motion-duration-[0.35s] motion-duration-[0.25s]/opacity">
                     <div class="space-y-1">
-                        <h1 class="relative flex items-center gap-1.5 text-xl font-bold group pl-1 max-w-[300px]">
+                        <h1 class="relative flex items-center gap-1.5 text-xl font-bold pl-1 max-w-[300px]">
                             <span class="leading-none truncate">{{ props.deck.title }}</span>
-                            <NotepadText v-if="props.deck.description" :size="18" class="flex-shrink-0 mb-0.5 text-neutral-500" />
+                            <NotepadText 
+                                v-if="props.deck.description" 
+                                :size="18" 
+                                class="peer flex-shrink-0 mb-0.5 text-neutral-500" 
+                            />
                             <div v-if="props.deck.description"
-                                class="absolute invisible p-2 border border-neutral-800 text-sm transition-all font-medium -translate-x-1/2 translate-y-2 rounded-md opacity-0 left-1/2 top-full bg-neutral-900 group-hover:visible group-hover:opacity-100 min-w-[300px] max-w-[500px] text-neutral-400 shadow-lg whitespace-pre-wrap"
+                                class="absolute pointer-events-none invisible p-2 border border-neutral-800 text-sm transition-all font-medium -translate-x-1/2 translate-y-2 rounded-md opacity-0 left-1/2 top-full bg-neutral-900 peer-hover:visible peer-hover:opacity-100 min-w-[300px] max-w-[500px] text-neutral-400 shadow-lg whitespace-pre-wrap"
                                 v-html="props.deck.description.replace(/\n/g, '<br />')">
                             </div>
                         </h1>

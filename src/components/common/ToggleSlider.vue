@@ -29,7 +29,7 @@ const toggle = () => {
       :aria-checked="modelValue"
       :disabled="disabled"
       @click="toggle"
-      class="relative inline-flex items-center h-6 rounded-full w-11 bg-neutral-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 before:absolute before:inset-0 before:rounded-full before:bg-gradient-to-r before:from-pink-500 before:to-rose-400 before:transition-opacity before:duration-200"
+      class="relative inline-flex items-center h-6 rounded-full w-11 bg-neutral-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 before:absolute before:inset-0 before:rounded-full before:bg-green-700 before:transition-opacity before:duration-200"
       :class="[
         modelValue ? 'before:opacity-100' : 'before:opacity-0',
         disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'

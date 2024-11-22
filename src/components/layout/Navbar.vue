@@ -4,7 +4,7 @@ import { useRouter, useRoute } from "vue-router";
 import LoadingSpinner from "../common/LoadingSpinner.vue";
 import SettingsModal from '../features/settings/SettingsModal.vue'
 import { ref, onMounted, onUnmounted } from 'vue'
-import { UserCircle2, Settings, LogOut, BookOpen, Compass } from 'lucide-vue-next'
+import { UserCircle2, Settings, LogOut, BookOpen, Compass, Activity } from 'lucide-vue-next'
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -99,6 +99,20 @@ const scrollToTop = () => {
             Discover
           </span>
           <div v-if="route.path.startsWith('/discover')"
+            class="absolute bottom-0 left-0 w-full h-0.5 bg-white rounded-full"></div>
+          <div v-else
+            class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-white rounded-full transition-all duration-150 group-hover:w-full -translate-x-1/2">
+          </div>
+        </router-link>
+        <router-link v-if="authStore.user" to="/feed"
+          class="relative px-4 text-sm transition-all duration-150 h-14 group"
+          :class="route.path.startsWith('/feed') ? 'text-white' : 'text-neutral-400 hover:text-white hover:bg-neutral-900'"
+          @click="scrollToTop">
+          <span class="flex items-center justify-center h-full mt-px">
+            <Activity :size="16" class="mr-2" />
+            Feed
+          </span>
+          <div v-if="route.path.startsWith('/feed')"
             class="absolute bottom-0 left-0 w-full h-0.5 bg-white rounded-full"></div>
           <div v-else
             class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-white rounded-full transition-all duration-150 group-hover:w-full -translate-x-1/2">

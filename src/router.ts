@@ -51,6 +51,12 @@ const router = createRouter({
       props: true,
     },
     {
+      path: "/feed",
+      name: "feed",
+      component: () => import("./views/Feed.vue"),
+      meta: { requiresAuth: true },
+    },
+    {
       path: "/:pathMatch(.*)*",
       name: "notFound",
       component: () => import("./views/NotFound.vue"),
