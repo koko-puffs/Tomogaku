@@ -49,7 +49,7 @@ onMounted(async () => {
         <div 
           v-for="deck in deckStore.decks" 
           :key="deck.id" 
-          class="relative panel-clickable p-3 motion-translate-y-in-[-4%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity flex flex-col h-full cursor-pointer hover:bg-neutral-800/50"
+          class="relative panel-clickable p-3 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity flex flex-col h-full cursor-pointer hover:bg-neutral-800/50"
           @click="navigateToDeck(deck.id, $event)"
         >
           <!-- Top content wrapper -->

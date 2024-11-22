@@ -64,32 +64,23 @@ const formatDate = (date: string) => {
         <!-- Deck Header -->
         <div class="flex items-start justify-between w-full">
             <!-- Title -->
-            <div class="motion-translate-y-in-[-12%] motion-opacity-in-[0%] motion-duration-[0.35s] motion-duration-[0.25s]/opacity">
-                <h1 class="text-2xl font-bold">
-                    {{ props.deck.title }}
-                </h1>
-            </div>
+
+            <h1 class="text-2xl font-bold">
+                {{ props.deck.title }}
+            </h1>
 
             <!-- Action Buttons -->
-            <div class="flex space-x-2 motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.35s] motion-duration-[0.25s]/opacity">
-                <button 
-                    class="flex items-center gap-2 px-4 py-2 button-visible" 
-                    @click="handleLike"
-                    :disabled="isLiking"
-                >
-                    <Heart 
-                        :size="18" 
-                        :class="{
-                            'text-red-500 fill-red-500': deckStore.isDeckLiked(props.deck.id)
-                        }" 
-                    />
+            <div
+                class="flex space-x-2">
+                <button class="flex items-center gap-2 px-4 py-2 button-visible" @click="handleLike"
+                    :disabled="isLiking">
+                    <Heart :size="18" :class="{
+                        'text-red-500 fill-red-500': deckStore.isDeckLiked(props.deck.id)
+                    }" />
                     {{ localLikesCount }}
                 </button>
-                <button 
-                    class="flex items-center gap-2 px-4 py-2 button-accept-visible" 
-                    @click="handleFork"
-                    :disabled="isForking"
-                >
+                <button class="flex items-center gap-2 px-4 py-2 button-accept-visible" @click="handleFork"
+                    :disabled="isForking">
                     <GitFork :size="18" />
                     {{ isForking ? 'Forking...' : 'Fork Deck' }}
                 </button>
@@ -98,11 +89,8 @@ const formatDate = (date: string) => {
 
         <!-- Author Info -->
         <div v-if="author" class="flex items-center gap-3">
-            <img 
-                :src="author.avatar_url || '/default-avatar.png'" 
-                :alt="author.username"
-                class="object-cover w-10 h-10 rounded-full"
-            />
+            <img :src="author.avatar_url || '/default-avatar.png'" :alt="author.username"
+                class="object-cover w-10 h-10 rounded-full" />
             <div class="flex flex-col">
                 <span class="font-medium">{{ author.username }}</span>
                 <span class="text-sm text-neutral-400">Created {{ formatDate(props.deck.created_at) }}</span>
@@ -119,7 +107,8 @@ const formatDate = (date: string) => {
 
         <!-- Description -->
         <div v-if="props.deck.description" class="p-4 rounded-lg bg-neutral-800/30">
-            <p class="whitespace-pre-wrap text-neutral-300" v-html="props.deck.description.replace(/\n/g, '<br />')"></p>
+            <p class="whitespace-pre-wrap text-neutral-300" v-html="props.deck.description.replace(/\n/g, '<br />')">
+            </p>
         </div>
 
         <!-- Deck Stats -->

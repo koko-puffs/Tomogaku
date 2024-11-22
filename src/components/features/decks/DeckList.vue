@@ -52,8 +52,12 @@ onUnmounted(() => {
 
         <!-- Deck List -->
         <div class="space-y-2">
-            <div v-for="deck in deckStore.userDecks" :key="deck.id" class="relative px-4 py-3 group"
-                :class="selectedDeck === deck.id ? 'panel-active' : 'panel-clickable'"
+            <div v-for="deck in deckStore.userDecks" :key="deck.id" class="relative px-4 py-3 group motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity"
+                :class="[
+                    selectedDeck === deck.id 
+                        ? 'panel-active' 
+                        : 'panel-clickable hover:bg-neutral-800/50'
+                ]"
                 @click="emit('select-deck', deck.id)">
                 <!-- Icons container -->
                 <div class="absolute flex gap-2 top-3 right-3">
@@ -67,7 +71,7 @@ onUnmounted(() => {
                 <div class="text-sm truncate max-w-[160px]">{{ deck.title }}</div>
                 <!-- Divider -->
                 <div class="w-full h-px my-3 transition-all duration-75"
-                    :class="[selectedDeck === deck.id ? 'bg-neutral-700' : 'bg-neutral-800 group-hover:bg-neutral-700']">
+                    :class="[selectedDeck === deck.id ? 'bg-neutral-700' : 'bg-neutral-800']">
                 </div>
                 <div class="flex justify-between px-8 text-sm">
                     <span class="relative group/tooltip">
