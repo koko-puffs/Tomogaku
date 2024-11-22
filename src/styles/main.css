@@ -14,8 +14,7 @@
   html,
   body,
   #app {
-    @apply text-neutral-200;
-    @apply font-roboto;
+    @apply text-neutral-200 font-roboto;
   }
 }
 
