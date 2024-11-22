@@ -15,7 +15,7 @@
 
         <form @submit.prevent="handleSubmit" class="space-y-8">
             <!-- Basic Information -->
-            <div class="p-6 space-y-6 border rounded-lg border-neutral-800">
+            <div class="p-6 space-y-4 border rounded-lg border-neutral-800">
                 <h4 class="font-bold text-md">Basic Information</h4>
 
                 <!-- Username -->
@@ -35,7 +35,7 @@
                 <!-- Bio -->
                 <div class="space-y-2">
                     <label class="text-sm">Bio</label>
-                    <textarea v-model="formData.bio" class="w-full h-24 resize-none input-lighter-filled"
+                    <textarea v-model="formData.bio" class="w-full h-24 resize-none input-lighter-filled !-mb-1"
                         placeholder="Tell others about yourself..."></textarea>
                 </div>
 

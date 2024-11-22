@@ -87,7 +87,7 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
 
 <template>
     <div
-        class="!mt-8 space-y-2 motion-translate-x-in-[0%] motion-translate-y-in-[-1%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.10s]/opacity">
+        class="!mt-8 space-y-2">
         <!-- Add Comment -->
         <div class="flex gap-2">
             <textarea v-model="newComment" placeholder="Add a comment..." @keydown="handleNewCommentKeydown"
@@ -106,7 +106,7 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
         <!-- Comments List -->
         <div class="space-y-2">
             <div v-for="comment in usersStore.getThreadedComments(props.deckId)" :key="comment.id"
-                class="p-3 space-y-3 panel">
+                class="p-3 space-y-3 panel motion-translate-y-in-[-5%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
                 <!-- Comment Header -->
                 <div class="flex items-start justify-between">
                     <div class="flex items-center gap-3">
@@ -160,7 +160,7 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
 
                 <!-- Comment Content -->
                 <div>
-                    <div v-if="editingComment === comment.id">
+                    <div v-if="editingComment === comment.id" class="motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
                         <textarea v-model="editCommentContent" @keydown="handleEditKeydown"
                             class="w-full h-20 resize-none input-lighter-filled" rows="3" />
                         <div class="flex justify-end gap-2 mt-1">
@@ -178,7 +178,7 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                 </div>
 
                 <!-- Reply Input -->
-                <div v-if="replyingTo === comment.id">
+                <div v-if="replyingTo === comment.id" class="motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
                     <textarea v-model="replyContent" placeholder="Write a reply..." @keydown="handleReplyKeydown"
                         class="w-full h-20 resize-none input-lighter-filled" rows="3" />
                     <div class="flex justify-end gap-2 mt-1">
@@ -194,7 +194,7 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                 <!-- Replies -->
                 <div v-if="usersStore.getCommentReplies(comment.id, props.deckId).length > 0" class="space-y-2">
                     <div v-for="reply in usersStore.getCommentReplies(comment.id, props.deckId)" :key="reply.id"
-                        class="p-3 rounded-lg bg-neutral-800">
+                        class="p-3 rounded-lg bg-neutral-800 motion-translate-y-in-[-5%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
                         <!-- Reply Header -->
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center gap-2">
@@ -236,7 +236,7 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                         </div>
 
                         <!-- Reply Content -->
-                        <div v-if="editingComment === reply.id">
+                        <div v-if="editingComment === reply.id" class="motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
                             <textarea v-model="editCommentContent" @keydown="handleEditKeydown"
                                 class="w-full h-20 resize-none input-lighter-filled" rows="3" />
                             <div class="flex justify-end gap-2 mt-1">
