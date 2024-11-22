@@ -5,6 +5,7 @@ import { useDeckStore } from '../../../stores/deckStore';
 import { useUsersStore } from '../../../stores/usersStore';
 import { formatDistanceToNow } from 'date-fns';
 import type { Database } from '../../../types/supabase';
+import { useRouter } from 'vue-router';
 
 type UserProfile = Database['public']['Tables']['user_profiles']['Row'];
 
@@ -18,6 +19,7 @@ const isForking = ref(false);
 const isLiking = ref(false);
 const author = ref<UserProfile | null>(null);
 const localLikesCount = ref(props.deck.likes_count || 0);
+const router = useRouter();
 
 onMounted(async () => {
     try {
@@ -30,7 +32,8 @@ onMounted(async () => {
 const handleFork = async () => {
     isForking.value = true;
     try {
-        await deckStore.forkDeck(props.deck.id);
+        const newDeck = await deckStore.forkDeck(props.deck.id);
+        router.push(`/learn/${newDeck.id}`);
     } catch (error) {
         console.error('Failed to fork deck:', error);
     } finally {
