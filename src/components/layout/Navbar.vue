@@ -65,8 +65,8 @@ const scrollToTop = () => {
 </script>
 
 <template>
-  <nav class="fixed top-0 left-0 right-0 z-50 border-b border-neutral-800 bg-neutral-950">
-    <div class="flex items-center justify-between flex-shrink-0 px-6 mx-auto space-x-4">
+  <nav class="fixed top-0 left-0 right-0 z-50 border-b border-neutral-800 bg-neutral-950/75 backdrop-blur-md">
+    <div class="flex items-center justify-between flex-shrink-0 px-6 mx-auto space-x-4 h-14">
       <!-- Left section -->
       <div class="flex items-center justify-start flex-1">
         <router-link to="/" class="relative flex items-center h-10 text-xl font-bold" style="top: -1px;"
@@ -77,8 +77,8 @@ const scrollToTop = () => {
       <!-- Center section -->
       <div class="flex items-center justify-center flex-1 space-x-2">
         <router-link v-if="authStore.user" to="/learn"
-          class="relative px-4 text-sm transition-all duration-150 h-14 group"
-          :class="route.path.startsWith('/learn') ? 'text-white' : 'text-neutral-400 hover:text-white hover:bg-neutral-900'"
+          class="relative px-4 text-sm transition-all duration-150 h-14 group hover:text-white"
+          :class="route.path.startsWith('/learn') ? 'text-white' : 'text-neutral-400'"
           @click="scrollToTop">
           <span class="flex items-center justify-center h-full mt-px">
             <BookOpen :size="16" class="mr-2" />
@@ -87,7 +87,7 @@ const scrollToTop = () => {
           <div v-if="route.path.startsWith('/learn')"
             class="absolute bottom-0 left-0 w-full h-0.5 bg-white rounded-full"></div>
           <div v-else
-            class="absolute bottom-0 left-0 w-0 h-0.5 bg-white rounded-full transition-all duration-150 group-hover:w-full">
+            class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-white rounded-full transition-all duration-150 group-hover:w-full -translate-x-1/2">
           </div>
         </router-link>
         <router-link v-if="authStore.user" to="/discover"
@@ -101,7 +101,7 @@ const scrollToTop = () => {
           <div v-if="route.path.startsWith('/discover')"
             class="absolute bottom-0 left-0 w-full h-0.5 bg-white rounded-full"></div>
           <div v-else
-            class="absolute bottom-0 left-0 w-0 h-0.5 bg-white rounded-full transition-all duration-150 group-hover:w-full">
+            class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-white rounded-full transition-all duration-150 group-hover:w-full -translate-x-1/2">
           </div>
         </router-link>
       </div>

@@ -132,7 +132,7 @@ const removeTag = (tagToRemove: string) => {
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
                             <div class="flex items-center gap-3">
-                                <span class="text-sm">Visibility:</span>
+                                <span class="text-sm -mb-0.5">Visibility:</span>
                                 <ToggleSlider
                                     v-model="isPublic"
                                 />
