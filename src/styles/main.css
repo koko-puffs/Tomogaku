@@ -18,6 +18,22 @@
   }
 }
 
+.prose h1 {
+  @apply mb-6 text-4xl font-bold;
+}
+
+.prose h2 {
+  @apply mt-8 mb-4 text-2xl font-bold;
+}
+
+.prose p {
+  @apply text-lg text-neutral-300;
+}
+
+.prose ul {
+  @apply my-4 text-lg text-neutral-300;
+}
+
 /* For Webkit browsers (Chrome, Safari, etc.) */
 ::-webkit-scrollbar {
   width: 10px;

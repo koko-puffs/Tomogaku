@@ -13,21 +13,3 @@ const formattedPrivacy = computed(() => {
     return marked(privacyText)
 })
 </script>
-
-<style>
-.prose h1 {
-    @apply text-4xl font-bold mb-6;
-}
-
-.prose h2 {
-    @apply text-2xl font-bold mt-8 mb-4;
-}
-
-.prose p {
-    @apply text-lg text-neutral-300;
-}
-
-.prose ul {
-    @apply my-4 text-lg text-neutral-300;
-}
-</style>

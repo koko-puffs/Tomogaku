@@ -116,7 +116,7 @@ const formatDate = (date: string) => {
 
         <!-- Description -->
         <div v-if="props.deck.description" class="p-4 rounded-lg bg-neutral-800/30">
-            <p class="text-neutral-300">{{ props.deck.description }}</p>
+            <p class="whitespace-pre-wrap text-neutral-300" v-html="props.deck.description.replace(/\n/g, '<br />')"></p>
         </div>
 
         <!-- Deck Stats -->

@@ -65,9 +65,9 @@ onMounted(async () => {
                 />
                 <div 
                   v-if="deck.description"
-                  class="absolute invisible p-2 border border-neutral-800 text-sm transition-all font-medium -translate-x-1/2 translate-y-2 rounded-md opacity-0 left-1/2 top-full bg-neutral-900 group-hover:visible group-hover:opacity-100 min-w-[300px] max-w-[500px] text-neutral-400 shadow-lg z-10"
+                  class="absolute invisible p-2 border border-neutral-800 text-sm transition-all font-medium -translate-x-1/2 translate-y-2 rounded-md opacity-0 left-1/2 top-full bg-neutral-900 group-hover:visible group-hover:opacity-100 min-w-[300px] max-w-[500px] text-neutral-400 shadow-lg z-10 whitespace-pre-wrap"
+                  v-html="deck.description.replace(/\n/g, '<br />')"
                 >
-                  {{ deck.description }}
                 </div>
               </div>
               <div class="flex gap-2">
