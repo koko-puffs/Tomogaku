@@ -3,7 +3,6 @@ import { GitFork, Heart, Clock, RefreshCw, Layers3 } from 'lucide-vue-next';
 import { ref, onMounted } from 'vue';
 import { useDeckStore } from '../../../stores/deckStore';
 import { useUsersStore } from '../../../stores/usersStore';
-import { useRouter } from 'vue-router';
 import { formatDistanceToNow } from 'date-fns';
 import type { Database } from '../../../types/supabase';
 
