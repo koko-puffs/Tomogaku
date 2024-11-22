@@ -176,7 +176,7 @@ const removeTag = (tagToRemove: string) => {
                         </h1>
                         <RouterLink 
                             v-if="props.deck.visibility === 'public'"
-                            :to="`/deck/${props.deck.id}`" 
+                            :to="`/discover/deck/${props.deck.id}`" 
                             class="flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-200 transition-colors pl-1"
                         >
                             <Globe2 :size="14" />

@@ -25,7 +25,7 @@ const navigateToDeck = (deckId: string, event: MouseEvent) => {
   if (target.closest('button') || target.closest('.icon-action')) {
     return; // Don't navigate if clicking on a button or icon
   }
-  router.push(`/deck/${deckId}`);
+  router.push(`/discover/deck/${deckId}`);
 };
 
 onMounted(async () => {
@@ -57,8 +57,8 @@ onMounted(async () => {
             <!-- Header with Title and Icons -->
             <div class="flex items-start justify-between mb-2">
               <div class="relative flex items-center gap-1 font-medium group">
-                <span class="truncate max-w-[160px]">{{ deck.title }}</span>
-                <NotepadText 
+                <span class="truncate max-w-[260px]">{{ deck.title }}</span>
+                <!-- <NotepadText 
                   v-if="deck.description" 
                   :size="16" 
                   class="mb-1 text-neutral-500 icon-action" 
@@ -68,7 +68,7 @@ onMounted(async () => {
                   class="absolute invisible p-2 border border-neutral-800 text-sm transition-all font-medium -translate-x-1/2 translate-y-2 rounded-md opacity-0 left-1/2 top-full bg-neutral-900 group-hover:visible group-hover:opacity-100 min-w-[300px] max-w-[500px] text-neutral-400 shadow-lg z-10 whitespace-pre-wrap"
                   v-html="deck.description.replace(/\n/g, '<br />')"
                 >
-                </div>
+                </div> -->
               </div>
               <div class="flex gap-2">
                 <Globe2 

@@ -38,14 +38,14 @@ const router = createRouter({
       component: () => import("./views/Privacy.vue"),
     },
     {
-      path: "/user/:id",
+      path: "/discover/user/:id",
       name: "userProfile", 
       component: () => import("./views/UserProfile.vue"),
       meta: { requiresAuth: true },
       props: true,
     },
     {
-      path: "/deck/:id",
+      path: "/discover/deck/:id",
       name: "deck",
       component: () => import("./views/Deck.vue"),
       props: true,

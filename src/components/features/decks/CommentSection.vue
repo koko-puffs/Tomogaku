@@ -110,13 +110,13 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                 <!-- Comment Header -->
                 <div class="flex items-start justify-between">
                     <div class="flex items-center gap-3">
-                        <router-link :to="`/user/${comment.user_id}`" class="transition-opacity hover:opacity-80">
-                            <img :src="usersStore.getUserProfile(comment.user_id)?.avatar_url || '/default-avatar.png'"
+                        <router-link :to="`/discover/user/${comment.user_id}`" class="transition-opacity hover:opacity-80">
+                            <img :src="usersStore.getUserProfile(comment.user_id)?.avatar_url"
                                 :alt="usersStore.getUserProfile(comment.user_id)?.username"
                                 class="w-8 h-8 rounded-full bg-neutral-700" />
                         </router-link>
                         <div class="flex flex-col">
-                            <router-link :to="`/user/${comment.user_id}`"
+                            <router-link :to="`/discover/user/${comment.user_id}`"
                                 class="text-sm font-medium transition-colors hover:text-neutral-300">
                                 {{ usersStore.getUserProfile(comment.user_id)?.username || 'Anonymous' }}
                             </router-link>
@@ -198,12 +198,12 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                         <!-- Reply Header -->
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center gap-2">
-                                <router-link :to="`/user/${reply.user_id}`" class="transition-opacity hover:opacity-80">
-                                    <img :src="usersStore.getUserProfile(reply.user_id)?.avatar_url || '/default-avatar.png'"
+                                <router-link :to="`/discover/user/${reply.user_id}`" class="transition-opacity hover:opacity-80">
+                                    <img :src="usersStore.getUserProfile(reply.user_id)?.avatar_url"
                                         :alt="usersStore.getUserProfile(reply.user_id)?.username"
                                         class="w-6 h-6 rounded-full bg-neutral-700" />
                                 </router-link>
-                                <router-link :to="`/user/${reply.user_id}`"
+                                <router-link :to="`/discover/user/${reply.user_id}`"
                                     class="text-xs font-medium transition-colors hover:text-neutral-300">
                                     {{ usersStore.getUserProfile(reply.user_id)?.username || 'Anonymous' }}
                                 </router-link>
