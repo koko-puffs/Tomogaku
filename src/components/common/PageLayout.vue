@@ -10,7 +10,7 @@
             <div class="w-px min-h-screen bg-neutral-800"></div>
 
             <!-- Right Content Area -->
-            <div class="min-h-screen py-4 pl-4 w-[780px]">
+            <div class="min-h-screen py-4 pl-4 max-w-[780px] min-w-[380px]">
                 <slot name="content" />
             </div>
         </div>

@@ -153,8 +153,7 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                             'text-neutral-400 hover:text-neutral-300': !usersStore.hasLikedComment(comment.id)
                         }">
                             <Heart :size="17" />
-                            <span class="text-sm leading-none">{{ usersStore.commentLikes.get(comment.id)?.size || 0
-                                }}</span>
+                            <span class="text-sm leading-none">{{ comment.likes_count }}</span>
                         </button>
                     </div>
                 </div>

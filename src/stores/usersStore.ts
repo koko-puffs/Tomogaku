@@ -191,6 +191,9 @@ export const useUsersStore = defineStore("users", {
         if (commentsError) throw commentsError;
         if (!comments) return;
 
+        // Store comments
+        this.comments.set(deckId, comments);
+
         // Get unique user IDs from comments
         const userIds = [...new Set(comments.map(comment => comment.user_id))];
 
@@ -208,10 +211,7 @@ export const useUsersStore = defineStore("users", {
           });
         }
 
-        // Store comments
-        this.comments.set(deckId, comments);
-
-        // Fetch likes for these comments
+        // Fetch current user's likes
         const commentIds = comments.map(comment => comment.id);
         await this.fetchCommentLikes(commentIds);
       } catch (error) {
@@ -256,6 +256,20 @@ export const useUsersStore = defineStore("users", {
       if (!authStore.userProfile) throw new Error("Must be logged in to update comment");
 
       try {
+        // First verify ownership
+        const { data: existingComment, error: verifyError } = await supabase
+          .from("comments")
+          .select("user_id")
+          .eq("id", commentId)
+          .single();
+
+        if (verifyError) throw verifyError;
+        if (!existingComment) throw new Error("Comment not found");
+        if (existingComment.user_id !== authStore.userProfile.id) {
+          throw new Error("Unauthorized to edit this comment");
+        }
+
+        // Then proceed with update
         const { data, error } = await supabase
           .from("comments")
           .update({
@@ -263,7 +277,6 @@ export const useUsersStore = defineStore("users", {
             edited_at: new Date().toISOString(),
           })
           .eq("id", commentId)
-          .eq("user_id", authStore.userProfile.id)
           .select()
           .single();
 
@@ -291,7 +304,20 @@ export const useUsersStore = defineStore("users", {
       if (!authStore.userProfile) throw new Error("Must be logged in to delete comment");
 
       try {
-        // Update local state first (optimistically)
+        // First verify ownership
+        const { data: existingComment, error: verifyError } = await supabase
+          .from("comments")
+          .select("user_id")
+          .eq("id", commentId)
+          .single();
+
+        if (verifyError) throw verifyError;
+        if (!existingComment) throw new Error("Comment not found");
+        if (existingComment.user_id !== authStore.userProfile.id) {
+          throw new Error("Unauthorized to delete this comment");
+        }
+
+        // Then proceed with optimistic update and deletion
         const deckComments = this.comments.get(deckId) || [];
         this.comments.set(
           deckId,
@@ -325,14 +351,20 @@ export const useUsersStore = defineStore("users", {
       try {
         const { data, error } = await supabase
           .from("comment_likes")
-          .select("*")
-          .in("comment_id", commentIds);
+          .select("comment_id")  // Only select the comment_id field
+          .in("comment_id", commentIds)
+          .eq("user_id", authStore.userProfile.id);
 
         if (error) throw error;
+        
+        // Initialize all comments as not liked
+        commentIds.forEach(id => this.commentLikes.set(id, new Set()));
+        
+        // Mark liked comments
         if (data) {
           data.forEach(like => {
             const likes = this.commentLikes.get(like.comment_id) || new Set();
-            likes.add(like.user_id);
+            likes.add(authStore.userProfile!.id);
             this.commentLikes.set(like.comment_id, likes);
           });
         }
@@ -347,6 +379,15 @@ export const useUsersStore = defineStore("users", {
 
       const hasLiked = this.hasLikedComment(commentId);
       try {
+        // Update local state optimistically
+        for (const [_deckId, comments] of this.comments.entries()) {
+          const comment = comments.find(c => c.id === commentId);
+          if (comment) {
+            comment.likes_count += hasLiked ? -1 : 1;
+            break;
+          }
+        }
+
         if (hasLiked) {
           const { error } = await supabase
             .from("comment_likes")
@@ -374,6 +415,14 @@ export const useUsersStore = defineStore("users", {
           this.commentLikes.set(commentId, likes);
         }
       } catch (error) {
+        // Rollback optimistic update on error
+        for (const [_deckId, comments] of this.comments.entries()) {
+          const comment = comments.find(c => c.id === commentId);
+          if (comment) {
+            comment.likes_count += hasLiked ? 1 : -1;
+            break;
+          }
+        }
         this.error = error instanceof Error ? error.message : "Error toggling comment like";
         throw error;
       }
