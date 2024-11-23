@@ -1,7 +1,7 @@
 <template>
     <div class="flex items-center justify-center mt-12 motion-preset-fade motion-duration-150">
         <!-- Gradient overlay -->
-        <div class="absolute inset-0 bg-gradient-to-b -z-10 from-pink-900/5 to-transparent"></div>
+        <div class="absolute inset-0 z-10 pointer-events-none bg-gradient-to-b from-amber-950/5 to-transparent"></div>
         <div class="text-center ">
             <h1
                 class="text-[120px] md:text-[150px] font-bold bg-gradient-to-r from-pink-500 to-rose-400 text-transparent bg-clip-text">

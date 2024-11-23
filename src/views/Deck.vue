@@ -97,6 +97,8 @@ const handleEditDeck = async (updates: {
 
 <template>
     <div class="motion-preset-fade motion-duration-150">
+        <!-- Gradient overlay -->
+        <div class="absolute inset-0 z-10 pointer-events-none bg-gradient-to-b from-emerald-950/5 to-transparent"></div>
         <PageLayoutMirrored>
             <template #content>
                 <div class="max-w-3xl mx-auto">

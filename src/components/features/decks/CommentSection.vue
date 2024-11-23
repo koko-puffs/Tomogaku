@@ -163,11 +163,11 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                         <button @click="toggleCommentLike(comment.id)" 
                             class="flex items-center gap-1.5 p-1 group active:scale-90 transition-transform">
                             <Heart :size="17" :class="{
-                                'text-pink-400 fill-pink-400': usersStore.hasLikedComment(comment.id),
+                                'text-rose-400 fill-rose-400': usersStore.hasLikedComment(comment.id),
                                 'text-neutral-400 group-hover:text-neutral-300': !usersStore.hasLikedComment(comment.id)
                             }" />
                             <span class="text-sm leading-none -mb-0.5" :class="{
-                                'text-pink-400': usersStore.hasLikedComment(comment.id),
+                                'text-rose-400': usersStore.hasLikedComment(comment.id),
                                 'text-neutral-400 group-hover:text-neutral-300': !usersStore.hasLikedComment(comment.id)
                             }">{{ comment.likes_count }}</span>
                         </button>

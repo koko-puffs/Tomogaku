@@ -166,7 +166,7 @@ watch(() => route.hash, (newHash) => {
                         <Trash2 :size="18" />
                     </button>
                 </div>
-                <button class="flex items-center gap-2 px-4 py-2 button-accept-visible" @click="handleFork"
+                <button class="flex items-center gap-2 px-4 py-2 button-emerald-visible" @click="handleFork"
                     :disabled="isForking">
                     <GitFork :size="18" />
                     {{ isForking ? 'Forking...' : 'Fork deck' }}
@@ -195,12 +195,12 @@ watch(() => route.hash, (newHash) => {
                 :disabled="isLiking">
                 <Heart :size="18" 
                     :class="{
-                        'text-pink-400 fill-pink-400': deckStore.isDeckLiked(props.deck.id),
+                        'text-rose-400 fill-rose-400': deckStore.isDeckLiked(props.deck.id),
                         'text-neutral-400 group-hover:text-neutral-300': !deckStore.isDeckLiked(props.deck.id)
                     }" />
                 <span class="text-sm leading-none -mb-0.5" 
                     :class="{
-                        'text-pink-400': deckStore.isDeckLiked(props.deck.id),
+                        'text-rose-400': deckStore.isDeckLiked(props.deck.id),
                         'text-neutral-400 group-hover:text-neutral-300': !deckStore.isDeckLiked(props.deck.id)
                     }">{{ localLikesCount }}</span>
             </button>

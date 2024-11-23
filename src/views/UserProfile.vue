@@ -1,5 +1,7 @@
 <template>
   <div class="motion-preset-fade motion-duration-150">
+    <!-- Gradient overlay -->
+    <div class="absolute inset-0 z-10 pointer-events-none bg-gradient-to-b from-emerald-950/5 to-transparent"></div>
     <div v-if="loading" class="flex justify-center py-8">
       <LoadingSpinner size={24} />
     </div>

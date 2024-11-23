@@ -107,4 +107,17 @@
       cursor-pointer
       flex items-center justify-center text-nowrap overflow-hidden;
   }
+  .button-emerald-visible {
+    @apply border bg-emerald-900 border-emerald-700 select-none rounded-lg text-sm h-10
+      hover:bg-emerald-800 hover:border-emerald-600 transition-all duration-75
+      cursor-pointer
+      flex items-center justify-center text-nowrap overflow-hidden;
+  }
+
+  .button-amber-visible {
+    @apply border bg-amber-900 border-amber-700 select-none rounded-lg text-sm h-10
+      hover:bg-amber-800 hover:border-amber-600 transition-all duration-75
+      cursor-pointer
+      flex items-center justify-center text-nowrap overflow-hidden;
+  }
 }
