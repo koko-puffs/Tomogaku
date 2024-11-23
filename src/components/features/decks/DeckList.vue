@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
-import { Plus, GitFork, Globe2 } from 'lucide-vue-next';
+import { GitFork, Globe2, Plus } from 'lucide-vue-next';
 import { useDeckStore } from '../../../stores/deckStore';
 import { useAuthStore } from '../../../stores/authStore';
 
@@ -45,8 +45,8 @@ onUnmounted(() => {
         <!-- Deck List Header -->
         <div class="flex items-center justify-between">
             <h2 class="pl-1 text-xl font-bold">Decks ({{ deckStore.userDecks.length }})</h2>
-            <button @click="emit('create-deck')" class="w-10 h-10 button-visible">
-                <Plus :size="18" />
+            <button @click="emit('create-deck')" class="w-10 button-accept">
+                <Plus :size="22" />
             </button>
         </div>
 

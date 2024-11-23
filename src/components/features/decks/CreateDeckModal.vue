@@ -56,7 +56,7 @@
 
       <!-- Footer -->
       <div class="flex justify-end gap-2 px-5 py-3 border-t border-neutral-800">
-        <button @click="closeModal" class="w-24 button-lighter-visible" :disabled="loading">
+        <button @click="closeModal" class="w-24 button-lighter" :disabled="loading">
           Cancel
         </button>
         <button @click="handleCreate" :disabled="!title || loading" class="w-24 button-accept-visible">

@@ -164,7 +164,7 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                         <textarea v-model="editCommentContent" @keydown="handleEditKeydown"
                             class="w-full h-20 resize-none input-lighter-filled" rows="3" />
                         <div class="flex justify-end gap-2 mt-1">
-                            <button @click="editingComment = null" class="w-24 button-lighter-visible">
+                            <button @click="editingComment = null" class="w-24 button-lighter">
                                 Cancel
                             </button>
                             <button @click="updateComment" class="w-24 button-lighter-visible">
@@ -182,7 +182,7 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                     <textarea v-model="replyContent" placeholder="Write a reply..." @keydown="handleReplyKeydown"
                         class="w-full h-20 resize-none input-lighter-filled" rows="3" />
                     <div class="flex justify-end gap-2 mt-1">
-                        <button @click="replyingTo = null" class="w-24 button-lighter-visible">
+                        <button @click="replyingTo = null" class="w-24 button-lighter">
                             Cancel
                         </button>
                         <button @click="addReply" :disabled="!replyContent" class="w-24 button-lighter-visible">
@@ -240,7 +240,7 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                             <textarea v-model="editCommentContent" @keydown="handleEditKeydown"
                                 class="w-full h-20 resize-none input-lighter-filled" rows="3" />
                             <div class="flex justify-end gap-2 mt-1">
-                                <button @click="editingComment = null" class="w-24 button-lighter-visible">
+                                <button @click="editingComment = null" class="w-24 button-lighter">
                                     Cancel
                                 </button>
                                 <button @click="updateComment" class="w-24 button-lighter-visible">

@@ -129,7 +129,7 @@
 
             <!-- Submit Button -->
             <div class="flex justify-end space-x-2">
-                <button type="button" @click="resetForm" class="w-24 button-lighter-visible" :disabled="loading">
+                <button type="button" @click="resetForm" class="w-24 button-lighter" :disabled="loading">
                     Reset
                 </button>
                 <button type="submit" class="w-24 button-accept-visible" :disabled="loading || !hasChanges">
