@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Pencil, Trash2, Globe2 } from 'lucide-vue-next';
+import { Pencil, Trash2, Globe2, BookOpen, Layers3 } from 'lucide-vue-next';
 import { ref, watch, computed } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import DeckEditForm from './DeckEditForm.vue';
@@ -113,10 +113,12 @@ const handleUpdate = (updatedData: {
                     </button>
                 </div>
                 <div class="flex gap-2">
-                    <button class="w-28 button-visible" @click="emit('cards')">
-                        View cards
+                    <button class="flex items-center gap-2 w-28 button-visible" @click="emit('cards')">
+                        <Layers3 :size="18" />
+                        Cards
                     </button>
-                    <button class="w-28 button-pink-visible" @click="emit('study')">
+                    <button class="flex items-center gap-2 w-28 button-pink-visible" @click="emit('study')">
+                        <BookOpen :size="18" />
                         Study
                     </button>
                 </div>
