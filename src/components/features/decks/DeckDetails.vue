@@ -126,7 +126,7 @@ const handleUpdate = (updatedData: {
         <!-- Stats and Description -->
         <div class="space-y-2">
             <!-- Deck Stats -->
-            <div class="p-3 space-y-2 panel">
+            <div class="px-4 py-3 space-y-2 panel">
                 <div class="space-y-2">
                     <div class="flex items-center justify-between">
                         <span class="text-neutral-400">New:</span>
@@ -148,9 +148,9 @@ const handleUpdate = (updatedData: {
             </div>
 
             <!-- Description and Tags Panel -->
-            <div v-if="props.deck.description || props.deck.tags?.length" class="p-2.5 space-y-2 panel">
+            <div v-if="props.deck.description || props.deck.tags?.length" class="p-2.5 space-y-2.5 panel">
                 <!-- Description -->
-                <div v-if="props.deck.description" class="p-1.5 space-y-2">
+                <div v-if="props.deck.description" class="px-1.5 py-1 space-y-2">
                     <h3 class="text-sm font-medium text-neutral-400">Description</h3>
                     <p class="whitespace-pre-wrap text-neutral-200">{{ props.deck.description }}</p>
                 </div>
