@@ -190,14 +190,14 @@ watch(() => route.hash, (newHash) => {
                     <span class="text-sm leading-none text-neutral-500">{{ author.followers_count }} follower(s)</span>
                 </div>
             </div>
-            <button class="flex items-center w-14 gap-1.5 button" @click="handleLike" :disabled="isLiking">
+            <button @click="handleLike" class="flex items-center gap-1.5 px-3 py-2.5 group" :disabled="isLiking">
                 <Heart :size="18" :class="{
                     'text-pink-400 fill-pink-400': deckStore.isDeckLiked(props.deck.id),
-                    'text-neutral-400': !deckStore.isDeckLiked(props.deck.id)
+                    'text-neutral-400 group-hover:text-neutral-300': !deckStore.isDeckLiked(props.deck.id)
                 }" />
                 <span class="text-sm leading-none -mb-0.5" :class="{
-                    'text-pink-400 fill-pink-400': deckStore.isDeckLiked(props.deck.id),
-                    'text-neutral-400': !deckStore.isDeckLiked(props.deck.id)
+                    'text-pink-400': deckStore.isDeckLiked(props.deck.id),
+                    'text-neutral-400 group-hover:text-neutral-300': !deckStore.isDeckLiked(props.deck.id)
                 }">{{ localLikesCount }}</span>
             </button>
         </div>
