@@ -1,5 +1,5 @@
 <template>
-  <footer class="pb-16 mt-auto border-t pt-14 border-neutral-800 bg-neutral-950">
+  <footer class="z-50 pb-16 mt-auto border-t pt-14 border-neutral-800 bg-neutral-950">
     <div class="container px-6 mx-auto">
       <!-- Changed to flex container with justify-between -->
       <div class="flex flex-col justify-between gap-8 md:flex-row">

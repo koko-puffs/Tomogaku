@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useDeckStore } from '../stores/deckStore';
 import { useUsersStore } from '../stores/usersStore';
@@ -53,6 +53,12 @@ onMounted(() => {
     fetchDeckData();
 });
 
+watch(() => props.id, (newId) => {
+    if (newId) {
+        fetchDeckData();
+    }
+});
+
 const currentDeck = computed(() => deckStore.getDeckById(props.id));
 </script>
 
@@ -71,6 +77,8 @@ const currentDeck = computed(() => deckStore.getDeckById(props.id));
 
                     <div v-else-if="currentDeck" class="space-y-6">
                         <PublicDeckDetails :deck="currentDeck" />
+                        
+                        <hr class="my-6 border-t border-neutral-800" />
                         
                         <div v-if="usersStore.loading.comments" class="flex items-center justify-center py-8 text-neutral-500">
                             <LoadingSpinner :size="24" />

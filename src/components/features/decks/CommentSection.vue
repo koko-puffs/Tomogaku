@@ -87,7 +87,7 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
 
 <template>
     <div
-        class="!mt-8 space-y-2">
+        class="space-y-2">
         <!-- Add Comment -->
         <div class="flex gap-2 motion-translate-y-in-[-4%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
             <textarea v-model="newComment" placeholder="Add a comment..." @keydown="handleNewCommentKeydown"
@@ -148,12 +148,16 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                         <button @click="replyingTo = comment.id" class="p-1 text-neutral-400 hover:text-neutral-300">
                             <MessageSquare :size="17" />
                         </button>
-                        <button @click="toggleCommentLike(comment.id)" class="flex items-center gap-1.5 p-1" :class="{
-                            'text-pink-400': usersStore.hasLikedComment(comment.id),
-                            'text-neutral-400 hover:text-neutral-300': !usersStore.hasLikedComment(comment.id)
-                        }">
-                            <Heart :size="17" />
-                            <span class="text-sm leading-none -mb-0.5">{{ comment.likes_count }}</span>
+                        <button @click="toggleCommentLike(comment.id)" 
+                            class="flex items-center gap-1.5 p-1 group">
+                            <Heart :size="17" :class="{
+                                'text-pink-400 fill-pink-400': usersStore.hasLikedComment(comment.id),
+                                'text-neutral-400 group-hover:text-neutral-300': !usersStore.hasLikedComment(comment.id)
+                            }" />
+                            <span class="text-sm leading-none -mb-0.5" :class="{
+                                'text-pink-400': usersStore.hasLikedComment(comment.id),
+                                'text-neutral-400 group-hover:text-neutral-300': !usersStore.hasLikedComment(comment.id)
+                            }">{{ comment.likes_count }}</span>
                         </button>
                     </div>
                 </div>

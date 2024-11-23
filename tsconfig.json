@@ -10,6 +10,10 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "strict": true,
-    "types": ["@types/node", "@types/node-fetch"]
+    "types": ["@types/node", "@types/node-fetch"],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types"
+    ]
   }
 }

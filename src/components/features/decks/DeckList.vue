@@ -41,11 +41,11 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="space-y-2">
+    <div class="space-y-4">
         <!-- Deck List Header -->
         <div class="flex items-center justify-between">
             <h2 class="pl-1 text-xl font-bold">Decks ({{ deckStore.userDecks.length }})</h2>
-            <button @click="emit('create-deck')" class="w-10 button-accept">
+            <button @click="emit('create-deck')" class="w-10 button">
                 <Plus :size="22" />
             </button>
         </div>

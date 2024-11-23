@@ -120,10 +120,11 @@ const scrollToTop = () => {
         <div v-if="isLoading" class="flex items-center justify-center mt-16 text-neutral-500">
           <LoadingSpinner :size="36" />
         </div>
-        <div v-else-if="currentDeck" class="space-y-2">
+        <div v-else-if="currentDeck" class="space-y-6">
           <DeckDetails :deck="currentDeck" @update="handleEditDeck" @delete="handleDeleteDeck" @study="handleStudyDeck"
             @cards="handleViewCards" />
           <template v-if="currentDeck.visibility !== 'private'">
+            <hr class="my-6 border-t border-neutral-800 dark:border-neutral-800" />
             <div v-if="usersStore.loading.comments" class="flex items-center justify-center py-8 text-neutral-500">
               <LoadingSpinner :size="24" />
             </div>

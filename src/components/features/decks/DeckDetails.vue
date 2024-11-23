@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Pencil, Trash2, NotepadText, X, Globe2, Lock } from 'lucide-vue-next';
+import { Pencil, Trash2, X, Globe2, Lock } from 'lucide-vue-next';
 import { ref, watch, computed } from 'vue';
 import ToggleSlider from '../../common/ToggleSlider.vue';
 import { RouterLink } from 'vue-router';
@@ -94,7 +94,7 @@ const removeTag = (tagToRemove: string) => {
 </script>
 
 <template>
-    <div class="space-y-2">
+    <div class="space-y-4">
         <!-- Deck Header -->
         <div class="flex items-center justify-between w-full">
             <!-- Edit Mode -->
@@ -165,12 +165,6 @@ const removeTag = (tagToRemove: string) => {
                     <div class="space-y-1">
                         <h1 class="relative flex items-center gap-1.5 text-xl font-bold pl-1 max-w-[300px]">
                             <span class="leading-none truncate">{{ props.deck.title }}</span>
-                            <NotepadText v-if="props.deck.description" :size="18"
-                                class="peer flex-shrink-0 mb-0.5 text-neutral-500" />
-                            <div v-if="props.deck.description"
-                                class="absolute pointer-events-none invisible p-2 border border-neutral-800 text-sm transition-all font-medium -translate-x-1/2 translate-y-2 rounded-md opacity-0 left-1/2 top-full bg-neutral-900 peer-hover:visible peer-hover:opacity-100 min-w-[300px] max-w-[500px] text-neutral-400 shadow-lg whitespace-pre-wrap"
-                                v-html="props.deck.description.replace(/\n/g, '<br />')">
-                            </div>
                         </h1>
                         <RouterLink v-if="props.deck.visibility === 'public'" :to="`/discover/deck/${props.deck.id}`"
                             class="flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-200 transition-colors pl-1">
@@ -203,32 +197,46 @@ const removeTag = (tagToRemove: string) => {
             </div>
         </div>
 
-        <!-- Tags Section -->
-        <div v-if="props.deck.tags?.length && !isEditing" class="flex flex-wrap gap-2">
-            <span v-for="tag in props.deck.tags" :key="tag"
-                class="px-2 py-1 text-xs rounded-md bg-neutral-800 text-neutral-400">
-                {{ tag }}
-            </span>
-        </div>
+        <!-- Description Panel with Tags -->
+        <div class="space-y-2">
+            <!-- Deck Stats -->
+            <div class="p-3 space-y-2 panel">
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-neutral-400">New:</span>
+                        <span class="text-cyan-400">10</span>
+                    </div>
+                    <div class="h-px bg-neutral-800"></div>
 
-        <!-- Deck Stats -->
-        <div class="p-3 space-y-2 panel">
-            <div class="space-y-2">
-                <div class="flex items-center justify-between">
-                    <span class="text-neutral-400">New:</span>
-                    <span class="text-cyan-400">10</span>
+                    <div class="flex items-center justify-between py-0.5">
+                        <span class="text-neutral-400">To-review:</span>
+                        <span class="text-green-400">25</span>
+                    </div>
+                    <div class="h-px bg-neutral-800"></div>
+
+                    <div class="flex items-center justify-between">
+                        <span class="text-neutral-400">Learning:</span>
+                        <span class="text-orange-400">60</span>
+                    </div>
                 </div>
-                <div class="h-px bg-neutral-800"></div>
+            </div>
 
-                <div class="flex items-center justify-between py-0.5">
-                    <span class="text-neutral-400">To-review:</span>
-                    <span class="text-green-400">25</span>
+            <!-- Description and Tags Panel -->
+            <div v-if="props.deck.description || props.deck.tags?.length" class="p-2.5 space-y-4 panel">
+                <!-- Description -->
+                <div v-if="props.deck.description" class="p-1.5 space-y-2">
+                    <h3 class="text-sm font-medium text-neutral-400">Description</h3>
+                    <p class="whitespace-pre-wrap text-neutral-200">{{ props.deck.description }}</p>
                 </div>
-                <div class="h-px bg-neutral-800"></div>
 
-                <div class="flex items-center justify-between">
-                    <span class="text-neutral-400">Learning:</span>
-                    <span class="text-orange-400">60</span>
+                <!-- Tags -->
+                <div v-if="props.deck.tags?.length" class="space-y-2">
+                    <div class="flex flex-wrap gap-2">
+                        <span v-for="tag in props.deck.tags" :key="tag"
+                            class="px-2 py-1 text-xs rounded-md bg-neutral-800 text-neutral-400">
+                            {{ tag }}
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>

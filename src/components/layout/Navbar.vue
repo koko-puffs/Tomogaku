@@ -78,7 +78,7 @@ const scrollToTop = () => {
       <div class="flex items-center justify-center flex-1 space-x-2">
         <router-link v-if="authStore.user" to="/learn"
           class="relative px-4 text-sm transition-all duration-150 h-14 group"
-          :class="route.path.startsWith('/learn') ? 'text-white' : 'text-neutral-400 hover:text-white hover:bg-neutral-900'"
+          :class="route.path.startsWith('/learn') ? 'text-white' : 'text-neutral-400 hover:text-white hover:bg-neutral-500/10'"
           @click="scrollToTop">
           <span class="flex items-center justify-center h-full mt-px">
             <BookOpen :size="16" class="mr-2" />
@@ -92,7 +92,7 @@ const scrollToTop = () => {
         </router-link>
         <router-link v-if="authStore.user" to="/discover"
           class="relative px-4 text-sm transition-all duration-150 h-14 group"
-          :class="route.path.startsWith('/discover') ? 'text-white' : 'text-neutral-400 hover:text-white hover:bg-neutral-900'"
+          :class="route.path.startsWith('/discover') ? 'text-white' : 'text-neutral-400 hover:text-white hover:bg-neutral-500/10'"
           @click="scrollToTop">
           <span class="flex items-center justify-center h-full mt-px">
             <Compass :size="16" class="mr-2" />
@@ -106,7 +106,7 @@ const scrollToTop = () => {
         </router-link>
         <router-link v-if="authStore.user" to="/feed"
           class="relative px-4 text-sm transition-all duration-150 h-14 group"
-          :class="route.path.startsWith('/feed') ? 'text-white' : 'text-neutral-400 hover:text-white hover:bg-neutral-900'"
+          :class="route.path.startsWith('/feed') ? 'text-white' : 'text-neutral-400 hover:text-white hover:bg-neutral-500/10'"
           @click="scrollToTop">
           <span class="flex items-center justify-center h-full mt-px">
             <Activity :size="16" class="mr-2" />
@@ -122,7 +122,7 @@ const scrollToTop = () => {
 
       <!-- Right section -->
       <div class="flex items-center justify-end flex-1 space-x-2">
-        <button v-if="!authStore.user" @click="handleDiscordSignIn" class="w-40 h-10 text-sm button-accept-visible"
+        <button v-if="!authStore.user" @click="handleDiscordSignIn" class="w-40 h-10 text-sm button-visible"
           :class="{ 'opacity-0': authStore.loading }" :disabled="authStore.loading">
           <span v-if="!authStore.loading">Sign in with Discord</span>
           <LoadingSpinner v-else />

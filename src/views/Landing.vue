@@ -120,7 +120,7 @@ const cards = Array.from({ length: cardCount }, (_, i) => ({
           <div
             class="w-40 h-56 border rounded-lg bg-gradient-to-br from-pink-500/5 to-purple-500/5 backdrop-blur-sm border-white/5">
             <div class="flex items-center justify-center h-full p-4 text-center">
-              <p class="text-sm font-medium text-white/10">{{ card.content }}</p>
+              <p class="text-sm font-medium text-white/20">{{ card.content }}</p>
             </div>
           </div>
         </div>
@@ -146,11 +146,11 @@ const cards = Array.from({ length: cardCount }, (_, i) => ({
         <div class="flex flex-col gap-4 sm:flex-row sm:justify-center">
           <button @click="handleGetStarted"
             class="w-full px-8 py-3 font-medium transition-all rounded-lg shadow-lg text-md sm:w-44 button-pink-visible hover:shadow-pink-500/25 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[1s] motion-duration-[1s]/opacity motion-delay-[300ms]">
-            Get Started Free
+            Get started
           </button>
           <a href="#features"
             class="w-full px-8 py-3 font-medium transition-all rounded-lg shadow-lg text-md sm:w-44 button-visible hover:shadow-neutral-700/25 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[1s] motion-duration-[1s]/opacity motion-delay-[350ms]">
-            Learn More
+            Learn more
           </a>
         </div>
       </div>
@@ -161,7 +161,7 @@ const cards = Array.from({ length: cardCount }, (_, i) => ({
       <div class="max-w-6xl mx-auto">
         <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <div v-for="(feature, index) in features" :key="index" :class="[
-            'p-6 transition-all duration-250 transform bg-neutral-900/50 hover:bg-neutral-800/50 hover:-translate-y-1 panel motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[1s] motion-duration-[1s]/opacity motion-delay-[350ms]',
+            'p-6 transition-all duration-250 transform hover:-translate-y-1 panel-clickable motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[1s] motion-duration-[1s]/opacity motion-delay-[350ms]',
             isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
           ]">
             <component :is="feature.icon" class="w-12 h-12 mb-4 text-pink-500" />
