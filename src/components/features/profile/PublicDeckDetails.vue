@@ -206,7 +206,7 @@ watch(() => route.hash, (newHash) => {
             </button>
         </div>
 
-        <!-- Description Panel with Tags -->
+        <!-- Description and Tags -->
         <div class="space-y-2">
             <div v-if="props.deck.description || props.deck.tags?.length" class="p-2.5 space-y-2.5 panel">
                 <!-- Description -->
