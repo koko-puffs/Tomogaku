@@ -1,7 +1,7 @@
 <template>
-  <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+  <div v-if="isOpen" class="fixed inset-0 z-50 flex justify-center bg-black/50">
     <div
-      class="relative w-[500px] bg-neutral-900 rounded-lg shadow-xl border border-neutral-800 motion-translate-y-in-[-2%] motion-opacity-in-[0%] motion-duration-[0.2s]">
+      class="relative w-[500px] h-fit mt-20 bg-neutral-900 rounded-lg shadow-xl border border-neutral-800 motion-translate-y-in-[-2%] motion-opacity-in-[0%] motion-duration-[0.2s]">
       <!-- Header -->
       <div class="flex items-center justify-between px-5 py-3 border-b border-neutral-800">
         <h2 class="text-xl font-semibold">Create a new deck</h2>
@@ -27,7 +27,7 @@
           <div class="space-y-2">
             <label for="deckDescription" class="block text-sm">Description (optional)</label>
             <textarea id="deckDescription" v-model="description" rows="3"
-              class="w-full h-24 resize-none input-lighter-filled !-mb-2" placeholder="Enter deck description"
+              class="w-full h-48 resize-none input-lighter-filled !-mb-2" placeholder="Enter deck description"
               :disabled="loading" />
           </div>
 

@@ -81,7 +81,7 @@ const removeTag = (tagToRemove: string) => {
 
             <div class="space-y-2">
                 <label class="block text-sm">Description (optional)</label>
-                <textarea v-model="editDescription" rows="3" class="w-full h-24 resize-none input-lighter-filled !-mb-2"
+                <textarea v-model="editDescription" rows="3" class="w-full h-48 resize-none input-lighter-filled !-mb-2"
                     placeholder="Enter deck description" />
             </div>
 

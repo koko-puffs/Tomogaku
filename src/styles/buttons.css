@@ -14,7 +14,7 @@
 
   .button-lighter {
     @apply border border-transparent select-none rounded-lg text-sm h-10
-      hover:bg-neutral-800 hover:border-neutral-700 transition-all duration-75
+      hover:bg-neutral-800/70 hover:border-neutral-700/70 transition-all duration-75
       cursor-pointer
       flex items-center justify-center text-nowrap overflow-hidden;
   }
@@ -48,8 +48,8 @@
   }
 
   .button-lighter-visible {
-    @apply border bg-neutral-800 border-neutral-700 select-none rounded-lg text-sm h-10
-      hover:bg-neutral-700 hover:border-neutral-600 transition-all duration-75
+    @apply border bg-neutral-800/70 border-neutral-700/70 select-none rounded-lg text-sm h-10
+      hover:bg-neutral-700/70 hover:border-neutral-600/70 transition-all duration-75
       cursor-pointer
       flex items-center justify-center text-nowrap overflow-hidden;
   }
@@ -69,14 +69,14 @@
   }
 
   .button-active-lighter {
-    @apply bg-neutral-800 border-neutral-700 border select-none rounded-lg text-sm h-10
+    @apply bg-neutral-800/70 border-neutral-700/70 border select-none rounded-lg text-sm h-10
       transition-all duration-75
       cursor-pointer
       flex items-center justify-center text-nowrap overflow-hidden;
   }
 
   .button-active-lighter-noborder {
-    @apply bg-neutral-800 select-none rounded-lg text-sm h-10
+    @apply bg-neutral-800/70 select-none rounded-lg text-sm h-10
       transition-all duration-75
       cursor-pointer
       flex items-center justify-center text-nowrap overflow-hidden;
