@@ -23,31 +23,58 @@ const selectedDeck = ref<string | null>(null);
 const isLoading = ref(true);
 
 const selectDeck = async (deckId: string) => {
-  selectedDeck.value = deckId;
-  await router.push(`/learn/${deckId}`);
+  try {
+    isLoading.value = true;
+    selectedDeck.value = deckId;
+    
+    // First, ensure we have the deck data
+    await deckStore.fetchCards(deckId);
+    
+    // Wait a small amount of time to ensure store is updated
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    const deck = deckStore.getDeckById(deckId);
+    if (!deck) {
+      console.error('Deck not found after fetching');
+      isLoading.value = false;
+      return;
+    }
 
-  isLoading.value = false;
+    if (deck.visibility !== 'private') {
+      await usersStore.fetchDeckCommentsWithProfiles(deckId);
+    }
 
-  deckStore.fetchCards(deckId);
-  const deck = deckStore.getDeckById(deckId);
-  if (deck && deck.visibility !== 'private') {
-    usersStore.fetchDeckCommentsWithProfiles(deckId);
+    // Only update route if we're not already there
+    if (route.params.deckId !== deckId) {
+      await router.push(`/learn/${deckId}`);
+    }
+
+    scrollToTop();
+  } catch (error) {
+    console.error('Error in selectDeck:', error);
+  } finally {
+    isLoading.value = false;
   }
-  scrollToTop();
 };
 
 onMounted(async () => {
-  isLoading.value = false;
+  if (route.params.deckId) {
+    await selectDeck(route.params.deckId as string);
+  } else {
+    isLoading.value = false;
+  }
 });
 
 watch(
   [() => route.params.deckId, () => deckStore.userDecks],
   async ([newDeckId, decks]) => {
     if (newDeckId) {
-      selectedDeck.value = newDeckId as string;
+      if (selectedDeck.value !== newDeckId) {
+        selectedDeck.value = newDeckId as string;
+      }
     } else if (decks.length > 0 && !selectedDeck.value) {
       await selectDeck(decks[0].id);
-    } else {
+    } else if (decks.length === 0) {
       selectedDeck.value = null;
     }
   },
