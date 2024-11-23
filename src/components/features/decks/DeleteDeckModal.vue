@@ -1,7 +1,7 @@
 <template>
-    <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" @click="closeModal">
+    <div v-if="isOpen" class="fixed inset-0 z-50 flex justify-center bg-black/50" @click="closeModal">
         <div
-            class="relative w-[400px] bg-neutral-900 rounded-lg shadow-xl border border-neutral-800 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.2s]"
+            class="relative w-[400px] h-fit mt-24 bg-neutral-900 rounded-lg shadow-xl border border-neutral-800 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.2s]"
             @click.stop>
             <!-- Header -->
             <div class="flex items-center justify-between px-5 py-3 border-b border-neutral-800">
