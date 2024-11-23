@@ -100,7 +100,7 @@ const cards = Array.from({ length: cardCount }, (_, i) => ({
 </script>
 
 <template>
-  <div class="relative w-full min-h-screen overflow-hidden">
+  <div class="relative w-full min-h-screen overflow-hidden motion-preset-fade motion-duration-1000">
     <!-- Animated Background -->
     <div class="fixed inset-0 w-full h-full -z-10">
       <!-- Gradient overlay -->
@@ -130,29 +130,26 @@ const cards = Array.from({ length: cardCount }, (_, i) => ({
     <!-- Hero Section -->
     <div class="relative flex flex-col items-center w-full px-6 pt-32 pb-20 text-center">
       <!-- Main content -->
-      <div :class="[
-        'relative space-y-6 max-w-3xl transition-all duration-1000 transform',
-        isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
-      ]">
-        <h1 class="text-5xl font-bold leading-tight md:text-6xl">
+      <div class="relative max-w-3xl space-y-6">
+        <h1 class="text-5xl font-bold leading-tight md:text-6xl motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[1s] motion-duration-[1s]/opacity motion-delay-[100ms]">
           Learning is better
           <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-400">
             together
           </span>
         </h1>
 
-        <p class="max-w-xl mx-auto text-lg text-neutral-400">
+        <p class="max-w-xl mx-auto text-lg text-neutral-400 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[1s] motion-duration-[1s]/opacity motion-delay-[200ms]">
           Remember stuff with flashcards that actually work (thanks, science!),
           share your genius with others, and join a community of people who love learning as much as you do.
         </p>
 
         <div class="flex flex-col gap-4 sm:flex-row sm:justify-center">
           <button @click="handleGetStarted"
-            class="w-full px-8 py-3 font-medium transition-all rounded-lg shadow-lg text-md sm:w-44 button-pink-visible hover:shadow-pink-500/25">
+            class="w-full px-8 py-3 font-medium transition-all rounded-lg shadow-lg text-md sm:w-44 button-pink-visible hover:shadow-pink-500/25 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[1s] motion-duration-[1s]/opacity motion-delay-[300ms]">
             Get Started Free
           </button>
           <a href="#features"
-            class="w-full px-8 py-3 font-medium transition-all rounded-lg shadow-lg text-md sm:w-44 button-visible hover:shadow-neutral-700/25">
+            class="w-full px-8 py-3 font-medium transition-all rounded-lg shadow-lg text-md sm:w-44 button-visible hover:shadow-neutral-700/25 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[1s] motion-duration-[1s]/opacity motion-delay-[350ms]">
             Learn More
           </a>
         </div>
@@ -164,7 +161,7 @@ const cards = Array.from({ length: cardCount }, (_, i) => ({
       <div class="max-w-6xl mx-auto">
         <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <div v-for="(feature, index) in features" :key="index" :class="[
-            'p-6 transition-all duration-250 transform bg-neutral-900/50 hover:bg-neutral-800/50 hover:-translate-y-1 panel',
+            'p-6 transition-all duration-250 transform bg-neutral-900/50 hover:bg-neutral-800/50 hover:-translate-y-1 panel motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[1s] motion-duration-[1s]/opacity motion-delay-[350ms]',
             isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
           ]">
             <component :is="feature.icon" class="w-12 h-12 mb-4 text-pink-500" />
