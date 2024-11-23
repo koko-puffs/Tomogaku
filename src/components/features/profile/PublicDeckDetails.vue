@@ -208,7 +208,7 @@ watch(() => route.hash, (newHash) => {
 
         <!-- Description Panel with Tags -->
         <div class="space-y-2">
-            <div v-if="props.deck.description || props.deck.tags?.length" class="p-2.5 space-y-4 panel">
+            <div v-if="props.deck.description || props.deck.tags?.length" class="p-2.5 space-y-2 panel">
                 <!-- Description -->
                 <div v-if="props.deck.description" class="p-1.5 space-y-2">
                     <h3 class="text-sm font-medium text-neutral-400">Description</h3>

@@ -123,7 +123,7 @@ const handleUpdate = (updatedData: {
             </div>
         </div>
 
-        <!-- Description Panel with Tags -->
+        <!-- Stats and Description -->
         <div class="space-y-2">
             <!-- Deck Stats -->
             <div class="p-3 space-y-2 panel">
@@ -148,7 +148,7 @@ const handleUpdate = (updatedData: {
             </div>
 
             <!-- Description and Tags Panel -->
-            <div v-if="props.deck.description || props.deck.tags?.length" class="p-2.5 space-y-4 panel">
+            <div v-if="props.deck.description || props.deck.tags?.length" class="p-2.5 space-y-2 panel">
                 <!-- Description -->
                 <div v-if="props.deck.description" class="p-1.5 space-y-2">
                     <h3 class="text-sm font-medium text-neutral-400">Description</h3>
