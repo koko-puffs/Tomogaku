@@ -89,16 +89,28 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
     <div
         class="space-y-2">
         <!-- Add Comment -->
-        <div class="flex gap-2 motion-translate-y-in-[-4%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+        <div class="flex motion-translate-y-in-[-4%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
             <textarea v-model="newComment" placeholder="Add a comment..." @keydown="handleNewCommentKeydown"
                 rows="1" @input="(e) => {
                     const target = e.target as HTMLTextAreaElement;
                     target.style.height = 'auto';
                     const newHeight = Math.max(40, target.scrollHeight);
                     target.style.height = newHeight + 'px';
+                    
+                    // Update classes based on height
+                    const button = target.nextElementSibling as HTMLElement;
+                    if (newHeight > 40) {
+                        target.classList.remove('rounded-r-none', 'border-r-0', 'hover:border-r', 'focus:border-r');
+                        target.classList.add('mr-2');
+                        button?.classList.remove('rounded-l-none');
+                    } else {
+                        target.classList.add('rounded-r-none', 'border-r-0', 'hover:border-r', 'focus:border-r');
+                        target.classList.remove('mr-2');
+                        button?.classList.add('rounded-l-none');
+                    }
                 }"
-                class="flex-1 min-h-[40px] max-h-[200px] input-filled resize-none overflow-hidden" />
-            <button @click="addComment" :disabled="!newComment" class="w-24 h-10 button-visible">
+                class="flex-1 min-h-[40px] max-h-[200px] input-filled resize-none overflow-hidden rounded-r-none border-r-0 hover:border-r focus:border-r" />
+            <button @click="addComment" :disabled="!newComment" class="w-24 h-10 rounded-l-none button-visible">
                 Comment
             </button>
         </div>
