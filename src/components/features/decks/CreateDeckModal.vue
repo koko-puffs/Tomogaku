@@ -1,7 +1,8 @@
 <template>
-  <div v-if="isOpen" class="fixed inset-0 z-50 flex justify-center bg-black/50">
+  <div v-if="isOpen" class="fixed inset-0 z-50 flex justify-center bg-black/50" @click="closeModal">
     <div
-      class="relative w-[500px] h-fit mt-20 bg-neutral-900 rounded-lg shadow-xl border border-neutral-800 motion-translate-y-in-[-2%] motion-opacity-in-[0%] motion-duration-[0.2s]">
+      class="relative w-[500px] h-fit mt-20 bg-neutral-900 rounded-lg shadow-xl border border-neutral-800 motion-translate-y-in-[-2%] motion-opacity-in-[0%] motion-duration-[0.2s]"
+      @click.stop>
       <!-- Header -->
       <div class="flex items-center justify-between px-5 py-3 border-b border-neutral-800">
         <h2 class="text-xl font-semibold">Create a new deck</h2>
