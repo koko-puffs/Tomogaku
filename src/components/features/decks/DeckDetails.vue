@@ -1,25 +1,55 @@
 <script setup lang="ts">
-import { Pencil, Trash2, X, Globe2, Lock } from 'lucide-vue-next';
+import { Pencil, Trash2, Globe2 } from 'lucide-vue-next';
 import { ref, watch, computed } from 'vue';
-import ToggleSlider from '../../common/ToggleSlider.vue';
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
+import DeckEditForm from './DeckEditForm.vue';
+import { useAuthStore } from '../../../stores/authStore';
 
 const props = defineProps<{
     deck: any;
 }>();
 
-const isEditing = ref(false);
-const editTitle = ref('');
-const editDescription = ref('');
-const editTags = ref<string[]>([]);
-const newTag = ref('');
-const tagError = ref('');
-const editVisibility = ref<'private' | 'public'>('private');
+const route = useRoute();
+const router = useRouter();
+const authStore = useAuthStore();
 
-const isPublic = computed({
-    get: () => editVisibility.value === 'public',
-    set: (value: boolean) => {
-        editVisibility.value = value ? 'public' : 'private';
+// Add ownership check
+const isOwner = computed(() => {
+    return authStore.user?.id === props.deck.user_id;
+});
+
+// Initialize isEditing based on URL hash AND ownership
+const isEditing = ref(route.hash === '#edit' && isOwner.value);
+
+// Watch for deck changes to reset edit mode
+watch(() => props.deck.id, () => {
+    isEditing.value = false;
+});
+
+// Update the URL when edit state changes, but only if owner
+watch(isEditing, (newValue) => {
+    if (!isOwner.value) return;
+
+    if (newValue) {
+        router.replace({ hash: '#edit' });
+    } else {
+        router.replace({ hash: '' });
+    }
+});
+
+const startEdit = () => {
+    if (!isOwner.value) return;
+    isEditing.value = true;
+};
+
+const cancelEdit = () => {
+    isEditing.value = false;
+};
+
+// Watch for hash changes to prevent non-owners from accessing edit mode
+watch(() => route.hash, (newHash) => {
+    if (newHash === '#edit' && !isOwner.value) {
+        router.replace({ hash: '' });
     }
 });
 
@@ -31,65 +61,14 @@ const emit = defineEmits<{
     'update': [{ title: string, description: string | null, tags: string[] | null, visibility: 'private' | 'public' }];
 }>();
 
-// Watch for changes to the deck prop
-watch(() => props.deck.id, () => {
+const handleUpdate = (updatedData: {
+    title: string,
+    description: string | null,
+    tags: string[] | null,
+    visibility: 'private' | 'public'
+}) => {
+    emit('update', updatedData);
     isEditing.value = false;
-    tagError.value = '';
-});
-
-const startEdit = () => {
-    isEditing.value = true;
-    editTitle.value = props.deck.title;
-    editDescription.value = props.deck.description || '';
-    editTags.value = [...(props.deck.tags || [])];
-    editVisibility.value = props.deck.visibility === 'public' ? 'public' : 'private';
-};
-
-const cancelEdit = () => {
-    isEditing.value = false;
-    tagError.value = '';
-};
-
-const handleUpdate = () => {
-    if (!editTitle.value) return;
-
-    emit('update', {
-        title: editTitle.value,
-        description: editDescription.value || null,
-        tags: editTags.value.length > 0 ? editTags.value : null,
-        visibility: editVisibility.value,
-    });
-    isEditing.value = false;
-};
-
-const addTag = () => {
-    const tag = newTag.value.trim().toLowerCase();
-
-    if (!tag) return;
-    if (tag.includes(' ')) {
-        tagError.value = 'Tags should be single words';
-        return;
-    }
-    if (editTags.value.includes(tag)) {
-        tagError.value = 'Tag already exists';
-        return;
-    }
-    if (editTags.value.length >= 10) {
-        tagError.value = 'Maximum 10 tags allowed';
-        return;
-    }
-    if (tag.length > 20) {
-        tagError.value = 'Tag is too long (max 20 characters)';
-        return;
-    }
-
-    editTags.value.push(tag);
-    newTag.value = '';
-    tagError.value = '';
-};
-
-const removeTag = (tagToRemove: string) => {
-    editTags.value = editTags.value.filter(tag => tag !== tagToRemove);
 };
 </script>
 
@@ -100,62 +79,9 @@ const removeTag = (tagToRemove: string) => {
             <!-- Edit Mode -->
             <div v-if="isEditing"
                 class="flex-1 w-full motion-translate-y-in-[-1.4%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
-                <div class="space-y-4">
-                    <div class="space-y-2">
-                        <label class="block text-sm">Title</label>
-                        <input v-model="editTitle" type="text" class="w-full input-filled"
-                            placeholder="Enter deck title" />
-                    </div>
-
-                    <div class="space-y-2">
-                        <label class="block text-sm">Description (optional)</label>
-                        <textarea v-model="editDescription" rows="3" class="w-full h-24 resize-none input-filled !-mb-2"
-                            placeholder="Enter deck description" />
-                    </div>
-
-                    <div class="space-y-2">
-                        <label class="block text-sm">Tags (optional)</label>
-                        <div class="relative space-y-2">
-                            <input v-model="newTag" @keydown.enter.prevent="addTag" type="text"
-                                class="w-full input-filled" placeholder="Type a tag and press Enter" />
-                            <p v-if="tagError" class="text-sm text-red-500">{{ tagError }}</p>
-                        </div>
-                        <div class="flex flex-wrap gap-2">
-                            <span v-for="tag in editTags" :key="tag"
-                                class="flex items-center gap-1 px-2 py-1 text-sm rounded-md bg-neutral-800">
-                                {{ tag }}
-                                <button @click="removeTag(tag)"
-                                    class="pl-1 transition-colors rounded-full hover:text-red-400">
-                                    <X :size="14" />
-                                </button>
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <div class="flex items-center gap-3">
-                                <span class="text-sm -mb-0.5">Visibility:</span>
-                                <ToggleSlider v-model="isPublic" />
-                                <div class="flex items-center gap-1.5">
-                                    <component :is="editVisibility === 'public' ? Globe2 : Lock" :size="16"
-                                        class="text-neutral-400" />
-                                    <span class="-mb-0.5 text-sm font-medium"
-                                        :class="editVisibility === 'public' ? 'text-green-400' : 'text-neutral-400'">
-                                        {{ editVisibility === 'public' ? 'Public' : 'Private' }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex justify-end gap-2">
-                            <button @click="cancelEdit" class="w-24 button">Cancel</button>
-                            <button @click="handleUpdate" :disabled="!editTitle"
-                                class="w-24 button-accept-visible">Save</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="h-px my-6 bg-neutral-800"></div>
+                <DeckEditForm :title="props.deck.title" :description="props.deck.description" :tags="props.deck.tags"
+                    :visibility="props.deck.visibility" @update="handleUpdate" @cancel="cancelEdit" />
+                <div class="h-px mt-6 mb-2 bg-neutral-800"></div>
             </div>
 
             <!-- View Mode -->
@@ -178,7 +104,7 @@ const removeTag = (tagToRemove: string) => {
             <!-- Buttons -->
             <div v-if="!isEditing"
                 class="flex gap-2 motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.35s] motion-duration-[0.25s]/opacity">
-                <div class="flex gap-1">
+                <div v-if="isOwner" class="flex">
                     <button class="w-10 button" @click="startEdit">
                         <Pencil :size="18" />
                     </button>

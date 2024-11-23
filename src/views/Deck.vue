@@ -7,6 +7,7 @@ import PageLayoutMirrored from '../components/common/PageLayoutMirrored.vue';
 import PublicDeckDetails from '../components/features/profile/PublicDeckDetails.vue';
 import CommentSection from '../components/features/decks/CommentSection.vue';
 import LoadingSpinner from '../components/common/LoadingSpinner.vue';
+import DeleteDeckModal from '../components/features/decks/DeleteDeckModal.vue';
 
 const props = defineProps<{
     id: string;
@@ -21,15 +22,15 @@ const error = ref<string | null>(null);
 const fetchDeckData = async () => {
     loading.value = true;
     error.value = null;
-    
+
     try {
         // Fetch the deck and ensure it's public
         const deck = await deckStore.fetchDeckById(props.id);
-        
+
         if (!deck) {
             throw new Error('Deck not found');
         }
-        
+
         if (deck.visibility !== 'public') {
             throw new Error('This deck is private');
         }
@@ -60,6 +61,38 @@ watch(() => props.id, (newId) => {
 });
 
 const currentDeck = computed(() => deckStore.getDeckById(props.id));
+
+// Add delete modal state and handlers
+const deleteDeckModalRef = ref();
+
+const handleDeleteDeck = () => {
+    deleteDeckModalRef.value?.openModal();
+};
+
+const confirmDeleteDeck = async () => {
+    try {
+        await deckStore.deleteDeck(props.id);
+        router.push('/discover');
+    } catch (error) {
+        console.error('Failed to delete deck:', error);
+    }
+};
+
+// Add edit handler
+const handleEditDeck = async (updates: {
+    title: string,
+    description: string | null,
+    tags: string[] | null,
+    visibility: 'private' | 'public'
+}) => {
+    if (!currentDeck.value) return;
+
+    try {
+        await deckStore.updateDeck(currentDeck.value.id, updates);
+    } catch (error) {
+        console.error('Failed to update deck:', error);
+    }
+};
 </script>
 
 <template>
@@ -76,11 +109,12 @@ const currentDeck = computed(() => deckStore.getDeckById(props.id));
                     </div>
 
                     <div v-else-if="currentDeck" class="space-y-6">
-                        <PublicDeckDetails :deck="currentDeck" />
-                        
+                        <PublicDeckDetails :deck="currentDeck" @delete="handleDeleteDeck" @update="handleEditDeck" />
+
                         <hr class="my-6 border-t border-neutral-800" />
-                        
-                        <div v-if="usersStore.loading.comments" class="flex items-center justify-center py-8 text-neutral-500">
+
+                        <div v-if="usersStore.loading.comments"
+                            class="flex items-center justify-center py-8 text-neutral-500">
                             <LoadingSpinner :size="24" />
                         </div>
                         <CommentSection v-else :deck-id="currentDeck.id" />
@@ -89,4 +123,6 @@ const currentDeck = computed(() => deckStore.getDeckById(props.id));
             </template>
         </PageLayoutMirrored>
     </div>
+
+    <DeleteDeckModal ref="deleteDeckModalRef" @confirm="confirmDeleteDeck" />
 </template>
