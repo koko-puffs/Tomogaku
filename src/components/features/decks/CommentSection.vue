@@ -149,7 +149,7 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                             <MessageSquare :size="17" />
                         </button>
                         <button @click="toggleCommentLike(comment.id)" 
-                            class="flex items-center gap-1.5 p-1 group">
+                            class="flex items-center gap-1.5 p-1 group active:scale-90 transition-transform">
                             <Heart :size="17" :class="{
                                 'text-pink-400 fill-pink-400': usersStore.hasLikedComment(comment.id),
                                 'text-neutral-400 group-hover:text-neutral-300': !usersStore.hasLikedComment(comment.id)
