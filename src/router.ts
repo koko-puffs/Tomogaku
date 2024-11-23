@@ -66,17 +66,18 @@ const router = createRouter({
 
 router.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore();
+  const publicPaths = ['/', '/terms', '/privacy', '/contact'];
 
   // Wait for auth check to complete
   if (!authStore.initialized) {
     await authStore.handleAuthRedirect();
   }
 
-  // Now make routing decisions with initialized auth state
-  if (to.meta.requiresAuth && !authStore.user) {
-    next("/");
-  } else if (authStore.user && to.path === "/") {
-    next("/learn");
+  // Check if path is public or user is authenticated
+  if (!authStore.user && !publicPaths.includes(to.path)) {
+    next('/');
+  } else if (authStore.user && to.path === '/') {
+    next('/learn');
   } else {
     next();
   }
