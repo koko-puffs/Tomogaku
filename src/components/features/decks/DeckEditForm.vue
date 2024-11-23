@@ -72,53 +72,55 @@ const removeTag = (tagToRemove: string) => {
 </script>
 
 <template>
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <label class="block text-sm">Title</label>
-            <input v-model="editTitle" type="text" class="w-full input-filled" placeholder="Enter deck title" />
-        </div>
-
-        <div class="space-y-2">
-            <label class="block text-sm">Description (optional)</label>
-            <textarea v-model="editDescription" rows="3" class="w-full h-24 resize-none input-filled !-mb-2"
-                placeholder="Enter deck description" />
-        </div>
-
-        <div class="space-y-2">
-            <label class="block text-sm">Tags (optional)</label>
-            <div class="relative space-y-2">
-                <input v-model="newTag" @keydown.enter.prevent="addTag" type="text" class="w-full input-filled"
-                    placeholder="Type a tag and press Enter" />
-                <p v-if="tagError" class="text-sm text-red-500">{{ tagError }}</p>
+    <div class="p-4 panel">
+        <div class="space-y-4">
+            <div class="space-y-2">
+                <label class="block text-sm">Title</label>
+                <input v-model="editTitle" type="text" class="w-full input-lighter-filled" placeholder="Enter deck title" />
             </div>
-            <div class="flex flex-wrap gap-2">
-                <span v-for="tag in editTags" :key="tag"
-                    class="flex items-center gap-1 px-2 py-1 text-sm rounded-md bg-neutral-800">
-                    {{ tag }}
-                    <button @click="removeTag(tag)" class="pl-1 transition-colors rounded-full hover:text-red-400">
-                        <X :size="14" />
-                    </button>
-                </span>
-            </div>
-        </div>
 
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <div class="flex items-center gap-3">
-                    <span class="text-sm -mb-0.5">Visibility:</span>
-                    <ToggleSlider v-model="isPublic" />
-                    <div class="flex items-center gap-1.5">
-                        <component :is="editVisibility === 'public' ? Globe2 : Lock" :size="16" class="text-neutral-400" />
-                        <span class="-mb-0.5 text-sm font-medium"
-                            :class="editVisibility === 'public' ? 'text-green-400' : 'text-neutral-400'">
-                            {{ editVisibility === 'public' ? 'Public' : 'Private' }}
-                        </span>
-                    </div>
+            <div class="space-y-2">
+                <label class="block text-sm">Description (optional)</label>
+                <textarea v-model="editDescription" rows="3" class="w-full h-24 resize-none input-lighter-filled !-mb-2"
+                    placeholder="Enter deck description" />
+            </div>
+
+            <div class="space-y-2">
+                <label class="block text-sm">Tags (optional)</label>
+                <div class="relative space-y-2">
+                    <input v-model="newTag" @keydown.enter.prevent="addTag" type="text" class="w-full input-lighter-filled"
+                        placeholder="Type a tag and press Enter" />
+                    <p v-if="tagError" class="text-sm text-red-500">{{ tagError }}</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <span v-for="tag in editTags" :key="tag"
+                        class="flex items-center gap-1 px-2 py-1 text-sm rounded-md bg-neutral-800">
+                        {{ tag }}
+                        <button @click="removeTag(tag)" class="pl-1 transition-colors rounded-full hover:text-red-400">
+                            <X :size="14" />
+                        </button>
+                    </span>
                 </div>
             </div>
-            <div class="flex justify-end gap-2">
-                <button @click="emit('cancel')" class="w-24 button">Cancel</button>
-                <button @click="handleUpdate" :disabled="!editTitle" class="w-24 button-accept-visible">Save</button>
+
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm -mb-0.5">Visibility:</span>
+                        <ToggleSlider v-model="isPublic" />
+                        <div class="flex items-center gap-1.5">
+                            <component :is="editVisibility === 'public' ? Globe2 : Lock" :size="16" class="text-neutral-400" />
+                            <span class="-mb-0.5 text-sm font-medium"
+                                :class="editVisibility === 'public' ? 'text-green-400' : 'text-neutral-400'">
+                                {{ editVisibility === 'public' ? 'Public' : 'Private' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button @click="emit('cancel')" class="w-24 button-lighter">Cancel</button>
+                    <button @click="handleUpdate" :disabled="!editTitle" class="w-24 button-accept-visible">Save</button>
+                </div>
             </div>
         </div>
     </div>
