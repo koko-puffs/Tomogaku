@@ -374,12 +374,24 @@ export const useUsersStore = defineStore("users", {
 
         if (error) throw error;
         if (data) {
+          // Update in comments map
           for (const [deckId, comments] of this.comments.entries()) {
             const index = comments.findIndex(c => c.id === commentId);
             if (index !== -1) {
               const updatedComments = [...comments];
               updatedComments[index] = data;
               this.comments.set(deckId, updatedComments);
+
+              // If it's a parent comment, also update sortedComments
+              if (!data.parent_id) {
+                const sortedComments = this.sortedComments.get(deckId) || [];
+                const sortedIndex = sortedComments.findIndex(c => c.id === commentId);
+                if (sortedIndex !== -1) {
+                  const updatedSortedComments = [...sortedComments];
+                  updatedSortedComments[sortedIndex] = data;
+                  this.sortedComments.set(deckId, updatedSortedComments);
+                }
+              }
               break;
             }
           }
@@ -411,10 +423,21 @@ export const useUsersStore = defineStore("users", {
 
         // Then proceed with optimistic update and deletion
         const deckComments = this.comments.get(deckId) || [];
-        this.comments.set(
-          deckId,
-          deckComments.filter(c => c.id !== commentId && c.parent_id !== commentId)
-        );
+        const updatedComments = deckComments.filter(c => c.id !== commentId && c.parent_id !== commentId);
+        this.comments.set(deckId, updatedComments);
+
+        // Update sortedComments
+        const sortedComments = this.sortedComments.get(deckId) || [];
+        const updatedSortedComments = sortedComments.filter(c => c.id !== commentId);
+        this.sortedComments.set(deckId, updatedSortedComments);
+
+        // Update comment count in pagination
+        const pagination = this.commentsPagination.get(deckId);
+        if (pagination && pagination.totalCount) {
+          pagination.totalCount--;
+          this.commentsPagination.set(deckId, pagination);
+        }
+
         this.commentLikes.delete(commentId);
 
         // Then send request to backend
@@ -425,8 +448,13 @@ export const useUsersStore = defineStore("users", {
           .eq("user_id", authStore.userProfile.id);
 
         if (error) {
-          // If there's an error, rollback the optimistic update
+          // If there's an error, rollback the optimistic updates
           this.comments.set(deckId, deckComments);
+          this.sortedComments.set(deckId, sortedComments);
+          if (pagination && pagination.totalCount) {
+            pagination.totalCount++;
+            this.commentsPagination.set(deckId, pagination);
+          }
           throw error;
         }
       } catch (error) {
