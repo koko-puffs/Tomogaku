@@ -34,13 +34,13 @@
 
               <!-- Follow Button -->
               <div class="flex justify-center">
-                <button @click="handleFollowToggle" :disabled="followLoading || !canFollow"
+                <button @click="handleFollowToggle" :disabled="followLoading || !canFollow || followStatusLoading"
                   class="w-full h-10 px-4 transition-colors duration-200 rounded-lg" :class="{
-                    'button-accept-visible': !isFollowing && canFollow,
-                    'button-lighter-visible': isFollowing && canFollow,
-                    'button-disabled': !canFollow
+                    'button-accept-visible': !isFollowing && canFollow && !followStatusLoading,
+                    'button-lighter-visible': isFollowing && canFollow && !followStatusLoading,
+                    'button-disabled': !canFollow || followStatusLoading
                   }">
-                  {{ isFollowing ? 'Unfollow' : 'Follow' }}
+                  {{ followStatusLoading ? 'Follow' : (isFollowing ? 'Unfollow' : 'Follow') }}
                 </button>
               </div>
 
@@ -175,6 +175,7 @@ const authStore = useAuthStore();
 const userProfile = ref<UserProfile | undefined>();
 const error = ref<string | null>(null);
 const followLoading = ref(false);
+const followStatusLoading = ref(true);
 
 // Computed properties
 const isCurrentUser = computed(() => {
@@ -213,14 +214,15 @@ const handleFollowToggle = async () => {
 const loadProfile = async () => {
   error.value = null;
   userProfile.value = undefined;
+  followStatusLoading.value = true;
 
   try {
     const userId = route.params.id as string;
 
-    // If viewing own profile, use the profile from authStore
     if (authStore.userProfile?.id === userId) {
       // @ts-ignore
       userProfile.value = authStore.userProfile;
+      followStatusLoading.value = false;
     } else {
       const profile = await usersStore.fetchUserProfile(userId);
       if (!profile) {
@@ -228,15 +230,16 @@ const loadProfile = async () => {
         return;
       }
       userProfile.value = profile;
-    }
 
-    // Fetch following status if looking at another user's profile
-    if (authStore.userProfile && !isCurrentUser.value) {
-      await usersStore.fetchFollowing();
+      if (authStore.userProfile && !isCurrentUser.value) {
+        await usersStore.fetchFollowing();
+      }
     }
   } catch (e) {
     error.value = 'User not found';
     console.error('Error loading profile:', e);
+  } finally {
+    followStatusLoading.value = false;
   }
 };
 
