@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useUsersStore } from '../../../stores/usersStore';
 import { Pencil, Trash2, Heart } from 'lucide-vue-next';
 
@@ -15,6 +15,9 @@ const editingComment = ref<string | null>(null);
 const editCommentContent = ref('');
 const replyingTo = ref<string | null>(null);
 const replyContent = ref('');
+
+// Add pagination state
+const commentsLoading = ref(false);
 
 // Comment handlers
 const addComment = async () => {
@@ -92,6 +95,29 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
         addReply();
     }
 };
+
+// Load more comments handler
+const loadMoreComments = async () => {
+    if (commentsLoading.value) return;
+    
+    const pagination = usersStore.getCommentsPagination(props.deckId);
+    if (!pagination.hasMore) return;
+
+    commentsLoading.value = true;
+    try {
+        await usersStore.fetchDeckCommentsWithProfiles(
+            props.deckId,
+            pagination.currentPage + 1
+        );
+    } finally {
+        commentsLoading.value = false;
+    }
+};
+
+// Initial load
+onMounted(async () => {
+    await usersStore.fetchDeckCommentsWithProfiles(props.deckId, 1);
+});
 </script>
 
 <template>
@@ -310,6 +336,17 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Load More Button -->
+            <div v-if="usersStore.getCommentsPagination(props.deckId).hasMore"
+                 class="flex justify-center pt-2">
+                <button @click="loadMoreComments"
+                        :disabled="commentsLoading"
+                        class="px-4 button-lighter">
+                    <template v-if="commentsLoading">Loading...</template>
+                    <template v-else>Load More Comments</template>
+                </button>
             </div>
         </div>
     </div>

@@ -28,7 +28,7 @@ onMounted(async () => {
       if (authStore.user) {
         await deckStore.fetchDecksByUserId(authStore.user.id);
       }
-    }, 10000) as unknown as number;
+    }, 60000) as unknown as number;
   }
 });
 

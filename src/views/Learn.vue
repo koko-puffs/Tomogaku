@@ -39,11 +39,7 @@ const selectDeck = async (deckId: string) => {
       isLoading.value = false;
       return;
     }
-
-    if (deck.visibility !== 'private') {
-      await usersStore.fetchDeckCommentsWithProfiles(deckId);
-    }
-
+    
     // Only update route if we're not already there
     if (route.params.deckId !== deckId) {
       await router.push(`/learn/${deckId}`);

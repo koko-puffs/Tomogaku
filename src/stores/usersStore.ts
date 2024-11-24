@@ -17,6 +17,11 @@ interface UsersState {
     following: boolean;
   };
   error: string | null;
+  commentsPagination: Map<string, {
+    currentPage: number;
+    hasMore: boolean;
+    isLoading: boolean;
+  }>;
 }
 
 export const useUsersStore = defineStore("users", {
@@ -31,6 +36,7 @@ export const useUsersStore = defineStore("users", {
       following: false,
     },
     error: null,
+    commentsPagination: new Map(),
   }),
 
   getters: {
@@ -75,6 +81,16 @@ export const useUsersStore = defineStore("users", {
             new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
         );
     },
+
+    getCommentsPagination: (state) => (deckId: string) => {
+      return (
+        state.commentsPagination.get(deckId) || {
+          currentPage: 1,
+          hasMore: true,
+          isLoading: false,
+        }
+      );
+    },
   },
 
   actions: {
@@ -84,6 +100,7 @@ export const useUsersStore = defineStore("users", {
       this.following.clear();
       this.comments.clear();
       this.commentLikes.clear();
+      this.commentsPagination.clear();
     },
 
     updateProfileInCache(profile: UserProfile) {
@@ -177,22 +194,43 @@ export const useUsersStore = defineStore("users", {
     },
 
     // Comment Actions
-    async fetchDeckCommentsWithProfiles(deckId: string) {
-      this.loading.comments = true;
+    async fetchDeckCommentsWithProfiles(deckId: string, page = 1, limit = 10) {
+      const pagination = this.commentsPagination.get(deckId) || {
+        currentPage: 1,
+        hasMore: true,
+        isLoading: false,
+      };
+
+      if (pagination.isLoading) return;
+      pagination.isLoading = true;
+      this.commentsPagination.set(deckId, pagination);
+
       try {
-        // First fetch comments
-        const { data: comments, error: commentsError } = await supabase
+        const from = (page - 1) * limit;
+        const to = from + limit - 1;
+
+        // Fetch comments with pagination
+        const { data: comments, error: commentsError, count } = await supabase
           .from("comments")
-          .select("*")
+          .select("*", { count: "exact" })
           .eq("deck_id", deckId)
           .eq("status", "active")
-          .order("created_at", { ascending: false });
+          .order("created_at", { ascending: false })
+          .range(from, to);
 
         if (commentsError) throw commentsError;
         if (!comments) return;
 
-        // Store comments
-        this.comments.set(deckId, comments);
+        // Update pagination state
+        this.commentsPagination.set(deckId, {
+          currentPage: page,
+          hasMore: count ? from + comments.length < count : false,
+          isLoading: false,
+        });
+
+        // Store comments (append if loading more, replace if first page)
+        const existingComments = page === 1 ? [] : (this.comments.get(deckId) || []);
+        this.comments.set(deckId, [...existingComments, ...comments]);
 
         // Get unique user IDs from comments
         const userIds = [...new Set(comments.map(comment => comment.user_id))];
@@ -218,7 +256,11 @@ export const useUsersStore = defineStore("users", {
         this.error = error instanceof Error ? error.message : "Error fetching comments";
         throw error;
       } finally {
-        this.loading.comments = false;
+        const currentPagination = this.commentsPagination.get(deckId);
+        if (currentPagination) {
+          currentPagination.isLoading = false;
+          this.commentsPagination.set(deckId, currentPagination);
+        }
       }
     },
 
