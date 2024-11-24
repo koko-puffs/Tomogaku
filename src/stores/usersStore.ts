@@ -23,6 +23,7 @@ interface UsersState {
     isLoading: boolean;
     totalCount?: number;
   }>;
+  sortedComments: Map<string, Comment[]>;
 }
 
 export const useUsersStore = defineStore("users", {
@@ -38,6 +39,7 @@ export const useUsersStore = defineStore("users", {
     },
     error: null,
     commentsPagination: new Map(),
+    sortedComments: new Map(),
   }),
 
   getters: {
@@ -63,24 +65,11 @@ export const useUsersStore = defineStore("users", {
         : false;
     },
 
-    getThreadedComments: (state) => (deckId: string, sortBy: 'newest' | 'likes' = 'newest'): Comment[] => {
-      const comments = state.comments.get(deckId) || [];
-      const parentComments = comments.filter((comment) => !comment.parent_id);
-      
-      if (sortBy === 'likes') {
-        return parentComments.sort((a, b) => {
-          // First sort by likes
-          const likeDiff = b.likes_count - a.likes_count;
-          // If likes are equal, sort by newest
-          return likeDiff !== 0 ? likeDiff : 
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-        });
-      } else {
-        // Default 'newest' sorting
-        return parentComments.sort((a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        );
+    getThreadedComments: (state) => (deckId: string): Comment[] => {
+      if (state.sortedComments.has(deckId)) {
+        return state.sortedComments.get(deckId) || [];
       }
+      return state.comments.get(deckId)?.filter(comment => !comment.parent_id) || [];
     },
 
     getCommentReplies: (state) => (commentId: string, deckId: string): Comment[] => {
@@ -290,6 +279,9 @@ export const useUsersStore = defineStore("users", {
         // Fetch current user's likes
         const commentIds = allComments.map(comment => comment.id);
         await this.fetchCommentLikes(commentIds);
+
+        // After successfully fetching comments, sort them
+        this.sortComments(deckId, sortBy);
       } catch (error) {
         this.error = error instanceof Error ? error.message : "Error fetching comments";
         throw error;
@@ -462,10 +454,11 @@ export const useUsersStore = defineStore("users", {
       const hasLiked = this.hasLikedComment(commentId);
       try {
         // Update local state optimistically
-        for (const [_deckId, comments] of this.comments.entries()) {
+        for (const [deckId, comments] of this.comments.entries()) {
           const comment = comments.find(c => c.id === commentId);
           if (comment) {
             comment.likes_count += hasLiked ? -1 : 1;
+            // Don't re-sort here
             break;
           }
         }
@@ -498,7 +491,7 @@ export const useUsersStore = defineStore("users", {
         }
       } catch (error) {
         // Rollback optimistic update on error
-        for (const [_deckId, comments] of this.comments.entries()) {
+        for (const [deckId, comments] of this.comments.entries()) {
           const comment = comments.find(c => c.id === commentId);
           if (comment) {
             comment.likes_count += hasLiked ? 1 : -1;
@@ -598,6 +591,27 @@ export const useUsersStore = defineStore("users", {
       } finally {
         this.loading.following = false;
       }
+    },
+
+    // Add new method to sort comments
+    sortComments(deckId: string, sortBy: 'newest' | 'likes') {
+      const comments = this.comments.get(deckId) || [];
+      const parentComments = comments.filter((comment) => !comment.parent_id);
+      
+      let sortedComments;
+      if (sortBy === 'likes') {
+        sortedComments = parentComments.sort((a, b) => {
+          const likeDiff = b.likes_count - a.likes_count;
+          return likeDiff !== 0 ? likeDiff : 
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        });
+      } else {
+        sortedComments = parentComments.sort((a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+      }
+      
+      this.sortedComments.set(deckId, sortedComments);
     },
   },
 });

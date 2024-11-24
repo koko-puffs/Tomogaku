@@ -120,7 +120,7 @@ const loadMoreComments = async () => {
     }
 };
 
-// Add watch for sortBy changes
+// Update watch for sortBy
 watch(sortBy, async () => {
     // Reset pagination
     usersStore.commentsPagination.set(props.deckId, {
@@ -130,6 +130,8 @@ watch(sortBy, async () => {
     });
     // Fetch comments with new sort
     await usersStore.fetchDeckCommentsWithProfiles(props.deckId, 1, 10, sortBy.value);
+    // Explicitly sort comments after fetching
+    usersStore.sortComments(props.deckId, sortBy.value);
 });
 
 // Initial load
@@ -214,7 +216,7 @@ emit('loading', false);
 
         <!-- Comments List -->
         <div v-else class="space-y-2">
-            <div v-for="comment in usersStore.getThreadedComments(props.deckId, sortBy)" :key="comment.id"
+            <div v-for="comment in usersStore.getThreadedComments(props.deckId)" :key="comment.id"
                 class="p-3 space-y-3 panel motion-translate-y-in-[-4%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
                 <!-- Comment Header -->
                 <div class="flex items-start justify-between">
