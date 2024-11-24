@@ -25,13 +25,25 @@ const selectDeck = async (deckId: string) => {
     isLoading.value = true;
     selectedDeck.value = deckId;
     
-    // First, ensure we have the deck data
-    await deckStore.fetchCards(deckId);
-      
-    const deck = deckStore.getDeckById(deckId);
+    // First check if we already have the deck
+    let deck = deckStore.getDeckById(deckId);
+    
     if (!deck) {
-      console.error('Deck not found after fetching');
-      isLoading.value = false;
+      // Fetch both deck and cards if we don't have the deck
+      await Promise.all([
+        deckStore.fetchDeckById(deckId),
+        deckStore.fetchCards(deckId)
+      ]);
+      deck = deckStore.getDeckById(deckId);
+    } else {
+      // If we have the deck, just ensure cards are loaded
+      await deckStore.fetchCards(deckId);
+    }
+    
+    if (!deck) {
+      console.error(`Deck ${deckId} not found after fetching`);
+      selectedDeck.value = null;
+      router.push('/learn');
       return;
     }
     
@@ -43,6 +55,7 @@ const selectDeck = async (deckId: string) => {
     scrollToTop();
   } catch (error) {
     console.error('Error in selectDeck:', error);
+    selectedDeck.value = null;
   } finally {
     isLoading.value = false;
   }
