@@ -17,9 +17,6 @@ const editCommentContent = ref('');
 const replyingTo = ref<string | null>(null);
 const replyContent = ref('');
 
-// Add pagination state
-const commentsLoading = ref(false);
-
 // Add sort state
 const sortBy = ref<'newest' | 'likes'>('likes');
 
@@ -102,12 +99,9 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
 
 // Load more comments handler
 const loadMoreComments = async () => {
-    if (commentsLoading.value) return;
-    
     const pagination = usersStore.getCommentsPagination(props.deckId);
-    if (!pagination.hasMore) return;
-
-    commentsLoading.value = true;
+    if (pagination.isLoading || !pagination.hasMore) return;
+    
     try {
         await usersStore.fetchDeckCommentsWithProfiles(
             props.deckId,
@@ -115,8 +109,8 @@ const loadMoreComments = async () => {
             10,
             sortBy.value
         );
-    } finally {
-        commentsLoading.value = false;
+    } catch (error) {
+        console.error('Failed to load more comments:', error);
     }
 };
 
@@ -138,15 +132,6 @@ watch(sortBy, async () => {
 onMounted(async () => {
     await usersStore.fetchDeckCommentsWithProfiles(props.deckId, 1, 10, sortBy.value);
 });
-
-const emit = defineEmits<{
-  loading: [value: boolean]
-}>();
-
-// When loading comments
-emit('loading', true);
-// When done loading
-emit('loading', false);
 </script>
 
 <template>
@@ -403,9 +388,12 @@ emit('loading', false);
             <div v-if="usersStore.getCommentsPagination(props.deckId).hasMore"
                  class="flex justify-center pt-2">
                 <button @click="loadMoreComments"
-                        :disabled="commentsLoading"
+                        :disabled="usersStore.getCommentsPagination(props.deckId).isLoading"
                         class="px-4 button-lighter">
-                    <template v-if="commentsLoading">Loading...</template>
+                    <template v-if="usersStore.getCommentsPagination(props.deckId).isLoading">
+                        <LoadingSpinner size="16" class="inline mr-2" />
+                        Loading...
+                    </template>
                     <template v-else>Load More Comments</template>
                 </button>
             </div>

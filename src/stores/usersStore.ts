@@ -195,7 +195,9 @@ export const useUsersStore = defineStore("users", {
 
     // Comment Actions
     async fetchDeckCommentsWithProfiles(deckId: string, page = 1, limit = 10, sortBy: 'newest' | 'likes' = 'newest') {
-      this.loading.comments = true;
+      if (page === 1) {
+        this.loading.comments = true;
+      }
 
       const pagination = this.commentsPagination.get(deckId) || {
         currentPage: 1,
@@ -286,7 +288,9 @@ export const useUsersStore = defineStore("users", {
         this.error = error instanceof Error ? error.message : "Error fetching comments";
         throw error;
       } finally {
-        this.loading.comments = false;
+        if (page === 1) {
+          this.loading.comments = false;
+        }
 
         const currentPagination = this.commentsPagination.get(deckId);
         if (currentPagination) {
