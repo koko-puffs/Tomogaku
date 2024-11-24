@@ -472,7 +472,7 @@ export const useUsersStore = defineStore("users", {
       const hasLiked = this.hasLikedComment(commentId);
       try {
         // Update local state optimistically
-        for (const [deckId, comments] of this.comments.entries()) {
+        for (const [_deckId, comments] of this.comments.entries()) {
           const comment = comments.find(c => c.id === commentId);
           if (comment) {
             comment.likes_count += hasLiked ? -1 : 1;
@@ -509,7 +509,7 @@ export const useUsersStore = defineStore("users", {
         }
       } catch (error) {
         // Rollback optimistic update on error
-        for (const [deckId, comments] of this.comments.entries()) {
+        for (const [_deckId, comments] of this.comments.entries()) {
           const comment = comments.find(c => c.id === commentId);
           if (comment) {
             comment.likes_count += hasLiked ? 1 : -1;
