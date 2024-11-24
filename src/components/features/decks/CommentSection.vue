@@ -18,10 +18,19 @@ const replyContent = ref('');
 
 // Comment handlers
 const addComment = async () => {
-    if (!props.deckId || !newComment.value) return;
+    if (!props.deckId || !newComment.value.trim()) return;
     try {
-        await usersStore.createComment(props.deckId, newComment.value);
+        await usersStore.createComment(props.deckId, newComment.value.trim());
         newComment.value = '';
+        // Reset textarea height
+        const textarea = document.querySelector('textarea') as HTMLTextAreaElement;
+        if (textarea) {
+            textarea.style.height = '40px';
+            textarea.classList.add('rounded-r-none', 'border-r-0', 'hover:border-r', 'focus:border-r');
+            textarea.classList.remove('mr-2');
+            const button = textarea.nextElementSibling as HTMLElement;
+            button?.classList.add('rounded-l-none');
+        }
     } catch (error) {
         console.error('Failed to create comment:', error);
     }
@@ -33,9 +42,9 @@ const startEditComment = (comment: any) => {
 };
 
 const updateComment = async () => {
-    if (!editingComment.value || !editCommentContent.value) return;
+    if (!editingComment.value || !editCommentContent.value.trim()) return;
     try {
-        await usersStore.updateComment(editingComment.value, editCommentContent.value);
+        await usersStore.updateComment(editingComment.value, editCommentContent.value.trim());
         editingComment.value = null;
         editCommentContent.value = '';
     } catch (error) {
@@ -52,9 +61,9 @@ const toggleCommentLike = async (commentId: string) => {
 };
 
 const addReply = async () => {
-    if (!props.deckId || !replyingTo.value || !replyContent.value) return;
+    if (!props.deckId || !replyingTo.value || !replyContent.value.trim()) return;
     try {
-        await usersStore.createComment(props.deckId, replyContent.value, replyingTo.value);
+        await usersStore.createComment(props.deckId, replyContent.value.trim(), replyingTo.value);
         replyContent.value = '';
         replyingTo.value = null;
     } catch (error) {
@@ -109,8 +118,11 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                         button?.classList.add('rounded-l-none');
                     }
                 }"
-                class="flex-1 min-h-[40px] max-h-[200px] input-filled resize-none overflow-hidden rounded-r-none border-r-0 hover:border-r focus:border-r" />
-            <button @click="addComment" :disabled="!newComment" class="w-24 h-10 rounded-l-none button-visible">
+                class="flex-1 min-h-[40px] input-filled resize-none overflow-hidden rounded-r-none border-r-0 hover:border-r focus:border-r" />
+            <button @click="addComment" 
+                :disabled="!newComment.trim()" 
+                class="w-24 h-10 rounded-l-none button-visible"
+                :class="{ 'text-neutral-600 pointer-events-none': !newComment.trim() }">
                 Comment
             </button>
         </div>
@@ -180,7 +192,10 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                             <button @click="editingComment = null" class="w-24 button-lighter">
                                 Cancel
                             </button>
-                            <button @click="updateComment" class="w-24 button-lighter-visible">
+                            <button @click="updateComment" 
+                                :disabled="!editCommentContent.trim()"
+                                class="w-24 button-lighter-visible"
+                                :class="{ 'text-neutral-600 pointer-events-none': !editCommentContent.trim() }">
                                 Save
                             </button>
                         </div>
@@ -188,7 +203,7 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                     <div v-else class="flex-1 min-w-0 pl-1 break-words whitespace-pre-wrap">
                         {{ comment.content }}
                     </div>
-                    <button v-if="replyingTo !== comment.id"
+                    <button v-if="replyingTo !== comment.id && editingComment !== comment.id"
                         @click="replyingTo = comment.id" 
                         class="flex-shrink-0 pr-1 text-sm text-neutral-400 hover:text-neutral-300">
                         Reply
@@ -209,7 +224,10 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                         <button @click="replyingTo = null" class="w-24 button-lighter">
                             Cancel
                         </button>
-                        <button @click="addReply" class="w-24 button-lighter-visible">
+                        <button @click="addReply" 
+                            :disabled="!replyContent.trim()" 
+                            class="w-24 button-lighter-visible"
+                            :class="{ 'text-neutral-600 pointer-events-none': !replyContent.trim() }">
                             Reply
                         </button>
                     </div>
@@ -279,7 +297,10 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                                 <button @click="editingComment = null" class="w-24 button-lighter">
                                     Cancel
                                 </button>
-                                <button @click="updateComment" class="w-24 button-lighter-visible">
+                                <button @click="updateComment" 
+                                    :disabled="!editCommentContent.trim()"
+                                    class="w-24 button-lighter-visible"
+                                    :class="{ 'text-neutral-400': !editCommentContent.trim() }">
                                     Save
                                 </button>
                             </div>

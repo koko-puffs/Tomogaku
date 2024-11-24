@@ -1,14 +1,12 @@
 <template>
     <div class="flex items-center justify-center mt-12 motion-preset-fade motion-duration-150">
-        <!-- Gradient overlay -->
-        <div class="absolute inset-0 z-10 pointer-events-none bg-gradient-to-b from-amber-950/5 to-transparent"></div>
         <div class="text-center ">
             <h1
-                class="text-[120px] md:text-[150px] font-bold bg-gradient-to-r from-pink-500 to-rose-400 text-transparent bg-clip-text">
-                404
+                class="text-[70px] md:text-[90px] font-bold bg-gradient-to-r from-pink-500 to-rose-400 text-transparent bg-clip-text">
+                {{ randomMessage }}
             </h1>
 
-            <h2 class="mb-2 text-3xl font-bold md:text-4xl">
+            <h2 class="mt-4 mb-1 text-3xl font-bold md:text-4xl">
                 Oops! Could not find that page.
             </h2>
 
@@ -25,3 +23,65 @@
         </div>
     </div>
 </template>
+
+<script setup>
+const messages = [
+    'Uh-oh!',
+    'Nope!',
+    'Oh snap!',
+    'Whoops!',
+    'D\'oh!',
+    'Yikes!',
+    'Nada!',
+    'MIA!',
+    'Gone!',
+    'Poof!',
+    'Zip!',
+    'Nuh-uh!',
+    'Welp!',
+    'Huh?',
+    'Lost!',
+    '404!',
+    'Nope!',
+    'Bzzt!',
+    'Meep!',
+    'Eek!',
+    'Wut?',
+    'Hmm...',
+    'Derp!',
+    '???',
+    '(╯°□°）╯',
+    '(；一_一)',
+    '(>_<)',
+    '¯\\_(ツ)_/¯',
+    '(≧﹏≦)',
+    '(｡T ω T｡)',
+    '(╥﹏╥)',
+    '(；⌣̀_⌣́)',
+    '(˚ ˃̣̣̥⌓˂̣̣̥)',
+    '(⊙_⊙)',
+    '(◎_◎;)',
+    '(●__●)',
+    '(×_×)',
+    '(￣ω￣;)',
+    '(⊙﹏⊙)',
+    '(-_-;)・・・',
+    '(￣▽￣*)ゞ',
+    '(＠_＠)',
+    '(╯︵╰,)',
+    '(っ °Д °;)っ',
+    '(｡╯︵╰｡)',
+    '(●´⌓`●)',
+    '(｡•́︿•̀｡)',
+    '(๑•﹏•)',
+    '(ノ_<。)',
+    '(´-﹏-`；)',
+    'ಥ_ಥ',
+    '(｡ŏ﹏ŏ)',
+    '(´。＿。｀)',
+    '(๑´•.̫ • `๑)',
+    '(´･_･`)'
+];
+
+const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+</script>

@@ -60,9 +60,16 @@
         <button @click="closeModal" class="w-24 button-lighter" :disabled="loading">
           Cancel
         </button>
-        <button @click="handleCreate" :disabled="!title || loading" class="w-24 button-accept-visible">
-          <LoadingSpinner v-if="loading" class="w-5 h-5" />
-          <span v-else>Create</span>
+        <button 
+            @click="handleCreate" 
+            :disabled="!title.trim() || loading" 
+            :class="[
+                title.trim() ? 'button-accept-visible' : 'button-lighter-visible',
+                { 'text-neutral-600 pointer-events-none': !title.trim() }
+            ]"
+            class="w-24">
+            <LoadingSpinner v-if="loading" class="w-5 h-5" />
+            <span v-else>Create</span>
         </button>
       </div>
     </div>
@@ -141,17 +148,17 @@ const closeModal = () => {
 };
 
 const handleCreate = async () => {
-  if (!title.value || loading.value) return;
+  if (!title.value.trim() || loading.value) return;
 
   loading.value = true;
   error.value = '';
 
   try {
     await deckStore.createDeck({
-      title: title.value,
+      title: title.value.trim(),
       description: description.value || null,
       visibility: 'private' as const,
-      tags: tags.value.length > 0 ? tags.value : null, // Include tags in deck creation
+      tags: tags.value.length > 0 ? tags.value : null,
     });
     closeModal();
   } catch (err) {

@@ -10,7 +10,7 @@ const authStore = useAuthStore();
 const features = [
   {
     icon: Brain,
-    title: 'Smart Cards',
+    title: 'Spaced Repetition',
     description: 'Our flashcards adapt to your brain. Ace it? See you later! Forgot it? We\'ll help you remember.'
   },
   {
@@ -20,7 +20,7 @@ const features = [
   },
   {
     icon: Share2,
-    title: 'Share Your Smarts',
+    title: 'Share Your Deck',
     description: 'Created an awesome deck? Share it! Need study material? Grab it from the community!'
   },
   {
@@ -125,6 +125,20 @@ const cards = Array.from({ length: cardCount }, (_, i) => ({
           </div>
         </div>
       </div>
+
+      <!-- Particles -->
+      <div class="absolute inset-0">
+        <div v-for="i in 100" :key="`particle-${i}`" 
+             class="absolute rounded-full particle bg-pink-500/10"
+             :style="{
+               '--size': `${Math.random() * 6 + 2}px`,
+               '--duration': `${Math.random() * 20 + 10}s`,
+               '--delay': `-${Math.random() * 20}s`,
+               left: `${Math.random() * 100}%`,
+               top: `${Math.random() * 100}%`,
+             }">
+        </div>
+      </div>
     </div>
 
     <!-- Hero Section -->
@@ -144,10 +158,15 @@ const cards = Array.from({ length: cardCount }, (_, i) => ({
         </p>
 
         <div class="flex flex-col gap-4 sm:flex-row sm:justify-center">
-          <button @click="handleGetStarted"
-            class="w-full px-8 py-3 font-medium transition-all rounded-lg shadow-lg text-md sm:w-44 button-pink-visible hover:shadow-pink-500/25 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[1s] motion-duration-[1s]/opacity motion-delay-[300ms]">
-            Get started
-          </button>
+          <div>
+            <button @click="handleGetStarted"
+              class="w-full px-8 py-3 font-medium transition-all rounded-lg shadow-lg text-md sm:w-44 button-pink-visible hover:shadow-pink-500/25 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[1s] motion-duration-[1s]/opacity motion-delay-[300ms]">
+              Get started
+            </button>
+            <p class="my-2 text-xs text-neutral-600 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[1s] motion-duration-[1s]/opacity motion-delay-[400ms]">
+              * Sign in using Discord
+            </p>
+          </div>
           <a href="#features"
             class="w-full px-8 py-3 font-medium transition-all rounded-lg shadow-lg text-md sm:w-44 button-visible hover:shadow-neutral-700/25 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[1s] motion-duration-[1s]/opacity motion-delay-[350ms]">
             Learn more
@@ -157,7 +176,7 @@ const cards = Array.from({ length: cardCount }, (_, i) => ({
     </div>
 
     <!-- Features Section -->
-    <div id="features" class="px-6 py-20">
+    <div id="features" class="px-6 py-12">
       <div class="max-w-6xl mx-auto">
         <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <div v-for="(feature, index) in features" :key="index" :class="[
@@ -210,5 +229,31 @@ const cards = Array.from({ length: cardCount }, (_, i) => ({
   background: linear-gradient(45deg, rgba(255, 255, 255, 0.03), transparent);
   border-radius: inherit;
   pointer-events: none;
+}
+
+.particle {
+  width: var(--size);
+  height: var(--size);
+  animation: particleFloat var(--duration) infinite linear;
+  animation-delay: var(--delay);
+  will-change: transform;
+  filter: blur(1px);
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(100px, -1000px) rotate(360deg);
+    opacity: 0;
+  }
 }
 </style>

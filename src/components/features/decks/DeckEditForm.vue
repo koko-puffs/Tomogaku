@@ -29,11 +29,23 @@ const emit = defineEmits<{
     'cancel': [];
 }>();
 
+const hasChanges = computed(() => {
+    return editTitle.value.trim() !== props.title ||
+        editDescription.value !== (props.description || '') ||
+        editVisibility.value !== props.visibility ||
+        !areArraysEqual(editTags.value, props.tags || []);
+});
+
+const areArraysEqual = (arr1: string[], arr2: string[]) => {
+    if (arr1.length !== arr2.length) return false;
+    return arr1.every((item, index) => item === arr2[index]);
+};
+
 const handleUpdate = () => {
-    if (!editTitle.value) return;
+    if (!editTitle.value.trim() || !hasChanges.value) return;
 
     emit('update', {
-        title: editTitle.value,
+        title: editTitle.value.trim(),
         description: editDescription.value || null,
         tags: editTags.value.length > 0 ? editTags.value : null,
         visibility: editVisibility.value,
@@ -119,7 +131,16 @@ const removeTag = (tagToRemove: string) => {
                 </div>
                 <div class="flex justify-end gap-2">
                     <button @click="emit('cancel')" class="w-24 button-lighter">Cancel</button>
-                    <button @click="handleUpdate" :disabled="!editTitle" class="w-24 button-accept-visible">Save</button>
+                    <button 
+                        @click="handleUpdate" 
+                        :disabled="!editTitle.trim() || !hasChanges" 
+                        :class="[
+                            editTitle.trim() && hasChanges ? 'button-accept-visible' : 'button-lighter-visible',
+                            { 'text-neutral-600 pointer-events-none': !editTitle.trim() || !hasChanges }
+                        ]"
+                        class="w-24">
+                        Save
+                    </button>
                 </div>
             </div>
         </div>

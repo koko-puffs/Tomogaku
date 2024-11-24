@@ -60,3 +60,36 @@
   scrollbar-width: thin;
   scrollbar-color: #404040 #262626; /* thumb track */
 }
+
+/* Style the select element itself */
+select {
+  @apply bg-neutral-800 text-neutral-200 border-neutral-700;
+}
+
+/* Style the options within the dropdown */
+select option {
+  @apply bg-neutral-800 text-neutral-200;
+}
+
+/* For Firefox */
+select {
+  scrollbar-color: #404040 #262626; /* thumb track */
+}
+
+/* For Webkit browsers (Chrome, Safari) */
+select::-webkit-scrollbar {
+  width: 8px;
+}
+
+select::-webkit-scrollbar-track {
+  background: #262626; /* Neutral-900 equivalent */
+}
+
+select::-webkit-scrollbar-thumb {
+  background: #404040; /* Neutral-700 equivalent */
+  border-radius: 4px;
+}
+
+select::-webkit-scrollbar-thumb:hover {
+  background: #525252; /* Neutral-600 equivalent */
+}
