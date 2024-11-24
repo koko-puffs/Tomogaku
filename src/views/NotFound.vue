@@ -24,8 +24,8 @@
     </div>
 </template>
 
-<script setup>
-const messages = [
+<script setup lang="ts">
+const messages: string[] = [
     'Uh-oh!',
     'Nope!',
     'Oh snap!',
@@ -83,5 +83,5 @@ const messages = [
     '(´･_･`)'
 ];
 
-const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+const randomMessage: string = messages[Math.floor(Math.random() * messages.length)];
 </script>
