@@ -188,7 +188,8 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                     <div v-else class="flex-1 min-w-0 pl-1 break-words whitespace-pre-wrap">
                         {{ comment.content }}
                     </div>
-                    <button @click="replyingTo = comment.id" 
+                    <button v-if="replyingTo !== comment.id"
+                        @click="replyingTo = comment.id" 
                         class="flex-shrink-0 pr-1 text-sm text-neutral-400 hover:text-neutral-300">
                         Reply
                     </button>
