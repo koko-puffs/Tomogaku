@@ -314,9 +314,27 @@ export const useUsersStore = defineStore("users", {
 
         if (error) throw error;
         if (data) {
+          // Update comments map
           const deckComments = this.comments.get(deckId) || [];
           this.comments.set(deckId, [data, ...deckComments]);
           this.commentLikes.set(data.id, new Set());
+
+          // If it's a parent comment (not a reply), update sortedComments too
+          if (!parentId) {
+            const sortedComments = this.sortedComments.get(deckId) || [];
+            this.sortedComments.set(deckId, [data, ...sortedComments]);
+
+            // Update comment count in pagination
+            const pagination = this.commentsPagination.get(deckId) || {
+              currentPage: 1,
+              hasMore: false,
+              isLoading: false,
+              totalCount: 0,
+            };
+            pagination.totalCount = (pagination.totalCount || 0) + 1;
+            this.commentsPagination.set(deckId, pagination);
+          }
+
           return data;
         }
       } catch (error) {
