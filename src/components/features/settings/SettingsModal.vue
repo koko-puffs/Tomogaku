@@ -5,8 +5,8 @@
       class="relative w-[1000px] max-h-fit my-20 bg-neutral-900 rounded-lg shadow-xl border border-neutral-800 motion-translate-y-in-[-1%] motion-opacity-in-[0%] motion-duration-[0.2s]"
       @click.stop>
       <!-- Header -->
-      <div class="flex items-center justify-between px-5 py-3 border-b border-neutral-800">
-        <h2 class="text-xl font-semibold">Settings</h2>
+      <div class="flex items-center justify-between px-3 py-3 border-b border-neutral-800">
+        <h2 class="pl-2 text-xl font-semibold">Settings</h2>
         <button @click="closeModal" class="p-2 transition-colors rounded-lg hover:bg-neutral-800">
           <X :size="20" />
         </button>

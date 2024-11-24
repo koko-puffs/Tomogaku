@@ -4,8 +4,8 @@
       class="relative w-[500px] h-fit mt-20 bg-neutral-900 rounded-lg shadow-xl border border-neutral-800 motion-translate-y-in-[-2%] motion-opacity-in-[0%] motion-duration-[0.2s]"
       @click.stop>
       <!-- Header -->
-      <div class="flex items-center justify-between px-5 py-3 border-b border-neutral-800">
-        <h2 class="text-xl font-semibold">Create a new deck</h2>
+      <div class="flex items-center justify-between px-3 py-3 border-b border-neutral-800">
+        <h2 class="pl-2 text-xl font-semibold">Create a new deck</h2>
         <button @click="closeModal" class="p-2 transition-colors rounded-lg hover:bg-neutral-800">
           <X :size="20" />
         </button>
@@ -56,7 +56,7 @@
       </div>
 
       <!-- Footer -->
-      <div class="flex justify-end gap-2 px-5 py-3 border-t border-neutral-800">
+      <div class="flex justify-end gap-2 px-3 py-3 border-t border-neutral-800">
         <button @click="closeModal" class="w-24 button-lighter" :disabled="loading">
           Cancel
         </button>
