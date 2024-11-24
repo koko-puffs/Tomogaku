@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useUsersStore } from '../../../stores/usersStore';
-import { Pencil, Trash2, Heart, MessageSquare } from 'lucide-vue-next';
+import { Pencil, Trash2, Heart } from 'lucide-vue-next';
 
 const props = defineProps<{
     deckId: string;
