@@ -2,8 +2,8 @@
   <div class="motion-preset-fade motion-duration-150">
     <!-- Gradient overlay -->
     <div class="absolute inset-0 z-10 pointer-events-none bg-gradient-to-b from-emerald-950/5 to-transparent"></div>
-    <div v-if="loading" class="flex justify-center py-8">
-      <LoadingSpinner size={24} />
+    <div v-if="usersStore.loading.profiles" class="flex items-center justify-center mt-20 text-neutral-500">
+      <LoadingSpinner :size="32" />
     </div>
 
     <div v-else-if="error">
@@ -173,7 +173,6 @@ const route = useRoute();
 const usersStore = useUsersStore();
 const authStore = useAuthStore();
 const userProfile = ref<UserProfile | undefined>();
-const loading = ref(true);
 const error = ref<string | null>(null);
 const followLoading = ref(false);
 
@@ -212,7 +211,6 @@ const handleFollowToggle = async () => {
 };
 
 const loadProfile = async () => {
-  loading.value = true;
   error.value = null;
   userProfile.value = undefined;
 
@@ -239,8 +237,6 @@ const loadProfile = async () => {
   } catch (e) {
     error.value = 'User not found';
     console.error('Error loading profile:', e);
-  } finally {
-    loading.value = false;
   }
 };
 
