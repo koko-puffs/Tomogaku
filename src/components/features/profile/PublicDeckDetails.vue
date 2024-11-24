@@ -142,7 +142,7 @@ watch(() => route.hash, (newHash) => {
                 <div
                     class="motion-translate-y-in-[-12%] motion-opacity-in-[0%] motion-duration-[0.35s] motion-duration-[0.25s]/opacity">
                     <div class="space-y-1">
-                        <h1 class="relative flex items-center gap-1.5 text-xl font-bold pl-1 max-w-[300px]">
+                        <h1 class="relative flex items-center gap-1.5 text-xl font-bold pl-1  max-w-[220px] md:max-w-[290px] lg:max-w-[350px]">
                             <span class="leading-none truncate">{{ props.deck.title }}</span>
                         </h1>
                         <RouterLink v-if="props.deck.is_forked && props.deck.original_deck_id"
@@ -166,10 +166,10 @@ watch(() => route.hash, (newHash) => {
                         <Trash2 :size="18" />
                     </button>
                 </div>
-                <button class="flex items-center gap-2 px-4 button-emerald-visible" @click="handleFork"
+                <button class="flex items-center w-10 gap-2 lg:px-4 button-emerald-visible lg:w-auto" @click="handleFork"
                     :disabled="isForking">
                     <GitFork :size="18" />
-                    {{ isForking ? 'Forking...' : 'Fork deck' }}
+                    <span class="hidden lg:inline">{{ isForking ? 'Forking...' : 'Fork deck' }}</span>
                 </button>
             </div>
         </div>
@@ -212,7 +212,7 @@ watch(() => route.hash, (newHash) => {
                 <!-- Description -->
                 <div v-if="props.deck.description" class="px-1.5 py-1 space-y-2">
                     <h3 class="text-sm font-medium text-neutral-400">Description</h3>
-                    <p class="whitespace-pre-wrap text-neutral-200">{{ props.deck.description }}</p>
+                    <p class="break-words whitespace-pre-wrap text-neutral-200">{{ props.deck.description }}</p>
                 </div>
 
                 <!-- Tags -->

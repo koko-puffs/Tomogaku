@@ -70,7 +70,9 @@ const scrollToTop = () => {
       <!-- Left section -->
       <div class="flex items-center justify-start flex-1">
         <router-link to="/" class="relative flex items-center h-10 text-xl font-bold" style="top: -1px;"
-          @click="scrollToTop">tomogaku
+          @click="scrollToTop">
+          <span class="sm:hidden">tg</span>
+          <span class="hidden sm:inline">tomogaku</span>
         </router-link>
       </div>
 
@@ -81,8 +83,8 @@ const scrollToTop = () => {
           :class="route.path.startsWith('/learn') ? 'text-white' : 'text-neutral-400 hover:text-white hover:bg-neutral-500/10'"
           @click="scrollToTop">
           <span class="flex items-center justify-center h-full mt-px">
-            <BookOpen :size="16" class="mr-2" />
-            Learn
+            <BookOpen :size="16" class="md:mr-2" />
+            <span class="hidden md:inline">Learn</span>
           </span>
           <div v-if="route.path.startsWith('/learn')"
             class="absolute bottom-0 left-0 w-full h-0.5 bg-white rounded-full"></div>
@@ -95,8 +97,8 @@ const scrollToTop = () => {
           :class="route.path.startsWith('/discover') ? 'text-white' : 'text-neutral-400 hover:text-white hover:bg-neutral-500/10'"
           @click="scrollToTop">
           <span class="flex items-center justify-center h-full mt-px">
-            <Compass :size="16" class="mr-2" />
-            Discover
+            <Compass :size="16" class="md:mr-2" />
+            <span class="hidden md:inline">Discover</span>
           </span>
           <div v-if="route.path.startsWith('/discover')"
             class="absolute bottom-0 left-0 w-full h-0.5 bg-white rounded-full"></div>
@@ -109,8 +111,8 @@ const scrollToTop = () => {
           :class="route.path.startsWith('/feed') ? 'text-white' : 'text-neutral-400 hover:text-white hover:bg-neutral-500/10'"
           @click="scrollToTop">
           <span class="flex items-center justify-center h-full mt-px">
-            <Activity :size="16" class="mr-2" />
-            Feed
+            <Activity :size="16" class="md:mr-2" />
+            <span class="hidden md:inline">Feed</span>
           </span>
           <div v-if="route.path.startsWith('/feed')"
             class="absolute bottom-0 left-0 w-full h-0.5 bg-white rounded-full"></div>
@@ -129,9 +131,9 @@ const scrollToTop = () => {
         </button>
 
         <div v-else class="relative" ref="dropdownRef">
-          <button @click.stop="toggleDropdown" class="flex items-center h-10 px-2 text-sm"
+          <button @click.stop="toggleDropdown" class="flex items-center h-10 px-1.5 text-sm sm:px-2"
             :class="isDropdownOpen ? 'button-active-noborder' : 'button-noborder'">
-            <span class="pl-1 pr-2">
+            <span class="hidden sm:pl-1 sm:pr-2 sm:inline">
               {{
                 (authStore.username ?? '').length > 20
                   ? (authStore.username ?? '').substring(0, 20) + '...'

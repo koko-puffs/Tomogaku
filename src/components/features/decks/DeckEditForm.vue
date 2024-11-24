@@ -115,7 +115,7 @@ const removeTag = (tagToRemove: string) => {
                 </div>
             </div>
 
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div class="flex items-center gap-2">
                     <div class="flex items-center gap-3">
                         <span class="text-sm -mb-0.5">Visibility:</span>
