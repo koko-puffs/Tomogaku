@@ -39,7 +39,7 @@ onMounted(async () => {
 
 <template>
   <div class="space-y-2">
-    <div v-if="loading" class="flex justify-center text-neutral-400">
+    <div v-if="loading" class="flex justify-center mt-14 text-neutral-500">
       <LoadingSpinner size="24" />
     </div>
 

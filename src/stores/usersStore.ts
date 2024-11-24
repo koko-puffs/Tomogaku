@@ -21,6 +21,7 @@ interface UsersState {
     currentPage: number;
     hasMore: boolean;
     isLoading: boolean;
+    totalCount?: number;
   }>;
 }
 
@@ -62,14 +63,24 @@ export const useUsersStore = defineStore("users", {
         : false;
     },
 
-    getThreadedComments: (state) => (deckId: string): Comment[] => {
+    getThreadedComments: (state) => (deckId: string, sortBy: 'newest' | 'likes' = 'newest'): Comment[] => {
       const comments = state.comments.get(deckId) || [];
-      return comments
-        .filter((comment) => !comment.parent_id)
-        .sort(
-          (a, b) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      const parentComments = comments.filter((comment) => !comment.parent_id);
+      
+      if (sortBy === 'likes') {
+        return parentComments.sort((a, b) => {
+          // First sort by likes
+          const likeDiff = b.likes_count - a.likes_count;
+          // If likes are equal, sort by newest
+          return likeDiff !== 0 ? likeDiff : 
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        });
+      } else {
+        // Default 'newest' sorting
+        return parentComments.sort((a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
+      }
     },
 
     getCommentReplies: (state) => (commentId: string, deckId: string): Comment[] => {
@@ -194,7 +205,9 @@ export const useUsersStore = defineStore("users", {
     },
 
     // Comment Actions
-    async fetchDeckCommentsWithProfiles(deckId: string, page = 1, limit = 10) {
+    async fetchDeckCommentsWithProfiles(deckId: string, page = 1, limit = 10, sortBy: 'newest' | 'likes' = 'newest') {
+      this.loading.comments = true;
+
       const pagination = this.commentsPagination.get(deckId) || {
         currentPage: 1,
         hasMore: true,
@@ -209,31 +222,56 @@ export const useUsersStore = defineStore("users", {
         const from = (page - 1) * limit;
         const to = from + limit - 1;
 
-        // Fetch comments with pagination
-        const { data: comments, error: commentsError, count } = await supabase
+        // First fetch parent comments (no parent_id)
+        let query = supabase
           .from("comments")
           .select("*", { count: "exact" })
           .eq("deck_id", deckId)
           .eq("status", "active")
-          .order("created_at", { ascending: false })
+          .is("parent_id", null) // Only fetch parent comments
           .range(from, to);
 
+        // Apply sorting
+        if (sortBy === 'likes') {
+          query = query.order('likes_count', { ascending: false }).order('created_at', { ascending: false });
+        } else {
+          query = query.order('created_at', { ascending: false });
+        }
+
+        const { data: parentComments, error: commentsError, count } = await query;
+
         if (commentsError) throw commentsError;
-        if (!comments) return;
+        if (!parentComments) return;
+
+        // Then fetch all replies for these parent comments
+        const parentIds = parentComments.map(comment => comment.id);
+        const { data: replies, error: repliesError } = await supabase
+          .from("comments")
+          .select("*")
+          .eq("deck_id", deckId)
+          .eq("status", "active")
+          .in("parent_id", parentIds)
+          .order('created_at', { ascending: true }); // Replies always sorted by oldest first
+
+        if (repliesError) throw repliesError;
+
+        // Combine parent comments and replies
+        const allComments = [...parentComments, ...(replies || [])];
 
         // Update pagination state
         this.commentsPagination.set(deckId, {
           currentPage: page,
-          hasMore: count ? from + comments.length < count : false,
+          hasMore: count ? from + parentComments.length < count : false,
           isLoading: false,
+          totalCount: count || 0,
         });
 
         // Store comments (append if loading more, replace if first page)
         const existingComments = page === 1 ? [] : (this.comments.get(deckId) || []);
-        this.comments.set(deckId, [...existingComments, ...comments]);
+        this.comments.set(deckId, [...existingComments, ...allComments]);
 
-        // Get unique user IDs from comments
-        const userIds = [...new Set(comments.map(comment => comment.user_id))];
+        // Get unique user IDs from all comments
+        const userIds = [...new Set(allComments.map(comment => comment.user_id))];
 
         // Fetch user profiles for all commenters
         const { data: profiles, error: profilesError } = await supabase
@@ -250,12 +288,14 @@ export const useUsersStore = defineStore("users", {
         }
 
         // Fetch current user's likes
-        const commentIds = comments.map(comment => comment.id);
+        const commentIds = allComments.map(comment => comment.id);
         await this.fetchCommentLikes(commentIds);
       } catch (error) {
         this.error = error instanceof Error ? error.message : "Error fetching comments";
         throw error;
       } finally {
+        this.loading.comments = false;
+
         const currentPagination = this.commentsPagination.get(deckId);
         if (currentPagination) {
           currentPagination.isLoading = false;

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useUsersStore } from '../../../stores/usersStore';
 import { Pencil, Trash2, Heart } from 'lucide-vue-next';
+import LoadingSpinner from '../../common/LoadingSpinner.vue';
 
 const props = defineProps<{
     deckId: string;
@@ -18,6 +19,9 @@ const replyContent = ref('');
 
 // Add pagination state
 const commentsLoading = ref(false);
+
+// Add sort state
+const sortBy = ref<'newest' | 'likes'>('likes');
 
 // Comment handlers
 const addComment = async () => {
@@ -107,24 +111,74 @@ const loadMoreComments = async () => {
     try {
         await usersStore.fetchDeckCommentsWithProfiles(
             props.deckId,
-            pagination.currentPage + 1
+            pagination.currentPage + 1,
+            10,
+            sortBy.value
         );
     } finally {
         commentsLoading.value = false;
     }
 };
 
+// Add watch for sortBy changes
+watch(sortBy, async () => {
+    // Reset pagination
+    usersStore.commentsPagination.set(props.deckId, {
+        currentPage: 1,
+        hasMore: true,
+        isLoading: false,
+    });
+    // Fetch comments with new sort
+    await usersStore.fetchDeckCommentsWithProfiles(props.deckId, 1, 10, sortBy.value);
+});
+
 // Initial load
 onMounted(async () => {
-    await usersStore.fetchDeckCommentsWithProfiles(props.deckId, 1);
+    await usersStore.fetchDeckCommentsWithProfiles(props.deckId, 1, 10, sortBy.value);
 });
+
+const emit = defineEmits<{
+  loading: [value: boolean]
+}>();
+
+// When loading comments
+emit('loading', true);
+// When done loading
+emit('loading', false);
 </script>
 
 <template>
-    <div
-        class="space-y-2">
+    <div class="space-y-2">
+        <!-- Sort Controls -->
+        <div class="flex items-center justify-between motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+            <!-- Comment Count -->
+            <span class="pl-2 text-sm text-neutral-400">
+                {{ usersStore.getCommentsPagination(props.deckId).totalCount || 0 }} Comments
+            </span>
+
+            <!-- Sort Buttons -->
+            <div class="flex text-sm">
+                <button 
+                    @click="sortBy = 'newest'"
+                    class="px-3 py-1.5 rounded-lg transition-colors duration-75"
+                    :class="sortBy === 'newest' 
+                        ? 'bg-neutral-400/10 text-neutral-200' 
+                        : 'text-neutral-400 hover:text-neutral-200'">
+                    Newest
+                </button>
+                <button 
+                    @click="sortBy = 'likes'"
+                    class="px-3 py-1.5 rounded-lg transition-colors duration-75"
+                    :class="sortBy === 'likes' 
+                        ? 'bg-neutral-400/10 text-neutral-200' 
+                        : 'text-neutral-400 hover:text-neutral-200'">
+                    Most Liked
+                </button>
+            </div>
+        </div>
+
         <!-- Add Comment -->
-        <div class="flex motion-translate-y-in-[-4%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+        <div class="flex motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
             <textarea v-model="newComment" placeholder="Add a comment..." @keydown="handleNewCommentKeydown"
                 rows="1" @input="(e) => {
                     const target = e.target as HTMLTextAreaElement;
@@ -153,9 +207,14 @@ onMounted(async () => {
             </button>
         </div>
 
+        <!-- Loading State -->
+        <div v-if="usersStore.loading.comments" class="flex justify-center py-8">
+            <LoadingSpinner size="32" class="text-neutral-400" />
+        </div>
+
         <!-- Comments List -->
-        <div class="space-y-2">
-            <div v-for="comment in usersStore.getThreadedComments(props.deckId)" :key="comment.id"
+        <div v-else class="space-y-2">
+            <div v-for="comment in usersStore.getThreadedComments(props.deckId, sortBy)" :key="comment.id"
                 class="p-3 space-y-3 panel motion-translate-y-in-[-4%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
                 <!-- Comment Header -->
                 <div class="flex items-start justify-between">

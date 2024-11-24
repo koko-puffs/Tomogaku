@@ -176,7 +176,7 @@ watch(() => route.hash, (newHash) => {
 
 
         <!-- Author Info -->
-        <div v-if="author" class="flex items-center justify-between">
+        <div v-if="author" class="flex items-center justify-between motion-translate-y-in-[-6%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
             <div class="flex items-center gap-3">
                 <router-link :to="`/discover/user/${author.id}`" class="transition-opacity hover:opacity-80">
                     <img :src="author.avatar_url || '/default-avatar.png'" :alt="author.username"
@@ -207,7 +207,7 @@ watch(() => route.hash, (newHash) => {
         </div>
 
         <!-- Description and Tags -->
-        <div class="space-y-2">
+        <div class="space-y-2 motion-translate-y-in-[-2%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
             <div v-if="props.deck.description || props.deck.tags?.length" class="p-2.5 space-y-2.5 panel">
                 <!-- Description -->
                 <div v-if="props.deck.description" class="px-1.5 py-1 space-y-2">

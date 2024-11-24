@@ -126,7 +126,7 @@ const handleUpdate = (updatedData: {
         </div>
 
         <!-- Stats and Description -->
-        <div class="space-y-2">
+        <div class="space-y-2 motion-translate-y-in-[-2%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
             <!-- Deck Stats -->
             <div class="px-4 py-3 space-y-2 panel">
                 <div class="space-y-2">

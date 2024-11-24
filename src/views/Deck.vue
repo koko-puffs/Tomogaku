@@ -39,7 +39,6 @@ const fetchDeckData = async () => {
         await Promise.all([
             usersStore.fetchUserProfile(deck.user_id),
             deckStore.fetchDeckLikes([deck.id]),
-            usersStore.fetchDeckCommentsWithProfiles(deck.id)
         ]);
 
     } catch (e) {
@@ -102,7 +101,7 @@ const handleEditDeck = async (updates: {
         <PageLayoutMirrored>
             <template #content>
                 <div class="max-w-3xl mx-auto">
-                    <div v-if="loading" class="flex items-center justify-center mt-16 text-neutral-500">
+                    <div v-if="loading" class="flex items-center justify-center mt-20 text-neutral-500">
                         <LoadingSpinner :size="36" />
                     </div>
 
@@ -112,14 +111,7 @@ const handleEditDeck = async (updates: {
 
                     <div v-else-if="currentDeck" class="space-y-6">
                         <PublicDeckDetails :deck="currentDeck" @delete="handleDeleteDeck" @update="handleEditDeck" />
-
-                        <hr class="my-6 border-t border-neutral-800" />
-
-                        <div v-if="usersStore.loading.comments"
-                            class="flex items-center justify-center py-8 text-neutral-500">
-                            <LoadingSpinner :size="24" />
-                        </div>
-                        <CommentSection v-else :deck-id="currentDeck.id" />
+                        <CommentSection :deck-id="currentDeck.id" />
                     </div>
                 </div>
             </template>
