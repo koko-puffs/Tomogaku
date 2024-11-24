@@ -157,9 +157,6 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                             class="p-1 text-neutral-400 hover:text-red-400">
                             <Trash2 :size="17" />
                         </button>
-                        <button @click="replyingTo = comment.id" class="p-1 text-neutral-400 hover:text-neutral-300">
-                            <MessageSquare :size="17" />
-                        </button>
                         <button @click="toggleCommentLike(comment.id)" 
                             class="flex items-center gap-1.5 p-1 group active:scale-90 transition-transform">
                             <Heart :size="17" :class="{
@@ -175,8 +172,8 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                 </div>
 
                 <!-- Comment Content -->
-                <div>
-                    <div v-if="editingComment === comment.id" class="motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+                <div class="flex items-end gap-4">
+                    <div v-if="editingComment === comment.id" class="flex-1 min-w-0 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
                         <textarea v-model="editCommentContent" @keydown="handleEditKeydown"
                             class="w-full h-20 resize-none input-lighter-filled" rows="3" />
                         <div class="flex justify-end gap-2 mt-1">
@@ -188,20 +185,30 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                             </button>
                         </div>
                     </div>
-                    <div v-else class="flex-1 pl-1 break-words whitespace-pre-wrap">
+                    <div v-else class="flex-1 min-w-0 pl-1 break-words whitespace-pre-wrap">
                         {{ comment.content }}
                     </div>
+                    <button @click="replyingTo = comment.id" 
+                        class="flex-shrink-0 pr-1 text-sm text-neutral-400 hover:text-neutral-300">
+                        Reply
+                    </button>
                 </div>
 
-                <!-- Reply Input -->
-                <div v-if="replyingTo === comment.id" class="motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
-                    <textarea v-model="replyContent" placeholder="Write a reply..." @keydown="handleReplyKeydown"
-                        class="w-full h-20 resize-none input-lighter-filled" rows="3" />
+                <!-- Add Reply Input when replying -->
+                <div v-if="replyingTo === comment.id" 
+                    class="mt-2 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+                    <textarea 
+                        v-model="replyContent" 
+                        @keydown="handleReplyKeydown"
+                        placeholder="Write a reply..."
+                        class="w-full resize-none input-lighter-filled" 
+                        rows="2" 
+                    />
                     <div class="flex justify-end gap-2 mt-1">
                         <button @click="replyingTo = null" class="w-24 button-lighter">
                             Cancel
                         </button>
-                        <button @click="addReply" :disabled="!replyContent" class="w-24 button-lighter-visible">
+                        <button @click="addReply" class="w-24 button-lighter-visible">
                             Reply
                         </button>
                     </div>
@@ -238,15 +245,27 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
                                 </span>
                             </div>
                             <!-- Reply Actions -->
-                            <div class="flex items-center gap-1"
-                                v-if="reply.user_id === usersStore.getCurrentUserProfile?.id">
-                                <button @click="startEditComment(reply)"
+                            <div class="flex items-center gap-1">
+                                <button v-if="reply.user_id === usersStore.getCurrentUserProfile?.id"
+                                    @click="startEditComment(reply)"
                                     class="p-1 text-neutral-400 hover:text-neutral-300">
-                                    <Pencil :size="14" />
+                                    <Pencil :size="17" />
                                 </button>
-                                <button @click="usersStore.deleteComment(reply.id, props.deckId)"
+                                <button v-if="reply.user_id === usersStore.getCurrentUserProfile?.id"
+                                    @click="usersStore.deleteComment(reply.id, props.deckId)"
                                     class="p-1 text-neutral-400 hover:text-red-400">
-                                    <Trash2 :size="14" />
+                                    <Trash2 :size="17" />
+                                </button>
+                                <button @click="toggleCommentLike(reply.id)" 
+                                    class="flex items-center gap-1.5 p-1 group active:scale-90 transition-transform">
+                                    <Heart :size="17" :class="{
+                                        'text-rose-400 fill-rose-400': usersStore.hasLikedComment(reply.id),
+                                        'text-neutral-400 group-hover:text-neutral-300': !usersStore.hasLikedComment(reply.id)
+                                    }" />
+                                    <span class="text-sm leading-none -mb-0.5" :class="{
+                                        'text-rose-400': usersStore.hasLikedComment(reply.id),
+                                        'text-neutral-400 group-hover:text-neutral-300': !usersStore.hasLikedComment(reply.id)
+                                    }">{{ reply.likes_count }}</span>
                                 </button>
                             </div>
                         </div>

@@ -141,6 +141,12 @@ const scrollToTop = () => {
     <!-- Gradient overlay -->
     <div class="absolute inset-0 z-10 pointer-events-none bg-gradient-to-b from-pink-950/5 to-transparent"></div>
     <PageLayout>
+        <!-- <template #header>
+          <div class="flex items-center justify-between w-full">
+            Test Header Content
+          </div>
+        </template> -->
+
       <template #sidebar>
         <DeckList :selected-deck="selectedDeck" @select-deck="selectDeck" @create-deck="openCreateDeckModal" />
       </template>
