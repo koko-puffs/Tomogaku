@@ -102,7 +102,7 @@ const handleEditDeck = async (updates: {
             <template #content>
                 <div class="max-w-3xl mx-auto">
                     <div v-if="loading" class="flex items-center justify-center mt-20 text-neutral-500">
-                        <LoadingSpinner :size="36" />
+                        <LoadingSpinner :size="32" />
                     </div>
 
                     <div v-else-if="error" class="text-center text-red-500">

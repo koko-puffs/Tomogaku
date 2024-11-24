@@ -27,10 +27,7 @@ const selectDeck = async (deckId: string) => {
     
     // First, ensure we have the deck data
     await deckStore.fetchCards(deckId);
-    
-    // Wait a small amount of time to ensure store is updated
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
+      
     const deck = deckStore.getDeckById(deckId);
     if (!deck) {
       console.error('Deck not found after fetching');
@@ -147,7 +144,7 @@ const scrollToTop = () => {
 
       <template #content>
         <div v-if="isLoading" class="flex items-center justify-center mt-20 text-neutral-500">
-          <LoadingSpinner :size="36" />
+          <LoadingSpinner :size="32" />
         </div>
         <div v-else-if="currentDeck" class="space-y-6">
           <DeckDetails :deck="currentDeck" @update="handleEditDeck" @delete="handleDeleteDeck" @study="handleStudyDeck"

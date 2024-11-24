@@ -210,8 +210,8 @@ emit('loading', false);
         </div>
 
         <!-- Loading State -->
-        <div v-if="usersStore.loading.comments" class="flex justify-center py-8">
-            <LoadingSpinner size="32" class="text-neutral-400" />
+        <div v-if="usersStore.loading.comments" class="flex items-center justify-center py-10 text-neutral-500">
+            <LoadingSpinner size="32" />
         </div>
 
         <!-- Comments List -->
