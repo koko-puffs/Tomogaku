@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineComponent, h, onMounted, onUnmounted } from 'vue'
+import { ref, computed, defineComponent, h, onUnmounted } from 'vue'
 import { X, User, Brain, Bell, Palette, Shield, Keyboard } from 'lucide-vue-next'
 import ProfileSettings from './ProfileSettings.vue'
 // import StudySettings from './StudySettings.vue'
