@@ -4,7 +4,7 @@ import { useDeckStore } from '../../stores/deckStore';
 import PageLayout from '../../components/common/PageLayout.vue';
 import { useRoute, useRouter } from 'vue-router';
 import CreateDeckModal from '../../components/features/decks/CreateDeckModal.vue';
-import DeleteDeckModal from '../../components/features/decks/DeleteDeckModal.vue';
+import DeleteModal from '../../components/common/DeleteModal.vue';
   import DeckList from '../../components/features/decks/DeckList.vue';
 import DeckDetails from '../../components/features/decks/DeckDetails.vue';
 import CommentSection from '../../components/features/decks/CommentSection.vue';
@@ -82,11 +82,11 @@ watch(
   { immediate: true }
 );
 
-const deleteDeckModalRef = ref();
+const deleteModalRef = ref();
 
 const handleDeleteDeck = async () => {
   if (!selectedDeck.value) return;
-  deleteDeckModalRef.value?.openModal();
+  deleteModalRef.value?.openModal();
 };
 
 const confirmDeleteDeck = async () => {
@@ -140,7 +140,7 @@ const scrollToTop = () => {
 <template>
   <div class="motion-preset-fade motion-duration-150">
     <!-- Gradient overlay -->
-    <div class="absolute inset-0 z-10 pointer-events-none bg-gradient-to-b from-pink-950/5 to-transparent"></div>
+    <div class="absolute inset-0 z-[20] pointer-events-none bg-gradient-to-b from-pink-950/5 to-transparent"></div>
     <PageLayout>
         <!-- <template #header>
           <div class="flex items-center justify-between w-full">
@@ -170,5 +170,11 @@ const scrollToTop = () => {
     </PageLayout>
   </div>
   <CreateDeckModal ref="createDeckModalRef" @created="selectDeck" />
-  <DeleteDeckModal ref="deleteDeckModalRef" @confirm="confirmDeleteDeck" />
+  <DeleteModal 
+    ref="deleteModalRef" 
+    @confirm="confirmDeleteDeck"
+    title="Delete Deck?"
+    mainMessage="Deleting this deck will also delete all the cards in it."
+    subMessage="This action cannot be undone."
+  />
 </template>

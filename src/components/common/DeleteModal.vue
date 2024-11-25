@@ -1,15 +1,15 @@
 <template>
     <Modal v-if="isOpen" @close="closeModal">
         <template #title>
-            Are you sure?
+            {{ title }}
         </template>
 
         <template #content>
             <div class="flex items-center gap-4">
                 <AlertTriangle class="flex-shrink-0 w-8 h-8 text-yellow-500" />
                 <p class="text-sm text-neutral-400">
-                    <span class="block">Deleting this deck will also delete all the cards in it.</span>
-                    <span class="block">This action cannot be undone.</span>
+                    <span class="block">{{ mainMessage }}</span>
+                    <span class="block">{{ subMessage }}</span>
                 </p>
             </div>
         </template>
@@ -37,8 +37,8 @@
 
 <script setup lang="ts">
 import { ref, onUnmounted, onMounted } from 'vue';
-import Modal from '../../common/Modal.vue';
-import LoadingSpinner from '../../common/LoadingSpinner.vue';
+import Modal from './Modal.vue';
+import LoadingSpinner from './LoadingSpinner.vue';
 import { AlertTriangle } from 'lucide-vue-next';
 
 const isOpen = ref(false);
@@ -118,4 +118,16 @@ onUnmounted(() => {
 });
 
 defineExpose({ openModal, closeModal });
+
+interface Props {
+    title?: string;
+    mainMessage?: string;
+    subMessage?: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    title: 'Are you sure?',
+    mainMessage: 'Deleting this deck will also delete all the cards in it.',
+    subMessage: 'This action cannot be undone.'
+});
 </script>

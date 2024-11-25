@@ -7,7 +7,7 @@ import PageLayoutMirrored from '../../components/common/PageLayoutMirrored.vue';
 import PublicDeckDetails from '../../components/features/profile/PublicDeckDetails.vue';
 import CommentSection from '../../components/features/decks/CommentSection.vue';
 import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
-import DeleteDeckModal from '../../components/features/decks/DeleteDeckModal.vue';
+import DeleteDeckModal from '../../components/common/DeleteModal.vue';
 
 const props = defineProps<{
     id: string;
@@ -98,7 +98,7 @@ const handleEditDeck = async (updates: {
 <template>
     <div class="motion-preset-fade motion-duration-150">
         <!-- Gradient overlay -->
-        <div class="absolute inset-0 z-10 pointer-events-none bg-gradient-to-b from-emerald-950/5 to-transparent"></div>
+        <div class="absolute inset-0 z-[20] pointer-events-none bg-gradient-to-b from-emerald-950/5 to-transparent"></div>
         <PageLayoutMirrored>
             <template #content>
                 <div class="max-w-3xl mx-auto">

@@ -3,6 +3,7 @@ import { ref, onMounted, watch } from 'vue';
 import { useUsersStore } from '../../../stores/usersStore';
 import { Pencil, Trash2, Heart } from 'lucide-vue-next';
 import LoadingSpinner from '../../common/LoadingSpinner.vue';
+import DeleteModal from '../../common/DeleteModal.vue';
 
 const props = defineProps<{
     deckId: string;
@@ -19,6 +20,10 @@ const replyContent = ref('');
 
 // Add sort state
 const sortBy = ref<'newest' | 'likes'>('likes');
+
+// Add ref for the modal and comment to delete
+const deleteModalRef = ref<InstanceType<typeof DeleteModal> | null>(null);
+const commentToDelete = ref<string | null>(null);
 
 // Comment handlers
 const addComment = async () => {
@@ -132,6 +137,20 @@ watch(sortBy, async () => {
 onMounted(async () => {
     await usersStore.fetchDeckCommentsWithProfiles(props.deckId, 1, 10, sortBy.value);
 });
+
+// Replace direct deletion with modal
+const handleDeleteComment = (commentId: string) => {
+    commentToDelete.value = commentId;
+    deleteModalRef.value?.openModal();
+};
+
+// Add confirmation handler
+const confirmDeleteComment = async () => {
+    if (commentToDelete.value) {
+        await usersStore.deleteComment(commentToDelete.value, props.deckId);
+        commentToDelete.value = null;
+    }
+};
 </script>
 
 <template>
@@ -237,7 +256,7 @@ onMounted(async () => {
                             <Pencil :size="17" />
                         </button>
                         <button v-if="comment.user_id === usersStore.getCurrentUserProfile?.id"
-                            @click="usersStore.deleteComment(comment.id, props.deckId)"
+                            @click="handleDeleteComment(comment.id)"
                             class="p-1 text-neutral-400 hover:text-red-400">
                             <Trash2 :size="17" />
                         </button>
@@ -348,7 +367,7 @@ onMounted(async () => {
                                     <Pencil :size="17" />
                                 </button>
                                 <button v-if="reply.user_id === usersStore.getCurrentUserProfile?.id"
-                                    @click="usersStore.deleteComment(reply.id, props.deckId)"
+                                    @click="handleDeleteComment(reply.id)"
                                     class="p-1 text-neutral-400 hover:text-red-400">
                                     <Trash2 :size="17" />
                                 </button>
@@ -403,5 +422,14 @@ onMounted(async () => {
                 </button>
             </div>
         </div>
+
+        <!-- Add the modal at the bottom of the template -->
+        <DeleteModal 
+            ref="deleteModalRef"
+            @confirm="confirmDeleteComment"
+            title="Delete Comment?"
+            mainMessage="Deleting this comment will also delete all the replies to it."
+            subMessage="This action cannot be undone."
+        />
     </div>
 </template>

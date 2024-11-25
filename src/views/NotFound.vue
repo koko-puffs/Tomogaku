@@ -1,6 +1,6 @@
 <template>
     <div class="flex items-center justify-center mt-12 motion-preset-fade motion-duration-150">
-        <div class="text-center ">
+        <div class="text-center">
             <h1
                 class="text-[70px] md:text-[90px] font-bold bg-gradient-to-r from-pink-500 to-rose-400 text-transparent bg-clip-text">
                 {{ randomMessage }}
@@ -10,7 +10,7 @@
                 Oops! Could not find that page.
             </h2>
 
-            <p class="mb-10 text-lg text-neutral-500 motion-preset-typewriter ">
+            <p class="mb-10 text-lg text-neutral-500">
                 The page you are looking for might have been removed or is temporarily unavailable.
             </p>
 

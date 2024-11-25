@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { GitFork, Heart, Clock, RefreshCw, Layers3, Edit2, Trash2 } from 'lucide-vue-next';
-import { ref, onMounted, computed, watch } from 'vue';
+import { GitFork, Heart, Clock, RefreshCw, Layers3, Edit2, Trash2, MoreVertical } from 'lucide-vue-next';
+import { ref, onMounted, computed, watch, onUnmounted } from 'vue';
 import { useDeckStore } from '../../../stores/deckStore';
 import { useUsersStore } from '../../../stores/usersStore';
 import { formatDistanceToNow } from 'date-fns';
@@ -86,11 +86,6 @@ watch(isEditing, (newValue) => {
     }
 });
 
-const startEdit = () => {
-    if (!isOwner.value) return;
-    isEditing.value = true;
-};
-
 const cancelEdit = () => {
     isEditing.value = false;
 };
@@ -112,23 +107,56 @@ const handleUpdate = (updatedData: {
     isEditing.value = false;
 };
 
-// Update delete handler to emit event
-const handleDelete = () => {
-    emit('delete');
-};
-
 // Watch for hash changes to prevent non-owners from accessing edit mode
 watch(() => route.hash, (newHash) => {
     if (newHash === '#edit' && !isOwner.value) {
         router.replace({ hash: '' });
     }
 });
+
+const isDropdownOpen = ref(false);
+const dropdownRef = ref<HTMLElement | null>(null);
+
+const closeDropdown = () => {
+  isDropdownOpen.value = false;
+};
+
+const toggleDropdown = () => {
+  isDropdownOpen.value = !isDropdownOpen.value;
+};
+
+const handleClickOutside = (event: MouseEvent) => {
+  if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
+    closeDropdown();
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
+
+// Modify startEdit to close dropdown
+const startEdit = () => {
+  if (!isOwner.value) return;
+  isEditing.value = true;
+  closeDropdown();
+};
+
+// Add handleDelete function
+const handleDelete = () => {
+  emit('delete');
+  closeDropdown();
+};
 </script>
 
 <template>
     <div class="space-y-6">
         <!-- Deck Header -->
-        <div class="flex items-center justify-between w-full">
+        <div class="flex items-center justify-between w-full relative z-[15]">
             <!-- Edit Mode -->
             <div v-if="isEditing"
                 class="flex-1 w-full motion-translate-y-in-[-1.4%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
@@ -142,7 +170,7 @@ watch(() => route.hash, (newHash) => {
                 <div
                     class="motion-translate-y-in-[-12%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
                     <div class="space-y-1">
-                        <h1 class="relative flex items-center gap-1.5 text-xl font-bold pl-1 max-w-[230px] lg:max-w-[460px]">
+                        <h1 class="relative flex items-center gap-1.5 text-xl font-bold pl-1 max-w-[265px] lg:max-w-[460px]">
                             <span class="leading-none truncate">{{ props.deck.title }}</span>
                         </h1>
                         <RouterLink v-if="props.deck.is_forked && props.deck.original_deck_id"
@@ -157,14 +185,37 @@ watch(() => route.hash, (newHash) => {
 
             <!-- Action Buttons -->
             <div v-if="!isEditing"
-                class="flex gap-2 motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.35s] motion-duration-[0.25s]/opacity">
-                <div v-if="isOwner" class="flex">
-                    <button class="w-10 button" @click="startEdit">
-                        <Edit2 :size="18" />
+                class="flex gap-2 motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity relative z-[15]">
+                <div v-if="isOwner" class="relative z-[15]" ref="dropdownRef">
+                    <!-- Show dropdown button on small screens -->
+                    <button @click.stop="toggleDropdown" class="w-10 button lg:hidden">
+                        <MoreVertical :size="18" />
                     </button>
-                    <button @click="handleDelete" class="w-10 button">
-                        <Trash2 :size="18" />
-                    </button>
+
+                    <!-- Dropdown menu -->
+                    <div v-if="isDropdownOpen"
+                        class="absolute right-0 w-48 py-2 mt-1 border rounded-lg shadow-xl bg-neutral-900 border-neutral-800 motion-translate-x-in-[0%] motion-translate-y-in-[-4%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity z-[15]">
+                        <button @click="startEdit"
+                            class="flex items-center w-full px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
+                            <Edit2 :size="16" class="mr-2" />
+                            Edit
+                        </button>
+                        <button @click="handleDelete"
+                            class="flex items-center w-full px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
+                            <Trash2 :size="16" class="mr-2" />
+                            Delete
+                        </button>
+                    </div>
+
+                    <!-- Show regular buttons on large screens -->
+                    <div class="hidden lg:flex">
+                        <button class="w-10 button" @click="startEdit">
+                            <Edit2 :size="18" />
+                        </button>
+                        <button @click="handleDelete" class="w-10 button">
+                            <Trash2 :size="18" />
+                        </button>
+                    </div>
                 </div>
                 <button class="flex items-center w-10 gap-2 md:px-4 button-emerald-visible md:w-auto" @click="handleFork"
                     :disabled="isForking">
@@ -175,8 +226,8 @@ watch(() => route.hash, (newHash) => {
         </div>
 
 
-        <!-- Author Info -->
-        <div v-if="author" class="flex items-center justify-between motion-translate-y-in-[-6%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+        <!-- Author Info - Add lower z-index -->
+        <div v-if="author" class="flex items-center justify-between motion-translate-y-in-[-6%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity relative z-[1]">
             <div class="flex items-center gap-3">
                 <router-link :to="`/discover/user/${author.id}`" class="transition-opacity hover:opacity-80">
                     <img :src="author.avatar_url || '/default-avatar.png'" :alt="author.username"
@@ -206,8 +257,8 @@ watch(() => route.hash, (newHash) => {
             </button>
         </div>
 
-        <!-- Description and Tags -->
-        <div class="space-y-2 motion-translate-y-in-[-2%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+        <!-- Description and Tags - Add lower z-index -->
+        <div class="space-y-2 motion-translate-y-in-[-2%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity relative z-[1]">
             <div v-if="props.deck.description || props.deck.tags?.length" class="p-2.5 space-y-2.5 panel">
                 <!-- Description -->
                 <div v-if="props.deck.description" class="px-1.5 py-1 space-y-2">
