@@ -28,11 +28,13 @@ const fetchDeckData = async () => {
         const deck = await deckStore.fetchDeckById(props.id);
 
         if (!deck) {
-            throw new Error('Deck not found');
+            router.push({ name: 'notFound' });
+            return;
         }
 
         if (deck.visibility !== 'public') {
-            throw new Error('This deck is private');
+            router.push({ name: 'notFound' });
+            return;
         }
 
         // Fetch additional data
@@ -42,7 +44,6 @@ const fetchDeckData = async () => {
         ]);
 
     } catch (e) {
-        error.value = e instanceof Error ? e.message : 'An error occurred';
         router.push({ name: 'notFound' });
     } finally {
         loading.value = false;

@@ -6,15 +6,7 @@
       <LoadingSpinner :size="32" />
     </div>
 
-    <div v-else-if="error">
-      <NotFound />
-    </div>
-
-    <div v-else-if="!userProfile">
-      <NotFound />
-    </div>
-
-    <div v-else>
+    <div v-else-if="userProfile">
       <PageLayout>
         <template #sidebar>
           <div class="space-y-4">
@@ -147,7 +139,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useUsersStore } from '../../stores/usersStore';
 import { useAuthStore } from '../../stores/authStore';
 import { UserCircle2 } from 'lucide-vue-next';
@@ -170,6 +162,7 @@ type LanguageCode = keyof typeof LANGUAGES;
 type UserProfile = Database['public']['Tables']['user_profiles']['Row'];
 
 const route = useRoute();
+const router = useRouter();
 const usersStore = useUsersStore();
 const authStore = useAuthStore();
 const userProfile = ref<UserProfile | undefined>();
@@ -226,7 +219,7 @@ const loadProfile = async () => {
     } else {
       const profile = await usersStore.fetchUserProfile(userId);
       if (!profile) {
-        error.value = 'User not found';
+        router.push({ name: 'notFound' });
         return;
       }
       userProfile.value = profile;
@@ -236,7 +229,7 @@ const loadProfile = async () => {
       }
     }
   } catch (e) {
-    error.value = 'User not found';
+    router.push({ name: 'notFound' });
     console.error('Error loading profile:', e);
   } finally {
     followStatusLoading.value = false;

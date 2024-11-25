@@ -11,8 +11,7 @@
             </h2>
 
             <p class="mb-10 text-lg text-neutral-500 motion-preset-typewriter ">
-                The page you are looking for might have been removed, had its name changed,
-                or is temporarily unavailable.
+                The page you are looking for might have been removed or is temporarily unavailable.
             </p>
 
             <div class="flex justify-center">

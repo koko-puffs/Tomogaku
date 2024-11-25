@@ -41,9 +41,7 @@ const selectDeck = async (deckId: string) => {
     }
     
     if (!deck) {
-      console.error(`Deck ${deckId} not found after fetching`);
-      selectedDeck.value = null;
-      router.push('/learn');
+      router.push({ name: 'notFound' });
       return;
     }
     
@@ -54,8 +52,7 @@ const selectDeck = async (deckId: string) => {
 
     scrollToTop();
   } catch (error) {
-    console.error('Error in selectDeck:', error);
-    selectedDeck.value = null;
+    router.push({ name: 'notFound' });
   } finally {
     isLoading.value = false;
   }

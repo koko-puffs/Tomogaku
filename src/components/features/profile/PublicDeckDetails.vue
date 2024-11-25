@@ -140,7 +140,7 @@ watch(() => route.hash, (newHash) => {
             <!-- View Mode -->
             <template v-else>
                 <div
-                    class="motion-translate-y-in-[-12%] motion-opacity-in-[0%] motion-duration-[0.35s] motion-duration-[0.25s]/opacity">
+                    class="motion-translate-y-in-[-12%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
                     <div class="space-y-1">
                         <h1 class="relative flex items-center gap-1.5 text-xl font-bold pl-1 max-w-[230px] lg:max-w-[460px]">
                             <span class="leading-none truncate">{{ props.deck.title }}</span>

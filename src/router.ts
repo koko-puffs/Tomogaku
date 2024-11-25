@@ -38,14 +38,14 @@ const router = createRouter({
       component: () => import("./views/Privacy.vue"),
     },
     {
-      path: "/discover/user/:id",
+      path: "/discover/user/:id?",
       name: "userProfile", 
       component: () => import("./views/discover/UserProfile.vue"),
       meta: { requiresAuth: true },
       props: true,
     },
     {
-      path: "/discover/deck/:id",
+      path: "/discover/deck/:id?",
       name: "deck",
       component: () => import("./views/discover/PublicDeck.vue"),
       props: true,
@@ -71,6 +71,12 @@ router.beforeEach(async (to, _from, next) => {
   // Wait for auth check to complete
   if (!authStore.initialized) {
     await authStore.handleAuthRedirect();
+  }
+
+  // Allow access to notFound page and public deck pages
+  if (to.name === 'notFound' || to.path.startsWith('/discover/deck/')) {
+    next();
+    return;
   }
 
   // Check if path is public or user is authenticated
