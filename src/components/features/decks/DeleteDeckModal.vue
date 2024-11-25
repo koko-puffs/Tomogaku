@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue';
+import { ref, onUnmounted, onMounted } from 'vue';
 import Modal from '../../common/Modal.vue';
 import LoadingSpinner from '../../common/LoadingSpinner.vue';
 import { AlertTriangle } from 'lucide-vue-next';
@@ -43,6 +43,7 @@ const loading = ref(false);
 const holdProgress = ref(0);
 const holdTimer = ref<number | null>(null);
 const isHolding = ref(false);
+const isMobile = ref(false);
 
 const emit = defineEmits<{
     (e: 'confirm'): void
@@ -71,8 +72,21 @@ const handleDelete = async () => {
     }
 };
 
+const checkMobile = () => {
+    isMobile.value = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+};
+
+onMounted(() => {
+    checkMobile();
+});
+
 const startDelete = () => {
     if (loading.value) return;
+
+    if (isMobile.value) {
+        handleDelete();
+        return;
+    }
 
     isHolding.value = true;
     holdProgress.value = 0;
