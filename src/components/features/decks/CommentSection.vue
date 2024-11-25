@@ -259,15 +259,15 @@ onMounted(async () => {
                 <div class="flex items-end gap-4">
                     <div v-if="editingComment === comment.id" class="flex-1 min-w-0 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
                         <textarea v-model="editCommentContent" @keydown="handleEditKeydown"
-                            class="w-full h-20 resize-none input-lighter-filled" rows="3" />
+                            class="w-full h-32 resize-none input-lighter-filled" rows="3" />
                         <div class="flex justify-end gap-2 mt-1">
                             <button @click="editingComment = null" class="w-24 button-lighter">
                                 Cancel
                             </button>
                             <button @click="updateComment" 
-                                :disabled="!editCommentContent.trim()"
+                                :disabled="!editCommentContent.trim() || editCommentContent.trim() === comment.content.trim()"
                                 class="w-24 button-lighter-visible"
-                                :class="{ 'text-neutral-600 pointer-events-none': !editCommentContent.trim() }">
+                                :class="{ 'text-neutral-600 pointer-events-none': !editCommentContent.trim() || editCommentContent.trim() === comment.content.trim() }">
                                 Save
                             </button>
                         </div>
@@ -289,8 +289,13 @@ onMounted(async () => {
                         v-model="replyContent" 
                         @keydown="handleReplyKeydown"
                         placeholder="Write a reply..."
-                        class="w-full resize-none input-lighter-filled" 
-                        rows="2" 
+                        class="w-full resize-none input-lighter-filled flex-1 min-h-[40px] overflow-hidden" 
+                        rows="1"
+                        @input="(e) => {
+                            const target = e.target as HTMLTextAreaElement;
+                            target.style.height = 'auto';
+                            target.style.height = Math.max(40, target.scrollHeight) + 'px';
+                        }"
                     />
                     <div class="flex justify-end gap-2 mt-1">
                         <button @click="replyingTo = null" class="w-24 button-lighter">
@@ -299,7 +304,7 @@ onMounted(async () => {
                         <button @click="addReply" 
                             :disabled="!replyContent.trim()" 
                             class="w-24 button-lighter-visible"
-                            :class="{ 'text-neutral-600 pointer-events-none': !replyContent.trim() }">
+                            :class="{ 'text-neutral-600 pointer-events-none': !replyContent.trim()  }">
                             Reply
                         </button>
                     </div>
@@ -364,15 +369,15 @@ onMounted(async () => {
                         <!-- Reply Content -->
                         <div v-if="editingComment === reply.id" class="motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
                             <textarea v-model="editCommentContent" @keydown="handleEditKeydown"
-                                class="w-full h-20 resize-none input-lighter-filled" rows="3" />
+                                class="w-full h-32 resize-none input-lighter-filled" rows="3" />
                             <div class="flex justify-end gap-2 mt-1">
                                 <button @click="editingComment = null" class="w-24 button-lighter">
                                     Cancel
                                 </button>
                                 <button @click="updateComment" 
-                                    :disabled="!editCommentContent.trim()"
+                                    :disabled="!editCommentContent.trim() || editCommentContent.trim() === reply.content.trim()"
                                     class="w-24 button-lighter-visible"
-                                    :class="{ 'text-neutral-400': !editCommentContent.trim() }">
+                                    :class="{ 'text-neutral-600 pointer-events-none': !editCommentContent.trim() || editCommentContent.trim() === reply.content.trim() }">
                                     Save
                                 </button>
                             </div>
