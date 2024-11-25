@@ -20,11 +20,14 @@
             </button>
             <div class="relative">
                 <button @mousedown="startDelete" @mouseup="cancelDelete" @mouseleave="cancelDelete"
-                    class="w-24 button-cancel-visible relative overflow-hidden active:scale-[0.97] transition-transform"
+                    class="w-24 button-cancel-visible relative overflow-hidden active:scale-[0.97] transition-transform duration-100"
                     :disabled="loading">
                     <LoadingSpinner v-if="loading" class="w-5 h-5" />
                     <span v-else class="relative z-10">{{ isHolding ? 'Deleting...' : 'Delete' }}</span>
-                    <div class="absolute inset-0 transition-all duration-75 bg-white opacity-25"
+                    <div class="absolute inset-0 bg-white opacity-25"
+                        :class="[
+                            isHolding ? 'transition-[width] duration-[600ms] ease-in' : 'transition-[width] duration-150',
+                            ]"
                         :style="{ width: `${holdProgress}%` }" />
                 </button>
             </div>
@@ -90,31 +93,28 @@ const startDelete = () => {
 
     isHolding.value = true;
     holdProgress.value = 0;
-    const startTime = Date.now();
+    
+    // Small delay to ensure the initial 0% is registered
+    requestAnimationFrame(() => {
+        holdProgress.value = 100;
+    });
 
-    holdTimer.value = window.setInterval(() => {
-        const elapsed = Date.now() - startTime;
-        holdProgress.value = Math.min((elapsed / 600) * 100, 100);
-
-        if (holdProgress.value >= 100) {
-            clearInterval(holdTimer.value!);
-            handleDelete();
-        }
-    }, 20);
+    holdTimer.value = window.setTimeout(() => {
+        handleDelete();
+    }, 600);
 };
 
 const cancelDelete = () => {
     if (holdTimer.value) {
-        clearInterval(holdTimer.value);
+        clearTimeout(holdTimer.value);
         holdTimer.value = null;
     }
     isHolding.value = false;
     holdProgress.value = 0;
 };
 
-// Clean up timer if component is destroyed
 onUnmounted(() => {
-    if (holdTimer.value) clearInterval(holdTimer.value);
+    if (holdTimer.value) clearTimeout(holdTimer.value);
 });
 
 defineExpose({ openModal, closeModal });
