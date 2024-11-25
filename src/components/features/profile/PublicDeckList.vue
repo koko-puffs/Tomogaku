@@ -96,7 +96,7 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div v-else class="p-3 text-center rounded-lg text-neutral-400 bg-neutral-800/50">
+      <div v-else class="p-3 text-center panel text-neutral-400">
         No public decks found
       </div>
     </div>

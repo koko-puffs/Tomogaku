@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineComponent, h } from 'vue'
+import { ref, computed, defineComponent, h, onMounted, onUnmounted } from 'vue'
 import { X, User, Brain, Bell, Palette, Shield, Keyboard } from 'lucide-vue-next'
 import ProfileSettings from './ProfileSettings.vue'
 // import StudySettings from './StudySettings.vue'
@@ -94,11 +94,18 @@ const currentTabComponent = computed(() => {
 
 const openModal = () => {
   isOpen.value = true
+  document.body.style.overflow = 'hidden'
 }
 
 const closeModal = () => {
   isOpen.value = false
+  document.body.style.overflow = 'auto'
 }
+
+// Clean up on component unmount
+onUnmounted(() => {
+  document.body.style.overflow = 'auto'
+})
 
 // Expose methods for parent component
 defineExpose({ openModal, closeModal })
