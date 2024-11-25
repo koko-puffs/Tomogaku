@@ -23,7 +23,7 @@
                     class="w-24 button-cancel-visible relative overflow-hidden active:scale-[0.97] transition-transform duration-100"
                     :disabled="loading">
                     <LoadingSpinner v-if="loading" class="w-5 h-5" />
-                    <span v-else class="relative z-10">{{ isHolding ? 'Deleting...' : 'Delete' }}</span>
+                    <span v-else class="relative z-10">{{ isHolding ? 'Hold...' : 'Delete' }}</span>
                     <div class="absolute inset-0 bg-white opacity-25"
                         :class="[
                             isHolding ? 'transition-[width] duration-[600ms] ease-in' : 'transition-[width] duration-150',
