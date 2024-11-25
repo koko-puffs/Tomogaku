@@ -15,20 +15,18 @@
         </template>
 
         <template #footer>
-            <div class="flex items-center justify-between gap-2">
-                <button @click="closeModal" class="w-24 button-lighter" :disabled="loading">
-                    Cancel
+            <button @click="closeModal" class="w-24 button-lighter" :disabled="loading">
+                Cancel
+            </button>
+            <div class="relative">
+                <button @mousedown="startDelete" @mouseup="cancelDelete" @mouseleave="cancelDelete"
+                    class="w-24 button-cancel-visible relative overflow-hidden active:scale-[0.97] transition-transform"
+                    :disabled="loading">
+                    <LoadingSpinner v-if="loading" class="w-5 h-5" />
+                    <span v-else class="relative z-10">{{ isHolding ? 'Deleting...' : 'Delete' }}</span>
+                    <div class="absolute inset-0 transition-all duration-75 bg-white opacity-25"
+                        :style="{ width: `${holdProgress}%` }" />
                 </button>
-                <div class="relative">
-                    <button @mousedown="startDelete" @mouseup="cancelDelete" @mouseleave="cancelDelete"
-                        class="w-24 button-cancel-visible relative overflow-hidden active:scale-[0.97] transition-transform"
-                        :disabled="loading">
-                        <LoadingSpinner v-if="loading" class="w-5 h-5" />
-                        <span v-else class="relative z-10">{{ isHolding ? 'Deleting...' : 'Delete' }}</span>
-                        <div class="absolute inset-0 transition-all duration-75 bg-white opacity-25"
-                            :style="{ width: `${holdProgress}%` }" />
-                    </button>
-                </div>
             </div>
         </template>
     </Modal>
