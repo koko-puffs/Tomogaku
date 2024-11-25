@@ -172,6 +172,6 @@ const scrollToTop = () => {
       </template>
     </PageLayout>
   </div>
-  <CreateDeckModal ref="createDeckModalRef" />
+  <CreateDeckModal ref="createDeckModalRef" @created="selectDeck" />
   <DeleteDeckModal ref="deleteDeckModalRef" @confirm="confirmDeleteDeck" />
 </template>

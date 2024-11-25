@@ -144,13 +144,14 @@ const handleCreate = async () => {
   error.value = '';
 
   try {
-    await deckStore.createDeck({
+    const newDeck = await deckStore.createDeck({
       title: title.value.trim(),
       description: description.value || null,
       visibility: 'private' as const,
       tags: tags.value.length > 0 ? tags.value : null,
     });
     closeModal();
+    emit('created', newDeck.id);
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Failed to create deck';
   } finally {
@@ -158,6 +159,10 @@ const handleCreate = async () => {
     closeModal();
   }
 };
+
+const emit = defineEmits<{
+  (event: 'created', deckId: string): void;
+}>();
 
 defineExpose({ openModal, closeModal });
 </script>
