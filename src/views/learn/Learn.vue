@@ -5,7 +5,7 @@ import PageLayout from '../../components/common/PageLayout.vue';
 import { useRoute, useRouter } from 'vue-router';
 import CreateDeckModal from '../../components/features/decks/CreateDeckModal.vue';
 import DeleteModal from '../../components/common/DeleteModal.vue';
-  import DeckList from '../../components/features/decks/DeckList.vue';
+import DeckList from '../../components/features/decks/DeckList.vue';
 import DeckDetails from '../../components/features/decks/DeckDetails.vue';
 import CommentSection from '../../components/features/decks/CommentSection.vue';
 import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
@@ -24,10 +24,10 @@ const selectDeck = async (deckId: string) => {
   try {
     isLoading.value = true;
     selectedDeck.value = deckId;
-    
+
     // First check if we already have the deck
     let deck = deckStore.getDeckById(deckId);
-    
+
     if (!deck) {
       // Fetch both deck and cards if we don't have the deck
       await Promise.all([
@@ -39,12 +39,12 @@ const selectDeck = async (deckId: string) => {
       // If we have the deck, just ensure cards are loaded
       await deckStore.fetchCards(deckId);
     }
-    
+
     if (!deck) {
       router.push({ name: 'notFound' });
       return;
     }
-    
+
     // Only update route if we're not already there
     if (route.params.deckId !== deckId) {
       await router.push(`/learn/${deckId}`);
@@ -142,7 +142,7 @@ const scrollToTop = () => {
     <!-- Gradient overlay -->
     <div class="absolute inset-0 z-[20] pointer-events-none bg-gradient-to-b from-pink-950/5 to-transparent"></div>
     <PageLayout>
-        <!-- <template #header>
+      <!-- <template #header>
           <div class="flex items-center justify-between w-full">
             Test Header Content
           </div>
@@ -170,11 +170,6 @@ const scrollToTop = () => {
     </PageLayout>
   </div>
   <CreateDeckModal ref="createDeckModalRef" @created="selectDeck" />
-  <DeleteModal 
-    ref="deleteModalRef" 
-    @confirm="confirmDeleteDeck"
-    title="Delete Deck?"
-    mainMessage="Deleting this deck will also delete all the cards in it."
-    subMessage="This action cannot be undone."
-  />
+  <DeleteModal ref="deleteModalRef" @confirm="confirmDeleteDeck" title="Delete Deck?"
+    mainMessage="Deleting this deck will also delete all the cards in it." subMessage="This action cannot be undone." />
 </template>

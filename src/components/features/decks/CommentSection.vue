@@ -106,7 +106,7 @@ const handleReplyKeydown = (event: KeyboardEvent) => {
 const loadMoreComments = async () => {
     const pagination = usersStore.getCommentsPagination(props.deckId);
     if (pagination.isLoading || !pagination.hasMore) return;
-    
+
     try {
         await usersStore.fetchDeckCommentsWithProfiles(
             props.deckId,
@@ -156,7 +156,8 @@ const confirmDeleteComment = async () => {
 <template>
     <div class="space-y-2">
         <!-- Sort Controls -->
-        <div class="flex items-center justify-between motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+        <div
+            class="flex items-center justify-between motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
             <!-- Comment Count -->
             <span class="pl-2 text-sm text-neutral-400">
                 {{ usersStore.getCommentsPagination(props.deckId).totalCount || 0 }} Comments
@@ -164,34 +165,29 @@ const confirmDeleteComment = async () => {
 
             <!-- Sort Buttons -->
             <div class="flex text-sm">
-                <button 
-                    @click="sortBy = 'newest'"
-                    class="px-3 py-1.5 rounded-lg transition-colors duration-75"
-                    :class="sortBy === 'newest' 
-                        ? 'bg-neutral-400/10 text-neutral-200' 
-                        : 'text-neutral-400 hover:text-neutral-200'">
+                <button @click="sortBy = 'newest'" class="px-3 py-1.5 rounded-lg transition-colors duration-75" :class="sortBy === 'newest'
+                    ? 'bg-neutral-400/10 text-neutral-200'
+                    : 'text-neutral-400 hover:text-neutral-200'">
                     Newest
                 </button>
-                <button 
-                    @click="sortBy = 'likes'"
-                    class="px-3 py-1.5 rounded-lg transition-colors duration-75"
-                    :class="sortBy === 'likes' 
-                        ? 'bg-neutral-400/10 text-neutral-200' 
-                        : 'text-neutral-400 hover:text-neutral-200'">
+                <button @click="sortBy = 'likes'" class="px-3 py-1.5 rounded-lg transition-colors duration-75" :class="sortBy === 'likes'
+                    ? 'bg-neutral-400/10 text-neutral-200'
+                    : 'text-neutral-400 hover:text-neutral-200'">
                     Most Liked
                 </button>
             </div>
         </div>
 
         <!-- Add Comment -->
-        <div class="flex motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
-            <textarea v-model="newComment" placeholder="Add a comment..." @keydown="handleNewCommentKeydown"
-                rows="1" @input="(e) => {
+        <div
+            class="flex motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+            <textarea v-model="newComment" placeholder="Add a comment..." @keydown="handleNewCommentKeydown" rows="1"
+                @input="(e) => {
                     const target = e.target as HTMLTextAreaElement;
                     target.style.height = 'auto';
                     const newHeight = Math.max(40, target.scrollHeight);
                     target.style.height = newHeight + 'px';
-                    
+
                     // Update classes based on height
                     const button = target.nextElementSibling as HTMLElement;
                     if (newHeight > 40) {
@@ -205,9 +201,7 @@ const confirmDeleteComment = async () => {
                     }
                 }"
                 class="flex-1 min-h-[40px] input-filled resize-none overflow-hidden rounded-r-none border-r-0 hover:border-r focus:border-r" />
-            <button @click="addComment" 
-                :disabled="!newComment.trim()" 
-                class="w-24 h-10 rounded-l-none button-visible"
+            <button @click="addComment" :disabled="!newComment.trim()" class="w-24 h-10 rounded-l-none button-visible"
                 :class="{ 'text-neutral-600 pointer-events-none': !newComment.trim() }">
                 Comment
             </button>
@@ -225,7 +219,8 @@ const confirmDeleteComment = async () => {
                 <!-- Comment Header -->
                 <div class="flex items-start justify-between">
                     <div class="flex items-center gap-3">
-                        <router-link :to="`/discover/user/${comment.user_id}`" class="transition-opacity hover:opacity-80">
+                        <router-link :to="`/discover/user/${comment.user_id}`"
+                            class="transition-opacity hover:opacity-80">
                             <img :src="usersStore.getUserProfile(comment.user_id)?.avatar_url"
                                 :alt="usersStore.getUserProfile(comment.user_id)?.username"
                                 class="w-8 h-8 rounded-full bg-neutral-700" />
@@ -256,11 +251,10 @@ const confirmDeleteComment = async () => {
                             <Pencil :size="17" />
                         </button>
                         <button v-if="comment.user_id === usersStore.getCurrentUserProfile?.id"
-                            @click="handleDeleteComment(comment.id)"
-                            class="p-1 text-neutral-400 hover:text-red-400">
+                            @click="handleDeleteComment(comment.id)" class="p-1 text-neutral-400 hover:text-red-400">
                             <Trash2 :size="17" />
                         </button>
-                        <button @click="toggleCommentLike(comment.id)" 
+                        <button @click="toggleCommentLike(comment.id)"
                             class="flex items-center gap-1.5 p-1 group active:scale-90 transition-transform">
                             <Heart :size="17" :class="{
                                 'text-rose-400 fill-rose-400': usersStore.hasLikedComment(comment.id),
@@ -276,14 +270,15 @@ const confirmDeleteComment = async () => {
 
                 <!-- Comment Content -->
                 <div class="flex items-end gap-4">
-                    <div v-if="editingComment === comment.id" class="flex-1 min-w-0 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+                    <div v-if="editingComment === comment.id"
+                        class="flex-1 min-w-0 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
                         <textarea v-model="editCommentContent" @keydown="handleEditKeydown"
                             class="w-full h-32 resize-none input-lighter-filled" rows="3" />
                         <div class="flex justify-end gap-2 mt-1">
                             <button @click="editingComment = null" class="w-24 button-lighter">
                                 Cancel
                             </button>
-                            <button @click="updateComment" 
+                            <button @click="updateComment"
                                 :disabled="!editCommentContent.trim() || editCommentContent.trim() === comment.content.trim()"
                                 class="w-24 button-lighter-visible"
                                 :class="{ 'text-neutral-600 pointer-events-none': !editCommentContent.trim() || editCommentContent.trim() === comment.content.trim() }">
@@ -295,35 +290,28 @@ const confirmDeleteComment = async () => {
                         {{ comment.content }}
                     </div>
                     <button v-if="replyingTo !== comment.id && editingComment !== comment.id"
-                        @click="replyingTo = comment.id" 
+                        @click="replyingTo = comment.id"
                         class="flex-shrink-0 pr-1 text-sm text-neutral-400 hover:text-neutral-300">
                         Reply
                     </button>
                 </div>
 
                 <!-- Add Reply Input when replying -->
-                <div v-if="replyingTo === comment.id" 
+                <div v-if="replyingTo === comment.id"
                     class="mt-2 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
-                    <textarea 
-                        v-model="replyContent" 
-                        @keydown="handleReplyKeydown"
-                        placeholder="Write a reply..."
-                        class="w-full resize-none input-lighter-filled flex-1 min-h-[40px] overflow-hidden" 
-                        rows="1"
+                    <textarea v-model="replyContent" @keydown="handleReplyKeydown" placeholder="Write a reply..."
+                        class="w-full resize-none input-lighter-filled flex-1 min-h-[40px] overflow-hidden" rows="1"
                         @input="(e) => {
                             const target = e.target as HTMLTextAreaElement;
                             target.style.height = 'auto';
                             target.style.height = Math.max(40, target.scrollHeight) + 'px';
-                        }"
-                    />
+                        }" />
                     <div class="flex justify-end gap-2 mt-1">
                         <button @click="replyingTo = null" class="w-24 button-lighter">
                             Cancel
                         </button>
-                        <button @click="addReply" 
-                            :disabled="!replyContent.trim()" 
-                            class="w-24 button-lighter-visible"
-                            :class="{ 'text-neutral-600 pointer-events-none': !replyContent.trim()  }">
+                        <button @click="addReply" :disabled="!replyContent.trim()" class="w-24 button-lighter-visible"
+                            :class="{ 'text-neutral-600 pointer-events-none': !replyContent.trim() }">
                             Reply
                         </button>
                     </div>
@@ -336,7 +324,8 @@ const confirmDeleteComment = async () => {
                         <!-- Reply Header -->
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center gap-2">
-                                <router-link :to="`/discover/user/${reply.user_id}`" class="transition-opacity hover:opacity-80">
+                                <router-link :to="`/discover/user/${reply.user_id}`"
+                                    class="transition-opacity hover:opacity-80">
                                     <img :src="usersStore.getUserProfile(reply.user_id)?.avatar_url"
                                         :alt="usersStore.getUserProfile(reply.user_id)?.username"
                                         class="w-6 h-6 rounded-full bg-neutral-700" />
@@ -371,7 +360,7 @@ const confirmDeleteComment = async () => {
                                     class="p-1 text-neutral-400 hover:text-red-400">
                                     <Trash2 :size="17" />
                                 </button>
-                                <button @click="toggleCommentLike(reply.id)" 
+                                <button @click="toggleCommentLike(reply.id)"
                                     class="flex items-center gap-1.5 p-1 group active:scale-90 transition-transform">
                                     <Heart :size="17" :class="{
                                         'text-rose-400 fill-rose-400': usersStore.hasLikedComment(reply.id),
@@ -386,14 +375,15 @@ const confirmDeleteComment = async () => {
                         </div>
 
                         <!-- Reply Content -->
-                        <div v-if="editingComment === reply.id" class="motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+                        <div v-if="editingComment === reply.id"
+                            class="motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
                             <textarea v-model="editCommentContent" @keydown="handleEditKeydown"
                                 class="w-full h-32 resize-none input-lighter-filled" rows="3" />
                             <div class="flex justify-end gap-2 mt-1">
                                 <button @click="editingComment = null" class="w-24 button-lighter">
                                     Cancel
                                 </button>
-                                <button @click="updateComment" 
+                                <button @click="updateComment"
                                     :disabled="!editCommentContent.trim() || editCommentContent.trim() === reply.content.trim()"
                                     class="w-24 button-lighter-visible"
                                     :class="{ 'text-neutral-600 pointer-events-none': !editCommentContent.trim() || editCommentContent.trim() === reply.content.trim() }">
@@ -409,11 +399,9 @@ const confirmDeleteComment = async () => {
             </div>
 
             <!-- Load More Button -->
-            <div v-if="usersStore.getCommentsPagination(props.deckId).hasMore"
-                 class="flex justify-center pt-2">
-                <button @click="loadMoreComments"
-                        :disabled="usersStore.getCommentsPagination(props.deckId).isLoading"
-                        class="px-4 button-lighter">
+            <div v-if="usersStore.getCommentsPagination(props.deckId).hasMore" class="flex justify-center pt-2">
+                <button @click="loadMoreComments" :disabled="usersStore.getCommentsPagination(props.deckId).isLoading"
+                    class="px-4 button-lighter">
                     <template v-if="usersStore.getCommentsPagination(props.deckId).isLoading">
                         <LoadingSpinner size="16" class="inline mr-2" />
                         Loading...
@@ -424,12 +412,8 @@ const confirmDeleteComment = async () => {
         </div>
 
         <!-- Add the modal at the bottom of the template -->
-        <DeleteModal 
-            ref="deleteModalRef"
-            @confirm="confirmDeleteComment"
-            title="Delete Comment?"
+        <DeleteModal ref="deleteModalRef" @confirm="confirmDeleteComment" title="Delete Comment?"
             mainMessage="Deleting this comment will also delete all the replies to it."
-            subMessage="This action cannot be undone."
-        />
+            subMessage="This action cannot be undone." />
     </div>
 </template>

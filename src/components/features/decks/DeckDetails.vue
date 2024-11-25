@@ -41,25 +41,25 @@ const isDropdownOpen = ref(false);
 const dropdownRef = ref<HTMLElement | null>(null);
 
 const closeDropdown = () => {
-  isDropdownOpen.value = false;
+    isDropdownOpen.value = false;
 };
 
 const toggleDropdown = () => {
-  isDropdownOpen.value = !isDropdownOpen.value;
+    isDropdownOpen.value = !isDropdownOpen.value;
 };
 
 const handleClickOutside = (event: MouseEvent) => {
-  if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
-    closeDropdown();
-  }
+    if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
+        closeDropdown();
+    }
 };
 
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside);
+    document.addEventListener('click', handleClickOutside);
 });
 
 onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside);
+    document.removeEventListener('click', handleClickOutside);
 });
 
 const emit = defineEmits<{
@@ -81,14 +81,14 @@ const handleUpdate = (updatedData: {
 };
 
 const startEdit = () => {
-  if (!isOwner.value) return;
-  isEditing.value = true;
-  closeDropdown();
+    if (!isOwner.value) return;
+    isEditing.value = true;
+    closeDropdown();
 };
 
 const handleDelete = () => {
-  emit('delete');
-  closeDropdown();
+    emit('delete');
+    closeDropdown();
 };
 
 const cancelEdit = () => {
@@ -120,7 +120,8 @@ watch(() => route.hash, (newHash) => {
                 <div
                     class="motion-translate-y-in-[-12%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
                     <div class="space-y-1">
-                        <h1 class="relative flex items-center gap-1.5 text-xl font-bold pl-1 max-w-[195px] md:max-w-[280px] lg:max-w-[350px]">
+                        <h1
+                            class="relative flex items-center gap-1.5 text-xl font-bold pl-1 max-w-[195px] md:max-w-[280px] lg:max-w-[350px]">
                             <span class="leading-none truncate">{{ props.deck.title }}</span>
                         </h1>
                         <RouterLink v-if="props.deck.visibility === 'public'" :to="`/discover/deck/${props.deck.id}`"
@@ -183,7 +184,8 @@ watch(() => route.hash, (newHash) => {
         </div>
 
         <!-- Stats and Description -->
-        <div class="space-y-2 motion-translate-y-in-[-2%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity relative z-[1]">
+        <div
+            class="space-y-2 motion-translate-y-in-[-2%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity relative z-[1]">
             <!-- Deck Stats -->
             <div class="px-4 py-3 space-y-2 panel">
                 <div class="space-y-2">

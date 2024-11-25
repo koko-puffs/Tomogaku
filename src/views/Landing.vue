@@ -52,31 +52,31 @@ const sampleContent = [
   'Conjugate "être" in French',
   'Define "Schadenfreude"',
   'Spanish: Ser vs Estar',
-  
+
   // Biology
   'Function of mitochondria?',
   'Define photosynthesis',
   'Parts of a neuron',
   'Types of blood cells',
-  
+
   // Geography
   'Capital of Mongolia',
   'Longest river in Europe',
   'What causes tsunamis?',
   'Largest desert on Earth',
-  
+
   // History
   'When was Rome founded?',
   'Who was Cleopatra?',
   'First Moon landing date',
   'French Revolution causes',
-  
+
   // Science
   'Define entropy',
   'Newton\'s Third Law',
   'States of matter',
   'What is DNA?',
-  
+
   // Math
   'Pythagorean theorem',
   'What is Pi?',
@@ -128,15 +128,13 @@ const cards = Array.from({ length: cardCount }, (_, i) => ({
 
       <!-- Particles -->
       <div class="absolute inset-0">
-        <div v-for="i in 100" :key="`particle-${i}`" 
-             class="absolute rounded-full particle bg-pink-500/10"
-             :style="{
-               '--size': `${Math.random() * 6 + 2}px`,
-               '--duration': `${Math.random() * 20 + 10}s`,
-               '--delay': `-${Math.random() * 20}s`,
-               left: `${Math.random() * 100}%`,
-               top: `${Math.random() * 100}%`,
-             }">
+        <div v-for="i in 100" :key="`particle-${i}`" class="absolute rounded-full particle bg-pink-500/10" :style="{
+          '--size': `${Math.random() * 6 + 2}px`,
+          '--duration': `${Math.random() * 20 + 10}s`,
+          '--delay': `-${Math.random() * 20}s`,
+          left: `${Math.random() * 100}%`,
+          top: `${Math.random() * 100}%`,
+        }">
         </div>
       </div>
     </div>
@@ -145,14 +143,16 @@ const cards = Array.from({ length: cardCount }, (_, i) => ({
     <div class="relative flex flex-col items-center w-full px-6 pt-32 pb-20 text-center">
       <!-- Main content -->
       <div class="relative max-w-3xl space-y-6">
-        <h1 class="text-5xl font-bold leading-tight md:text-6xl motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[1s] motion-duration-[1s]/opacity motion-delay-[100ms]">
+        <h1
+          class="text-5xl font-bold leading-tight md:text-6xl motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[1s] motion-duration-[1s]/opacity motion-delay-[100ms]">
           Learning is better
           <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-400">
             together
           </span>
         </h1>
 
-        <p class="max-w-xl mx-auto text-lg text-neutral-400 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[1s] motion-duration-[1s]/opacity motion-delay-[200ms]">
+        <p
+          class="max-w-xl mx-auto text-lg text-neutral-400 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[1s] motion-duration-[1s]/opacity motion-delay-[200ms]">
           Remember stuff with flashcards that actually work (thanks, science!),
           share your genius with others, and join a community of people who love learning as much as you do.
         </p>
@@ -163,7 +163,8 @@ const cards = Array.from({ length: cardCount }, (_, i) => ({
               class="w-full px-8 py-3 font-medium transition-all rounded-lg shadow-lg text-md sm:w-44 button-pink-visible hover:shadow-pink-500/25 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[1s] motion-duration-[1s]/opacity motion-delay-[300ms]">
               Get started
             </button>
-            <p class="my-2 text-xs text-neutral-600 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[1s] motion-duration-[1s]/opacity motion-delay-[400ms]">
+            <p
+              class="my-2 text-xs text-neutral-600 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[1s] motion-duration-[1s]/opacity motion-delay-[400ms]">
               * Sign in using Discord
             </p>
           </div>
@@ -245,12 +246,15 @@ const cards = Array.from({ length: cardCount }, (_, i) => ({
     transform: translate(0, 0) rotate(0deg);
     opacity: 0;
   }
+
   10% {
     opacity: 0.8;
   }
+
   90% {
     opacity: 0.8;
   }
+
   100% {
     transform: translate(100px, -1000px) rotate(360deg);
     opacity: 0;

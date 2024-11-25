@@ -119,15 +119,9 @@ onUnmounted(() => {
 
 defineExpose({ openModal, closeModal });
 
-interface Props {
-    title?: string;
-    mainMessage?: string;
-    subMessage?: string;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-    title: 'Are you sure?',
-    mainMessage: 'Deleting this deck will also delete all the cards in it.',
-    subMessage: 'This action cannot be undone.'
-});
+defineProps<{
+    title: string;
+    mainMessage: string;
+    subMessage: string;
+}>();
 </script>

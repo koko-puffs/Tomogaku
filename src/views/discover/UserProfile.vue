@@ -11,7 +11,8 @@
         <template #sidebar>
           <div class="space-y-4">
             <!-- Profile Header -->
-            <div class="p-4 pt-6 space-y-3 panel motion-translate-y-in-[-1%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+            <div
+              class="p-4 pt-6 space-y-3 panel motion-translate-y-in-[-1%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
               <!-- Avatar and Name -->
               <div class="text-center">
                 <div class="flex justify-center mb-3">
@@ -66,7 +67,8 @@
             </div>
 
             <!-- Stats -->
-            <div class="p-3 panel motion-translate-y-in-[-1.6%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+            <div
+              class="p-3 panel motion-translate-y-in-[-1.6%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
               <h2 class="mx-1 mb-2 font-bold text-md text-neutral-200">Stats</h2>
               <div class="grid grid-cols-2 gap-2">
                 <div class="p-4 rounded-lg bg-neutral-800/70">
@@ -106,10 +108,10 @@
               params: { id: route.params.id },
               query: { tab: tab.id }
             }" class="relative px-6 py-3 text-sm transition-colors duration-150" :class="[
-                activeTab === tab.id
-                  ? 'text-white'
-                  : 'text-neutral-400 hover:text-white'
-              ]">
+              activeTab === tab.id
+                ? 'text-white'
+                : 'text-neutral-400 hover:text-white'
+            ]">
               {{ tab.label }}
               <div v-if="activeTab === tab.id" class="absolute bottom-0 left-0 w-full h-0.5 bg-white rounded-full">
               </div>
@@ -144,7 +146,6 @@ import { useUsersStore } from '../../stores/usersStore';
 import { useAuthStore } from '../../stores/authStore';
 import { UserCircle2 } from 'lucide-vue-next';
 import type { Database } from '../../types/supabase';
-import NotFound from '../../views/NotFound.vue';
 import PageLayout from '../../components/common/PageLayout.vue';
 import PublicDeckList from '../../components/features/profile/PublicDeckList.vue';
 import LoadingSpinner from '../../components/common/LoadingSpinner.vue';

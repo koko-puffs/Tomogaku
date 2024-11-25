@@ -22,7 +22,7 @@ interface DeckState {
     remainingCards: Card[];
     completedCards: Card[];
   };
-  deckLikes: Map<string, boolean>;  // Keyed by deck_id
+  deckLikes: Map<string, boolean>; // Keyed by deck_id
 }
 
 export const useDeckStore = defineStore("decks", {
@@ -33,7 +33,7 @@ export const useDeckStore = defineStore("decks", {
     loading: {
       decks: false,
       cards: false,
-      operations: false
+      operations: false,
     },
     error: null,
     currentCard: null,
@@ -86,8 +86,10 @@ export const useDeckStore = defineStore("decks", {
       );
     },
 
-    isDeckLiked: (state) => (deckId: string): boolean => 
-      state.deckLikes.get(deckId) || false,
+    isDeckLiked:
+      (state) =>
+      (deckId: string): boolean =>
+        state.deckLikes.get(deckId) || false,
   },
 
   actions: {
@@ -97,7 +99,7 @@ export const useDeckStore = defineStore("decks", {
         const { data, error } = await supabase
           .from("decks")
           .select("*")
-          .is("deleted_at", null)  // Only fetch non-deleted decks
+          .is("deleted_at", null) // Only fetch non-deleted decks
           .order("created_at", { ascending: false });
 
         if (error) throw error;
@@ -194,25 +196,25 @@ export const useDeckStore = defineStore("decks", {
         // Soft delete by updating deleted_at
         const { error } = await supabase
           .from("decks")
-          .update({ 
+          .update({
             deleted_at: new Date().toISOString(),
             // Also update visibility to prevent access
-            visibility: 'private' as const
+            visibility: "private" as const,
           })
           .eq("id", id);
 
         if (error) throw error;
 
         // Update local state
-        this.decks = this.decks.filter(deck => deck.id !== id);
+        this.decks = this.decks.filter((deck) => deck.id !== id);
         if (this.currentDeck?.id === id) {
           this.currentDeck = null;
         }
         // Clear cards for this deck
         delete this.cards[id];
-
       } catch (error) {
-        this.error = error instanceof Error ? error.message : "Error deleting deck";
+        this.error =
+          error instanceof Error ? error.message : "Error deleting deck";
         throw error;
       } finally {
         this.loading.operations = false;
@@ -402,9 +404,10 @@ export const useDeckStore = defineStore("decks", {
         if (error) throw error;
         this.decks = data;
       } catch (error) {
-        this.error = error instanceof Error 
-          ? error.message 
-          : "Error fetching user's decks";
+        this.error =
+          error instanceof Error
+            ? error.message
+            : "Error fetching user's decks";
         throw error;
       } finally {
         this.loading.decks = false;
@@ -425,9 +428,10 @@ export const useDeckStore = defineStore("decks", {
         if (error) throw error;
         this.decks = data;
       } catch (error) {
-        this.error = error instanceof Error 
-          ? error.message 
-          : "Error fetching user's public decks";
+        this.error =
+          error instanceof Error
+            ? error.message
+            : "Error fetching user's public decks";
         throw error;
       } finally {
         this.loading.decks = false;
@@ -441,21 +445,24 @@ export const useDeckStore = defineStore("decks", {
       this.loading.operations = true;
       try {
         // First ensure we have the source deck data
-        const sourceDeck = this.getDeckById(deckId) || await this.fetchDeckById(deckId);
+        const sourceDeck =
+          this.getDeckById(deckId) || (await this.fetchDeckById(deckId));
         if (!sourceDeck) throw new Error("Deck not found");
 
         // Create new deck as a fork
         const { data: newDeck, error: deckError } = await supabase
           .from("decks")
-          .insert([{
-            user_id: authStore.user.id,
-            title: `${sourceDeck.title} (forked)`,
-            description: sourceDeck.description,
-            tags: sourceDeck.tags,
-            visibility: 'private' as const,
-            is_forked: true,
-            original_deck_id: deckId,
-          }])
+          .insert([
+            {
+              user_id: authStore.user.id,
+              title: `${sourceDeck.title} (forked)`,
+              description: sourceDeck.description,
+              tags: sourceDeck.tags,
+              visibility: "private" as const,
+              is_forked: true,
+              original_deck_id: deckId,
+            },
+          ])
           .select()
           .single();
 
@@ -469,7 +476,7 @@ export const useDeckStore = defineStore("decks", {
           .eq("deck_id", deckId);
 
         if (sourceCards && sourceCards.length > 0) {
-          const newCards = sourceCards.map(card => ({
+          const newCards = sourceCards.map((card) => ({
             ...card,
             id: undefined, // Let Supabase generate new IDs
             deck_id: newDeck.id,
@@ -493,9 +500,9 @@ export const useDeckStore = defineStore("decks", {
         // Update local state
         this.decks.unshift(newDeck);
         return newDeck;
-
       } catch (error) {
-        this.error = error instanceof Error ? error.message : "Error forking deck";
+        this.error =
+          error instanceof Error ? error.message : "Error forking deck";
         throw error;
       } finally {
         this.loading.operations = false;
@@ -514,18 +521,19 @@ export const useDeckStore = defineStore("decks", {
           .eq("user_id", authStore.user.id);
 
         if (error) throw error;
-        
+
         // Initialize all decks as not liked
-        deckIds.forEach(id => this.deckLikes.set(id, false));
-        
+        deckIds.forEach((id) => this.deckLikes.set(id, false));
+
         // Mark liked decks
         if (data) {
-          data.forEach(like => {
+          data.forEach((like) => {
             this.deckLikes.set(like.deck_id, true);
           });
         }
       } catch (error) {
-        this.error = error instanceof Error ? error.message : "Error fetching deck likes";
+        this.error =
+          error instanceof Error ? error.message : "Error fetching deck likes";
       }
     },
 
@@ -548,12 +556,12 @@ export const useDeckStore = defineStore("decks", {
 
           if (error) throw error;
         } else {
-          const { error } = await supabase
-            .from("deck_likes")
-            .insert([{
+          const { error } = await supabase.from("deck_likes").insert([
+            {
               deck_id: deckId,
               user_id: authStore.user.id,
-            }]);
+            },
+          ]);
 
           if (error) throw error;
         }
@@ -563,7 +571,8 @@ export const useDeckStore = defineStore("decks", {
       } catch (error) {
         // Rollback optimistic update on error
         this.deckLikes.set(deckId, isLiked);
-        this.error = error instanceof Error ? error.message : "Error toggling deck like";
+        this.error =
+          error instanceof Error ? error.message : "Error toggling deck like";
         throw error;
       }
     },
@@ -582,12 +591,13 @@ export const useDeckStore = defineStore("decks", {
         if (!data) throw new Error("Deck not found");
 
         // Add to local state if not already present
-        if (!this.decks.some(deck => deck.id === data.id)) {
+        if (!this.decks.some((deck) => deck.id === data.id)) {
           this.decks.push(data);
         }
         return data;
       } catch (error) {
-        this.error = error instanceof Error ? error.message : "Error fetching deck";
+        this.error =
+          error instanceof Error ? error.message : "Error fetching deck";
         throw error;
       }
     },

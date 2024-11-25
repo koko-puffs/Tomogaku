@@ -118,38 +118,38 @@ const isDropdownOpen = ref(false);
 const dropdownRef = ref<HTMLElement | null>(null);
 
 const closeDropdown = () => {
-  isDropdownOpen.value = false;
+    isDropdownOpen.value = false;
 };
 
 const toggleDropdown = () => {
-  isDropdownOpen.value = !isDropdownOpen.value;
+    isDropdownOpen.value = !isDropdownOpen.value;
 };
 
 const handleClickOutside = (event: MouseEvent) => {
-  if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
-    closeDropdown();
-  }
+    if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
+        closeDropdown();
+    }
 };
 
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside);
+    document.addEventListener('click', handleClickOutside);
 });
 
 onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside);
+    document.removeEventListener('click', handleClickOutside);
 });
 
 // Modify startEdit to close dropdown
 const startEdit = () => {
-  if (!isOwner.value) return;
-  isEditing.value = true;
-  closeDropdown();
+    if (!isOwner.value) return;
+    isEditing.value = true;
+    closeDropdown();
 };
 
 // Add handleDelete function
 const handleDelete = () => {
-  emit('delete');
-  closeDropdown();
+    emit('delete');
+    closeDropdown();
 };
 </script>
 
@@ -170,7 +170,8 @@ const handleDelete = () => {
                 <div
                     class="motion-translate-y-in-[-12%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
                     <div class="space-y-1">
-                        <h1 class="relative flex items-center gap-1.5 text-xl font-bold pl-1 max-w-[265px] lg:max-w-[460px]">
+                        <h1
+                            class="relative flex items-center gap-1.5 text-xl font-bold pl-1 max-w-[265px] lg:max-w-[460px]">
                             <span class="leading-none truncate">{{ props.deck.title }}</span>
                         </h1>
                         <RouterLink v-if="props.deck.is_forked && props.deck.original_deck_id"
@@ -217,8 +218,8 @@ const handleDelete = () => {
                         </button>
                     </div>
                 </div>
-                <button class="flex items-center w-10 gap-2 md:px-4 button-emerald-visible md:w-auto" @click="handleFork"
-                    :disabled="isForking">
+                <button class="flex items-center w-10 gap-2 md:px-4 button-emerald-visible md:w-auto"
+                    @click="handleFork" :disabled="isForking">
                     <GitFork :size="18" />
                     <span class="hidden md:inline">{{ isForking ? 'Forking...' : 'Fork deck' }}</span>
                 </button>
@@ -227,7 +228,8 @@ const handleDelete = () => {
 
 
         <!-- Author Info - Add lower z-index -->
-        <div v-if="author" class="flex items-center justify-between motion-translate-y-in-[-6%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity relative z-[1]">
+        <div v-if="author"
+            class="flex items-center justify-between motion-translate-y-in-[-6%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity relative z-[1]">
             <div class="flex items-center gap-3">
                 <router-link :to="`/discover/user/${author.id}`" class="transition-opacity hover:opacity-80">
                     <img :src="author.avatar_url || '/default-avatar.png'" :alt="author.username"
@@ -241,24 +243,23 @@ const handleDelete = () => {
                     <span class="text-sm leading-none text-neutral-500">{{ author.followers_count }} follower(s)</span>
                 </div>
             </div>
-            <button @click="handleLike" 
-                class="flex items-center gap-1.5 px-3 py-2.5 group active:scale-90 transition-transform" 
+            <button @click="handleLike"
+                class="flex items-center gap-1.5 px-3 py-2.5 group active:scale-90 transition-transform"
                 :disabled="isLiking">
-                <Heart :size="18" 
-                    :class="{
-                        'text-rose-400 fill-rose-400': deckStore.isDeckLiked(props.deck.id),
-                        'text-neutral-400 group-hover:text-neutral-300': !deckStore.isDeckLiked(props.deck.id)
-                    }" />
-                <span class="text-sm leading-none -mb-0.5" 
-                    :class="{
-                        'text-rose-400': deckStore.isDeckLiked(props.deck.id),
-                        'text-neutral-400 group-hover:text-neutral-300': !deckStore.isDeckLiked(props.deck.id)
-                    }">{{ localLikesCount }}</span>
+                <Heart :size="18" :class="{
+                    'text-rose-400 fill-rose-400': deckStore.isDeckLiked(props.deck.id),
+                    'text-neutral-400 group-hover:text-neutral-300': !deckStore.isDeckLiked(props.deck.id)
+                }" />
+                <span class="text-sm leading-none -mb-0.5" :class="{
+                    'text-rose-400': deckStore.isDeckLiked(props.deck.id),
+                    'text-neutral-400 group-hover:text-neutral-300': !deckStore.isDeckLiked(props.deck.id)
+                }">{{ localLikesCount }}</span>
             </button>
         </div>
 
         <!-- Description and Tags - Add lower z-index -->
-        <div class="space-y-2 motion-translate-y-in-[-2%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity relative z-[1]">
+        <div
+            class="space-y-2 motion-translate-y-in-[-2%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity relative z-[1]">
             <div v-if="props.deck.description || props.deck.tags?.length" class="p-2.5 space-y-2.5 panel">
                 <!-- Description -->
                 <div v-if="props.deck.description" class="px-1.5 py-1 space-y-2">

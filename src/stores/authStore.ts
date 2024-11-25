@@ -8,7 +8,7 @@ const getRedirectTo = () => {
   return import.meta.env.VITE_REDIRECT_URL || "http://localhost:5173";
 };
 
-type UserProfile = Database['public']['Tables']['user_profiles']['Row']
+type UserProfile = Database["public"]["Tables"]["user_profiles"]["Row"];
 
 interface UserMetadata {
   avatar_url: string;
@@ -89,8 +89,7 @@ export const useAuthStore = defineStore("auth", {
               user.email?.split("@")[0] ||
               `user_${user.id.slice(0, 8)}`,
             avatar_url:
-              user.user_metadata.avatar_url ||
-              user.user_metadata.picture,
+              user.user_metadata.avatar_url || user.user_metadata.picture,
             email: user.email!,
             language: "en",
             account_type: "free",
@@ -208,7 +207,7 @@ export const useAuthStore = defineStore("auth", {
 
     async syncDiscordProfile(): Promise<void> {
       if (!this.user) throw new Error("Must be logged in to refresh profile");
-      
+
       try {
         // Force a new OAuth sign-in to get fresh Discord data
         const { error: signInError } = await supabase.auth.signInWithOAuth({
@@ -217,13 +216,13 @@ export const useAuthStore = defineStore("auth", {
             redirectTo: getRedirectTo(),
             // Force a new OAuth flow to get fresh data
             queryParams: {
-              prompt: 'consent'
-            }
-          }
+              prompt: "consent",
+            },
+          },
         });
 
         if (signInError) throw signInError;
-        
+
         // Note: The actual profile update will happen in handleAuthRedirect
         // after the OAuth redirect completes
       } catch (error) {
@@ -246,6 +245,6 @@ export const useAuthStore = defineStore("auth", {
         console.error("Error updating profile:", error);
         throw error;
       }
-    }
+    },
   },
 });

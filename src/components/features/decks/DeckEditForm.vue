@@ -88,7 +88,8 @@ const removeTag = (tagToRemove: string) => {
         <div class="space-y-4">
             <div class="space-y-2">
                 <label class="block text-sm">Title</label>
-                <input v-model="editTitle" type="text" class="w-full input-lighter-filled" placeholder="Enter deck title" />
+                <input v-model="editTitle" type="text" class="w-full input-lighter-filled"
+                    placeholder="Enter deck title" />
             </div>
 
             <div class="space-y-2">
@@ -100,8 +101,8 @@ const removeTag = (tagToRemove: string) => {
             <div class="space-y-2">
                 <label class="block text-sm">Tags (optional)</label>
                 <div class="relative space-y-2">
-                    <input v-model="newTag" @keydown.enter.prevent="addTag" type="text" class="w-full input-lighter-filled"
-                        placeholder="Type a tag and press Enter" />
+                    <input v-model="newTag" @keydown.enter.prevent="addTag" type="text"
+                        class="w-full input-lighter-filled" placeholder="Type a tag and press Enter" />
                     <p v-if="tagError" class="text-sm text-red-500">{{ tagError }}</p>
                 </div>
                 <div class="flex flex-wrap gap-2">
@@ -121,7 +122,8 @@ const removeTag = (tagToRemove: string) => {
                         <span class="text-sm -mb-0.5">Visibility:</span>
                         <ToggleSlider v-model="isPublic" />
                         <div class="flex items-center gap-1.5">
-                            <component :is="editVisibility === 'public' ? Globe2 : Lock" :size="16" class="text-neutral-400" />
+                            <component :is="editVisibility === 'public' ? Globe2 : Lock" :size="16"
+                                class="text-neutral-400" />
                             <span class="-mb-0.5 text-sm font-medium"
                                 :class="editVisibility === 'public' ? 'text-green-400' : 'text-neutral-400'">
                                 {{ editVisibility === 'public' ? 'Public' : 'Private' }}
@@ -131,14 +133,10 @@ const removeTag = (tagToRemove: string) => {
                 </div>
                 <div class="flex justify-end gap-2">
                     <button @click="emit('cancel')" class="w-24 button-lighter">Cancel</button>
-                    <button 
-                        @click="handleUpdate" 
-                        :disabled="!editTitle.trim() || !hasChanges" 
-                        :class="[
-                            editTitle.trim() && hasChanges ? 'button-accept-visible' : 'button-lighter-visible',
-                            { 'text-neutral-600 pointer-events-none': !editTitle.trim() || !hasChanges }
-                        ]"
-                        class="w-24">
+                    <button @click="handleUpdate" :disabled="!editTitle.trim() || !hasChanges" :class="[
+                        editTitle.trim() && hasChanges ? 'button-accept-visible' : 'button-lighter-visible',
+                        { 'text-neutral-600 pointer-events-none': !editTitle.trim() || !hasChanges }
+                    ]" class="w-24">
                         Save
                     </button>
                 </div>

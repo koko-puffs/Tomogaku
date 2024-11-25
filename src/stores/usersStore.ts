@@ -17,12 +17,15 @@ interface UsersState {
     following: boolean;
   };
   error: string | null;
-  commentsPagination: Map<string, {
-    currentPage: number;
-    hasMore: boolean;
-    isLoading: boolean;
-    totalCount?: number;
-  }>;
+  commentsPagination: Map<
+    string,
+    {
+      currentPage: number;
+      hasMore: boolean;
+      isLoading: boolean;
+      totalCount?: number;
+    }
+  >;
   sortedComments: Map<string, Comment[]>;
 }
 
@@ -43,8 +46,10 @@ export const useUsersStore = defineStore("users", {
   }),
 
   getters: {
-    getUserProfile: (state) => (userId: string): UserProfile | undefined =>
-      state.profiles.get(userId),
+    getUserProfile:
+      (state) =>
+      (userId: string): UserProfile | undefined =>
+        state.profiles.get(userId),
 
     getCurrentUserProfile(): UserProfile | undefined {
       const authStore = useAuthStore();
@@ -52,35 +57,50 @@ export const useUsersStore = defineStore("users", {
       return authStore.userProfile || undefined;
     },
 
-    getDeckComments: (state) => (deckId: string): Comment[] =>
-      state.comments.get(deckId) || [],
+    getDeckComments:
+      (state) =>
+      (deckId: string): Comment[] =>
+        state.comments.get(deckId) || [],
 
-    isFollowing: (state) => (userId: string): boolean =>
-      state.following.has(userId),
+    isFollowing:
+      (state) =>
+      (userId: string): boolean =>
+        state.following.has(userId),
 
-    hasLikedComment: (state) => (commentId: string): boolean => {
-      const authStore = useAuthStore();
-      return authStore.userProfile
-        ? state.commentLikes.get(commentId)?.has(authStore.userProfile.id) || false
-        : false;
-    },
+    hasLikedComment:
+      (state) =>
+      (commentId: string): boolean => {
+        const authStore = useAuthStore();
+        return authStore.userProfile
+          ? state.commentLikes.get(commentId)?.has(authStore.userProfile.id) ||
+              false
+          : false;
+      },
 
-    getThreadedComments: (state) => (deckId: string): Comment[] => {
-      if (state.sortedComments.has(deckId)) {
-        return state.sortedComments.get(deckId) || [];
-      }
-      return state.comments.get(deckId)?.filter(comment => !comment.parent_id) || [];
-    },
-
-    getCommentReplies: (state) => (commentId: string, deckId: string): Comment[] => {
-      const comments = state.comments.get(deckId) || [];
-      return comments
-        .filter((comment) => comment.parent_id === commentId)
-        .sort(
-          (a, b) =>
-            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    getThreadedComments:
+      (state) =>
+      (deckId: string): Comment[] => {
+        if (state.sortedComments.has(deckId)) {
+          return state.sortedComments.get(deckId) || [];
+        }
+        return (
+          state.comments.get(deckId)?.filter((comment) => !comment.parent_id) ||
+          []
         );
-    },
+      },
+
+    getCommentReplies:
+      (state) =>
+      (commentId: string, deckId: string): Comment[] => {
+        const comments = state.comments.get(deckId) || [];
+        return comments
+          .filter((comment) => comment.parent_id === commentId)
+          .sort(
+            (a, b) =>
+              new Date(a.created_at).getTime() -
+              new Date(b.created_at).getTime()
+          );
+      },
 
     getCommentsPagination: (state) => (deckId: string) => {
       return (
@@ -105,7 +125,7 @@ export const useUsersStore = defineStore("users", {
 
     updateProfileInCache(profile: UserProfile) {
       this.profiles.set(profile.id, profile);
-      
+
       const authStore = useAuthStore();
       if (authStore.userProfile?.id === profile.id) {
         authStore.userProfile = profile;
@@ -134,7 +154,10 @@ export const useUsersStore = defineStore("users", {
         this.updateProfileInCache(profile);
         return profile;
       } catch (error) {
-        this.error = error instanceof Error ? error.message : "Error fetching user profile";
+        this.error =
+          error instanceof Error
+            ? error.message
+            : "Error fetching user profile";
         throw error;
       } finally {
         this.loading.profiles = false;
@@ -143,7 +166,8 @@ export const useUsersStore = defineStore("users", {
 
     async createUserProfile(profileData: Partial<UserProfile>) {
       const authStore = useAuthStore();
-      if (!authStore.user) throw new Error("Must be logged in to create profile");
+      if (!authStore.user)
+        throw new Error("Must be logged in to create profile");
 
       this.loading.profiles = true;
       try {
@@ -160,7 +184,10 @@ export const useUsersStore = defineStore("users", {
           return profile;
         }
       } catch (error) {
-        this.error = error instanceof Error ? error.message : "Error creating user profile";
+        this.error =
+          error instanceof Error
+            ? error.message
+            : "Error creating user profile";
         throw error;
       } finally {
         this.loading.profiles = false;
@@ -169,7 +196,8 @@ export const useUsersStore = defineStore("users", {
 
     async updateUserProfile(updates: Partial<UserProfile>) {
       const authStore = useAuthStore();
-      if (!authStore.userProfile) throw new Error("Must be logged in to update profile");
+      if (!authStore.userProfile)
+        throw new Error("Must be logged in to update profile");
 
       this.loading.profiles = true;
       try {
@@ -186,7 +214,10 @@ export const useUsersStore = defineStore("users", {
           return data;
         }
       } catch (error) {
-        this.error = error instanceof Error ? error.message : "Error updating user profile";
+        this.error =
+          error instanceof Error
+            ? error.message
+            : "Error updating user profile";
         throw error;
       } finally {
         this.loading.profiles = false;
@@ -194,7 +225,12 @@ export const useUsersStore = defineStore("users", {
     },
 
     // Comment Actions
-    async fetchDeckCommentsWithProfiles(deckId: string, page = 1, limit = 10, sortBy: 'newest' | 'likes' = 'newest') {
+    async fetchDeckCommentsWithProfiles(
+      deckId: string,
+      page = 1,
+      limit = 10,
+      sortBy: "newest" | "likes" = "newest"
+    ) {
       if (page === 1) {
         this.loading.comments = true;
       }
@@ -223,26 +259,32 @@ export const useUsersStore = defineStore("users", {
           .range(from, to);
 
         // Apply sorting
-        if (sortBy === 'likes') {
-          query = query.order('likes_count', { ascending: false }).order('created_at', { ascending: false });
+        if (sortBy === "likes") {
+          query = query
+            .order("likes_count", { ascending: false })
+            .order("created_at", { ascending: false });
         } else {
-          query = query.order('created_at', { ascending: false });
+          query = query.order("created_at", { ascending: false });
         }
 
-        const { data: parentComments, error: commentsError, count } = await query;
+        const {
+          data: parentComments,
+          error: commentsError,
+          count,
+        } = await query;
 
         if (commentsError) throw commentsError;
         if (!parentComments) return;
 
         // Then fetch all replies for these parent comments
-        const parentIds = parentComments.map(comment => comment.id);
+        const parentIds = parentComments.map((comment) => comment.id);
         const { data: replies, error: repliesError } = await supabase
           .from("comments")
           .select("*")
           .eq("deck_id", deckId)
           .eq("status", "active")
           .in("parent_id", parentIds)
-          .order('created_at', { ascending: true }); // Replies always sorted by oldest first
+          .order("created_at", { ascending: true }); // Replies always sorted by oldest first
 
         if (repliesError) throw repliesError;
 
@@ -258,11 +300,14 @@ export const useUsersStore = defineStore("users", {
         });
 
         // Store comments (append if loading more, replace if first page)
-        const existingComments = page === 1 ? [] : (this.comments.get(deckId) || []);
+        const existingComments =
+          page === 1 ? [] : this.comments.get(deckId) || [];
         this.comments.set(deckId, [...existingComments, ...allComments]);
 
         // Get unique user IDs from all comments
-        const userIds = [...new Set(allComments.map(comment => comment.user_id))];
+        const userIds = [
+          ...new Set(allComments.map((comment) => comment.user_id)),
+        ];
 
         // Fetch user profiles for all commenters
         const { data: profiles, error: profilesError } = await supabase
@@ -273,19 +318,20 @@ export const useUsersStore = defineStore("users", {
         if (profilesError) throw profilesError;
         if (profiles) {
           // Store user profiles in cache
-          profiles.forEach(profile => {
+          profiles.forEach((profile) => {
             this.updateProfileInCache(profile);
           });
         }
 
         // Fetch current user's likes
-        const commentIds = allComments.map(comment => comment.id);
+        const commentIds = allComments.map((comment) => comment.id);
         await this.fetchCommentLikes(commentIds);
 
         // After successfully fetching comments, sort them
         this.sortComments(deckId, sortBy);
       } catch (error) {
-        this.error = error instanceof Error ? error.message : "Error fetching comments";
+        this.error =
+          error instanceof Error ? error.message : "Error fetching comments";
         throw error;
       } finally {
         if (page === 1) {
@@ -302,17 +348,20 @@ export const useUsersStore = defineStore("users", {
 
     async createComment(deckId: string, content: string, parentId?: string) {
       const authStore = useAuthStore();
-      if (!authStore.userProfile) throw new Error("Must be logged in to comment");
+      if (!authStore.userProfile)
+        throw new Error("Must be logged in to comment");
 
       try {
         const { data, error } = await supabase
           .from("comments")
-          .insert([{
-            deck_id: deckId,
-            user_id: authStore.userProfile.id,
-            content,
-            parent_id: parentId,
-          }])
+          .insert([
+            {
+              deck_id: deckId,
+              user_id: authStore.userProfile.id,
+              content,
+              parent_id: parentId,
+            },
+          ])
           .select()
           .single();
 
@@ -342,14 +391,16 @@ export const useUsersStore = defineStore("users", {
           return data;
         }
       } catch (error) {
-        this.error = error instanceof Error ? error.message : "Error creating comment";
+        this.error =
+          error instanceof Error ? error.message : "Error creating comment";
         throw error;
       }
     },
 
     async updateComment(commentId: string, content: string) {
       const authStore = useAuthStore();
-      if (!authStore.userProfile) throw new Error("Must be logged in to update comment");
+      if (!authStore.userProfile)
+        throw new Error("Must be logged in to update comment");
 
       try {
         // First verify ownership
@@ -380,7 +431,7 @@ export const useUsersStore = defineStore("users", {
         if (data) {
           // Update in comments map
           for (const [deckId, comments] of this.comments.entries()) {
-            const index = comments.findIndex(c => c.id === commentId);
+            const index = comments.findIndex((c) => c.id === commentId);
             if (index !== -1) {
               const updatedComments = [...comments];
               updatedComments[index] = data;
@@ -389,7 +440,9 @@ export const useUsersStore = defineStore("users", {
               // If it's a parent comment, also update sortedComments
               if (!data.parent_id) {
                 const sortedComments = this.sortedComments.get(deckId) || [];
-                const sortedIndex = sortedComments.findIndex(c => c.id === commentId);
+                const sortedIndex = sortedComments.findIndex(
+                  (c) => c.id === commentId
+                );
                 if (sortedIndex !== -1) {
                   const updatedSortedComments = [...sortedComments];
                   updatedSortedComments[sortedIndex] = data;
@@ -402,14 +455,16 @@ export const useUsersStore = defineStore("users", {
           return data;
         }
       } catch (error) {
-        this.error = error instanceof Error ? error.message : "Error updating comment";
+        this.error =
+          error instanceof Error ? error.message : "Error updating comment";
         throw error;
       }
     },
 
     async deleteComment(commentId: string, deckId: string) {
       const authStore = useAuthStore();
-      if (!authStore.userProfile) throw new Error("Must be logged in to delete comment");
+      if (!authStore.userProfile)
+        throw new Error("Must be logged in to delete comment");
 
       try {
         // First verify ownership
@@ -427,12 +482,16 @@ export const useUsersStore = defineStore("users", {
 
         // Then proceed with optimistic update and deletion
         const deckComments = this.comments.get(deckId) || [];
-        const updatedComments = deckComments.filter(c => c.id !== commentId && c.parent_id !== commentId);
+        const updatedComments = deckComments.filter(
+          (c) => c.id !== commentId && c.parent_id !== commentId
+        );
         this.comments.set(deckId, updatedComments);
 
         // Update sortedComments
         const sortedComments = this.sortedComments.get(deckId) || [];
-        const updatedSortedComments = sortedComments.filter(c => c.id !== commentId);
+        const updatedSortedComments = sortedComments.filter(
+          (c) => c.id !== commentId
+        );
         this.sortedComments.set(deckId, updatedSortedComments);
 
         // Update comment count in pagination
@@ -462,7 +521,8 @@ export const useUsersStore = defineStore("users", {
           throw error;
         }
       } catch (error) {
-        this.error = error instanceof Error ? error.message : "Error deleting comment";
+        this.error =
+          error instanceof Error ? error.message : "Error deleting comment";
         throw error;
       }
     },
@@ -475,37 +535,41 @@ export const useUsersStore = defineStore("users", {
       try {
         const { data, error } = await supabase
           .from("comment_likes")
-          .select("comment_id")  // Only select the comment_id field
+          .select("comment_id") // Only select the comment_id field
           .in("comment_id", commentIds)
           .eq("user_id", authStore.userProfile.id);
 
         if (error) throw error;
-        
+
         // Initialize all comments as not liked
-        commentIds.forEach(id => this.commentLikes.set(id, new Set()));
-        
+        commentIds.forEach((id) => this.commentLikes.set(id, new Set()));
+
         // Mark liked comments
         if (data) {
-          data.forEach(like => {
+          data.forEach((like) => {
             const likes = this.commentLikes.get(like.comment_id) || new Set();
             likes.add(authStore.userProfile!.id);
             this.commentLikes.set(like.comment_id, likes);
           });
         }
       } catch (error) {
-        this.error = error instanceof Error ? error.message : "Error fetching comment likes";
+        this.error =
+          error instanceof Error
+            ? error.message
+            : "Error fetching comment likes";
       }
     },
 
     async toggleCommentLike(commentId: string) {
       const authStore = useAuthStore();
-      if (!authStore.userProfile) throw new Error("Must be logged in to like comments");
+      if (!authStore.userProfile)
+        throw new Error("Must be logged in to like comments");
 
       const hasLiked = this.hasLikedComment(commentId);
       try {
         // Update local state optimistically
         for (const [_deckId, comments] of this.comments.entries()) {
-          const comment = comments.find(c => c.id === commentId);
+          const comment = comments.find((c) => c.id === commentId);
           if (comment) {
             comment.likes_count += hasLiked ? -1 : 1;
             // Don't re-sort here
@@ -527,12 +591,12 @@ export const useUsersStore = defineStore("users", {
             this.commentLikes.set(commentId, likes);
           }
         } else {
-          const { error } = await supabase
-            .from("comment_likes")
-            .insert([{
+          const { error } = await supabase.from("comment_likes").insert([
+            {
               comment_id: commentId,
               user_id: authStore.userProfile.id,
-            }]);
+            },
+          ]);
 
           if (error) throw error;
           const likes = this.commentLikes.get(commentId) || new Set();
@@ -542,13 +606,16 @@ export const useUsersStore = defineStore("users", {
       } catch (error) {
         // Rollback optimistic update on error
         for (const [_deckId, comments] of this.comments.entries()) {
-          const comment = comments.find(c => c.id === commentId);
+          const comment = comments.find((c) => c.id === commentId);
           if (comment) {
             comment.likes_count += hasLiked ? 1 : -1;
             break;
           }
         }
-        this.error = error instanceof Error ? error.message : "Error toggling comment like";
+        this.error =
+          error instanceof Error
+            ? error.message
+            : "Error toggling comment like";
         throw error;
       }
     },
@@ -567,10 +634,11 @@ export const useUsersStore = defineStore("users", {
 
         if (error) throw error;
         if (data) {
-          this.following = new Set(data.map(f => f.following_id));
+          this.following = new Set(data.map((f) => f.following_id));
         }
       } catch (error) {
-        this.error = error instanceof Error ? error.message : "Error fetching following";
+        this.error =
+          error instanceof Error ? error.message : "Error fetching following";
       } finally {
         this.loading.following = false;
       }
@@ -578,9 +646,11 @@ export const useUsersStore = defineStore("users", {
 
     async toggleFollow(userId: string) {
       const authStore = useAuthStore();
-      if (!authStore.userProfile) throw new Error("Must be logged in to follow users");
-      if (userId === authStore.userProfile.id) throw new Error("Cannot follow yourself");
-    
+      if (!authStore.userProfile)
+        throw new Error("Must be logged in to follow users");
+      if (userId === authStore.userProfile.id)
+        throw new Error("Cannot follow yourself");
+
       this.loading.following = true;
       try {
         if (this.following.has(userId)) {
@@ -590,10 +660,10 @@ export const useUsersStore = defineStore("users", {
             .delete()
             .eq("follower_id", authStore.userProfile.id)
             .eq("following_id", userId);
-    
+
           if (error) throw error;
           this.following.delete(userId);
-          
+
           // Update counts immediately
           const targetProfile = this.profiles.get(userId);
           const currentProfile = this.profiles.get(authStore.userProfile.id);
@@ -607,16 +677,16 @@ export const useUsersStore = defineStore("users", {
           }
         } else {
           // Follow
-          const { error } = await supabase
-            .from("user_followers")
-            .insert([{
+          const { error } = await supabase.from("user_followers").insert([
+            {
               follower_id: authStore.userProfile.id,
               following_id: userId,
-            }]);
-    
+            },
+          ]);
+
           if (error) throw error;
           this.following.add(userId);
-          
+
           // Update counts immediately
           const targetProfile = this.profiles.get(userId);
           const currentProfile = this.profiles.get(authStore.userProfile.id);
@@ -629,14 +699,15 @@ export const useUsersStore = defineStore("users", {
             this.updateProfileInCache(currentProfile);
           }
         }
-    
+
         // Still fetch the latest data in the background
         await Promise.all([
           this.fetchUserProfile(userId),
-          this.fetchUserProfile(authStore.userProfile.id)
+          this.fetchUserProfile(authStore.userProfile.id),
         ]);
       } catch (error) {
-        this.error = error instanceof Error ? error.message : "Error toggling follow";
+        this.error =
+          error instanceof Error ? error.message : "Error toggling follow";
         throw error;
       } finally {
         this.loading.following = false;
@@ -644,23 +715,26 @@ export const useUsersStore = defineStore("users", {
     },
 
     // Add new method to sort comments
-    sortComments(deckId: string, sortBy: 'newest' | 'likes') {
+    sortComments(deckId: string, sortBy: "newest" | "likes") {
       const comments = this.comments.get(deckId) || [];
       const parentComments = comments.filter((comment) => !comment.parent_id);
-      
+
       let sortedComments;
-      if (sortBy === 'likes') {
+      if (sortBy === "likes") {
         sortedComments = parentComments.sort((a, b) => {
           const likeDiff = b.likes_count - a.likes_count;
-          return likeDiff !== 0 ? likeDiff : 
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+          return likeDiff !== 0
+            ? likeDiff
+            : new Date(b.created_at).getTime() -
+                new Date(a.created_at).getTime();
         });
       } else {
-        sortedComments = parentComments.sort((a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        sortedComments = parentComments.sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
       }
-      
+
       this.sortedComments.set(deckId, sortedComments);
     },
   },
