@@ -65,7 +65,7 @@ const scrollToTop = () => {
 </script>
 
 <template>
-  <nav class="fixed top-0 left-0 right-0 z-50 sm:pr-2.5 border-b border-neutral-800 bg-neutral-950/75 backdrop-blur-md">
+  <nav class="fixed top-0 left-0 right-0 z-50 border-b border-neutral-800 bg-neutral-950/75 backdrop-blur-md">
     <div class="flex items-center justify-between flex-shrink-0 px-6 mx-auto space-x-4 h-14">
       <!-- Left section -->
       <div class="flex items-center justify-start flex-1">
@@ -131,7 +131,7 @@ const scrollToTop = () => {
         </button>
 
         <div v-else class="relative" ref="dropdownRef">
-          <button @click.stop="toggleDropdown" class="flex items-center h-10 px-1.5 text-sm sm:px-2"
+          <button @click.stop="toggleDropdown" class="flex items-center h-10 px-1.5 text-sm sm:px-2 -mr-2 sm:mr-0"
             :class="isDropdownOpen ? 'button-active-noborder' : 'button-noborder'">
             <span class="hidden sm:pl-1 sm:pr-2 sm:inline">
               {{
