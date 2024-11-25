@@ -17,14 +17,14 @@ const router = createRouter({
     {
       path: "/learn/:deckId?",
       name: "learn",
-      component: () => import("./views/Learn.vue"),
+      component: () => import("./views/learn/Learn.vue"),
       meta: { requiresAuth: true },
       props: true,
     },
     {
       path: "/discover",
       name: "discover",
-      component: () => import("./views/Discover.vue"),
+      component: () => import("./views/discover/Discover.vue"),
       meta: { requiresAuth: true },
     },
     {
@@ -40,20 +40,20 @@ const router = createRouter({
     {
       path: "/discover/user/:id",
       name: "userProfile", 
-      component: () => import("./views/UserProfile.vue"),
+      component: () => import("./views/discover/UserProfile.vue"),
       meta: { requiresAuth: true },
       props: true,
     },
     {
       path: "/discover/deck/:id",
       name: "deck",
-      component: () => import("./views/Deck.vue"),
+      component: () => import("./views/discover/PublicDeck.vue"),
       props: true,
     },
     {
       path: "/feed",
       name: "feed",
-      component: () => import("./views/Feed.vue"),
+      component: () => import("./views/feed/Feed.vue"),
       meta: { requiresAuth: true },
     },
     {

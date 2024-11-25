@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { useDeckStore } from '../stores/deckStore';
-import { useUsersStore } from '../stores/usersStore';
-import PageLayoutMirrored from '../components/common/PageLayoutMirrored.vue';
-import PublicDeckDetails from '../components/features/profile/PublicDeckDetails.vue';
-import CommentSection from '../components/features/decks/CommentSection.vue';
-import LoadingSpinner from '../components/common/LoadingSpinner.vue';
-import DeleteDeckModal from '../components/features/decks/DeleteDeckModal.vue';
+import { useDeckStore } from '../../stores/deckStore';
+import { useUsersStore } from '../../stores/usersStore';
+import PageLayoutMirrored from '../../components/common/PageLayoutMirrored.vue';
+import PublicDeckDetails from '../../components/features/profile/PublicDeckDetails.vue';
+import CommentSection from '../../components/features/decks/CommentSection.vue';
+import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
+import DeleteDeckModal from '../../components/features/decks/DeleteDeckModal.vue';
 
 const props = defineProps<{
     id: string;

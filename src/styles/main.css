@@ -9,12 +9,19 @@
 @layer base {
   :root {
     @apply bg-neutral-950;
+    scrollbar-gutter: stable;
   }
   
   html,
   body,
   #app {
     @apply text-neutral-200 font-roboto;
+    scrollbar-gutter: stable;
+  }
+
+  .fixed {
+    width: 100vw;
+    margin-right: calc(-1 * (100vw - 100%));
   }
 }
 

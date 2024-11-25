@@ -148,14 +148,14 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { useUsersStore } from '../stores/usersStore';
-import { useAuthStore } from '../stores/authStore';
+import { useUsersStore } from '../../stores/usersStore';
+import { useAuthStore } from '../../stores/authStore';
 import { UserCircle2 } from 'lucide-vue-next';
-import type { Database } from '../types/supabase';
-import NotFound from './NotFound.vue';
-import PageLayout from '../components/common/PageLayout.vue';
-import PublicDeckList from '../components/features/profile/PublicDeckList.vue';
-import LoadingSpinner from '../components/common/LoadingSpinner.vue';
+import type { Database } from '../../types/supabase';
+import NotFound from '../../views/NotFound.vue';
+import PageLayout from '../../components/common/PageLayout.vue';
+import PublicDeckList from '../../components/features/profile/PublicDeckList.vue';
+import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
 
 // Language mapping
 const LANGUAGES = {

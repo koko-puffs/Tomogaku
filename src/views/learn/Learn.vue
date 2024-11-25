@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue';
-import { useDeckStore } from '../stores/deckStore';
-import PageLayout from '../components/common/PageLayout.vue';
+import { useDeckStore } from '../../stores/deckStore';
+import PageLayout from '../../components/common/PageLayout.vue';
 import { useRoute, useRouter } from 'vue-router';
-import CreateDeckModal from '../components/features/decks/CreateDeckModal.vue';
-import DeleteDeckModal from '../components/features/decks/DeleteDeckModal.vue';
-import DeckList from '../components/features/decks/DeckList.vue';
-import DeckDetails from '../components/features/decks/DeckDetails.vue';
-import CommentSection from '../components/features/decks/CommentSection.vue';
-import LoadingSpinner from '../components/common/LoadingSpinner.vue';
+import CreateDeckModal from '../../components/features/decks/CreateDeckModal.vue';
+import DeleteDeckModal from '../../components/features/decks/DeleteDeckModal.vue';
+  import DeckList from '../../components/features/decks/DeckList.vue';
+import DeckDetails from '../../components/features/decks/DeckDetails.vue';
+import CommentSection from '../../components/features/decks/CommentSection.vue';
+import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
 
 defineProps<{
   deckId?: string;
