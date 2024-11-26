@@ -223,7 +223,7 @@ defineExpose({
                 <!-- Status tag -->
                 <span class="px-2 py-1 text-xs rounded-md text-neutral-400 shrink-0" :class="[
                     selectedCard === card.id
-                        ? 'bg-neutral-700'
+                        ? 'bg-neutral-700/70'
                         : 'bg-neutral-800'
                 ]">
                     {{ card.status }}
