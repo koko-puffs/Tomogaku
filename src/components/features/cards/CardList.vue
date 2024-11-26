@@ -232,7 +232,7 @@ defineExpose({
                 ]"
                 @click="emit('select-card', card.id)">
                 
-                <div class="flex items-center flex-1 min-w-0 gap-4">
+                <div class="flex items-center flex-1 min-w-0 gap-2">
                     <!-- Position number - only show if exists -->
                     <span v-if="card.position" class="text-sm text-neutral-400">#{{ card.position }}</span>
                     
