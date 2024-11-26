@@ -132,7 +132,7 @@ defineExpose({
                     class="w-10"
                     :class="[
                         showFilters 
-                            ? 'button-lighter-visible hover:bg-neutral-800 bg-neutral-800' 
+                            ? 'button-lighter-visible hover:bg-neutral-800 bg-neutral-800 hover:border-neutral-700/70' 
                             : 'button'
                     ]">
                     <Filter :size="18" />
