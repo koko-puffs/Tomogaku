@@ -10,11 +10,12 @@ const props = defineProps<{
     front_content: string;
     back_content: string;
     tags: string[] | null;
+    position: number | null;
   };
 }>();
 
 const emit = defineEmits<{
-  'update': [updates: { front_content: string; back_content: string; tags: string[] }];
+  'update': [updates: { front_content: string; back_content: string; tags: string[]; position: number | null }];
   'delete': [];
   'duplicate': [];
   'previous': [];
@@ -26,23 +27,32 @@ const editBackContent = ref(props.card.back_content);
 const editTags = ref<string[]>([...(props.card.tags || [])]);
 const newTag = ref('');
 const tagError = ref('');
+const editPosition = ref<number | null>(props.card.position);
 
-// Update watch to properly handle HTML content clearing
+// Update watch to properly reset all fields
 watch(() => props.card.id, () => {
+  // Clear all fields first
   editFrontContent.value = '';
   editBackContent.value = '';
+  editTags.value = [];
+  editPosition.value = null;
+  newTag.value = '';
+  tagError.value = '';
   
+  // Then set new values on next tick
   nextTick(() => {
     editFrontContent.value = props.card.front_content || '';
     editBackContent.value = props.card.back_content || '';
     editTags.value = [...(props.card.tags || [])];
+    editPosition.value = props.card.position;
   });
 }, { immediate: true });
 
 const hasChanges = computed(() => {
   return editFrontContent.value !== props.card.front_content ||
          editBackContent.value !== props.card.back_content ||
-         !areArraysEqual(editTags.value, props.card.tags || []);
+         !areArraysEqual(editTags.value, props.card.tags || []) ||
+         editPosition.value !== props.card.position;
 });
 
 const areArraysEqual = (arr1: string[], arr2: string[]) => {
@@ -61,6 +71,7 @@ const handleUpdate = () => {
     front_content: editFrontContent.value,
     back_content: editBackContent.value,
     tags: editTags.value,
+    position: editPosition.value,
   });
 };
 
@@ -95,9 +106,10 @@ const removeTag = (tagToRemove: string) => {
 };
 
 const resetForm = () => {
-  editFrontContent.value = props.card.front_content;
-  editBackContent.value = props.card.back_content;
+  editFrontContent.value = props.card.front_content || '';
+  editBackContent.value = props.card.back_content || '';
   editTags.value = [...(props.card.tags || [])];
+  editPosition.value = props.card.position;
   newTag.value = '';
   tagError.value = '';
 };
@@ -108,6 +120,27 @@ const handlePrevious = () => {
 
 const handleNext = () => {
   emit('next');
+};
+
+const handlePositionInput = (event: Event) => {
+  event.stopPropagation();
+  const input = event.target as HTMLInputElement;
+  const value = input.value;
+  
+  // Allow empty value (null position)
+  if (!value) {
+    editPosition.value = null;
+    return;
+  }
+
+  // Convert to number and validate
+  const num = parseInt(value);
+  if (!isNaN(num) && num > 0) {
+    editPosition.value = num;
+  } else {
+    // Reset to previous valid value
+    input.value = editPosition.value?.toString() ?? '';
+  }
 };
 </script>
 
@@ -170,7 +203,7 @@ const handleNext = () => {
     <div class="p-4 space-y-6">
       <!-- Front Content -->
       <div class="space-y-2">
-        <label class="block pl-1 text-sm text-neutral-400">Front</label>
+        <label class="block text-sm text-neutral-400">Front</label>
         <QuillEditor
           :key="`front-${props.card.id}`"
           v-model:content="editFrontContent"
@@ -180,11 +213,9 @@ const handleNext = () => {
         />
       </div>
 
-      <div class="h-px bg-neutral-800"></div>
-
       <!-- Back Content -->
       <div class="space-y-2">
-        <label class="block pl-1 text-sm text-neutral-400">Back</label>
+        <label class="block text-sm text-neutral-400">Back</label>
         <QuillEditor
           :key="`back-${props.card.id}`"
           v-model:content="editBackContent"
@@ -196,22 +227,44 @@ const handleNext = () => {
 
       <div class="h-px bg-neutral-800"></div>
 
-      <!-- Tags -->
-      <div class="space-y-2">
-        <label class="block pl-1 text-sm text-neutral-400">Tags</label>
-        <div class="relative space-y-2">
-          <input v-model="newTag" @keydown.enter.prevent="addTag" type="text" class="w-full input-lighter-filled"
-            placeholder="Type a tag and press Enter" />
-          <p v-if="tagError" class="text-sm text-red-500">{{ tagError }}</p>
+      <!-- Tags and Position Section -->
+      <div class="flex gap-2">
+        <!-- Tags Section -->
+        <div class="flex-1 space-y-2">
+          <label class="block text-sm text-neutral-400">Tags</label>
+          <div class="relative">
+            <input 
+              v-model="newTag" 
+              @keydown.enter.prevent="addTag" 
+              type="text" 
+              class="w-full input-lighter-filled"
+              placeholder="Type a tag and press Enter" 
+            />
+            <p v-if="tagError" class="absolute mt-1 text-sm text-red-500">{{ tagError }}</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span v-for="tag in editTags" :key="tag"
+              class="flex items-center gap-1 px-2 py-1 text-sm rounded-md bg-neutral-800">
+              {{ tag }}
+              <button @click="removeTag(tag)" class="pl-1 transition-colors rounded-full hover:text-red-400">
+                <X :size="14" />
+              </button>
+            </span>
+          </div>
         </div>
-        <div class="flex flex-wrap gap-2">
-          <span v-for="tag in editTags" :key="tag"
-            class="flex items-center gap-1 px-2 py-1 text-sm rounded-md bg-neutral-800">
-            {{ tag }}
-            <button @click="removeTag(tag)" class="pl-1 transition-colors rounded-full hover:text-red-400">
-              <X :size="14" />
-            </button>
-          </span>
+
+        <!-- Position Section -->
+        <div class="space-y-2 w-28">
+          <label class="block text-sm text-neutral-400">Position</label>
+          <input
+            type="number"
+            :value="editPosition"
+            @input="handlePositionInput"
+            @keydown.stop
+            class="w-full input-lighter-filled"
+            min="1"
+            placeholder="#"
+          />
         </div>
       </div>
     </div>

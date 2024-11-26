@@ -7,7 +7,7 @@
     <template #content>
       <div class="space-y-4">
         <div class="space-y-2">
-          <label for="deckTitle" class="block pl-1 text-sm text-neutral-400">Title</label>
+          <label for="deckTitle" class="block text-sm text-neutral-400">Title</label>
           <div class="relative">
             <input id="deckTitle" v-model="title" type="text" class="w-full input-lighter-filled"
               :class="{ 'border-red-500': error }" placeholder="Enter deck title" :disabled="loading" />
@@ -18,14 +18,14 @@
         </div>
 
         <div class="space-y-2">
-          <label for="deckDescription" class="block pl-1 text-sm text-neutral-400">Description (optional)</label>
+          <label for="deckDescription" class="block text-sm text-neutral-400">Description (optional)</label>
           <textarea id="deckDescription" v-model="description" rows="3"
             class="w-full h-48 resize-none input-lighter-filled !-mb-2" placeholder="Enter deck description"
             :disabled="loading" />
         </div>
 
         <div class="space-y-2">
-          <label for="deckTags" class="block pl-1 text-sm text-neutral-400">Tags (optional)</label>
+          <label for="deckTags" class="block text-sm text-neutral-400">Tags (optional)</label>
           <div class="relative space-y-2">
             <input v-model="newTag" @keydown.enter.prevent="addTag" type="text" class="w-full input-lighter-filled"
               placeholder="Type a tag and press Enter" :disabled="loading" />

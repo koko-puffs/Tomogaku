@@ -103,6 +103,14 @@ export const useDeckStore = defineStore("decks", {
       (state) =>
       (deckId: string): boolean =>
         state.deckLikes.get(deckId) || false,
+
+    getUniqueTags:
+      (state) =>
+      (deckId: string): string[] => {
+        const cards = state.cards[deckId] || [];
+        const allTags = cards.flatMap((card) => card.tags || []);
+        return [...new Set(allTags)];
+      },
   },
 
   actions: {
@@ -151,7 +159,7 @@ export const useDeckStore = defineStore("decks", {
     async createDeck(deckData: Partial<Deck>) {
       const authStore = useAuthStore();
       if (!authStore.user) throw new Error("Please sign in to create a deck");
-    
+
       // Initialize FSRS settings
       const fullDeckData = {
         ...deckData,
@@ -161,13 +169,16 @@ export const useDeckStore = defineStore("decks", {
           fsrs: {
             request_retention: 0.9,
             maximum_stability: 36500,
-            weights: [2.2, 0.7, 2.6, 1.7, 0.5, -0.2, 0.2, 1.0, -0.5, -0.1, 0.5, -0.1, 0.8],
+            weights: [
+              2.2, 0.7, 2.6, 1.7, 0.5, -0.2, 0.2, 1.0, -0.5, -0.1, 0.5, -0.1,
+              0.8,
+            ],
             learning_steps: [1, 10],
-            enable_fsrs: true
-          }
-        }
+            enable_fsrs: true,
+          },
+        },
       };
-    
+
       this.loading.operations = true;
       try {
         const { data, error } = await supabase
@@ -175,7 +186,7 @@ export const useDeckStore = defineStore("decks", {
           .insert([fullDeckData])
           .select()
           .single();
-    
+
         if (error) throw error;
         if (data) {
           this.decks.unshift(data);
@@ -296,23 +307,25 @@ export const useDeckStore = defineStore("decks", {
     async createCard(cardData: Partial<Card>) {
       const authStore = useAuthStore();
       if (!authStore.user) throw new Error("Please sign in to create a card");
-    
+
       // Check if user owns the deck
       const deck = this.getDeckById(cardData.deck_id!);
       if (!deck || deck.user_id !== authStore.user.id) {
         throw new Error("You do not have permission to add cards to this deck");
       }
-    
+
       // Safely parse deck settings with type assertion
       const deckSettings = deck.settings as DeckSettings;
       const fsrsSettings = deckSettings?.fsrs || {
         request_retention: 0.9,
         maximum_stability: 36500,
-        weights: [2.2, 0.7, 2.6, 1.7, 0.5, -0.2, 0.2, 1.0, -0.5, -0.1, 0.5, -0.1, 0.8],
+        weights: [
+          2.2, 0.7, 2.6, 1.7, 0.5, -0.2, 0.2, 1.0, -0.5, -0.1, 0.5, -0.1, 0.8,
+        ],
         learning_steps: [1, 10],
-        enable_fsrs: true
+        enable_fsrs: true,
       };
-    
+
       // Prepare card data with FSRS initialization
       const fullCardData: Partial<Card> = {
         ...cardData,
@@ -333,9 +346,9 @@ export const useDeckStore = defineStore("decks", {
         // Keep track of reviews
         last_review_date: null,
         last_review_rating: null,
-        lapses_count: 0
+        lapses_count: 0,
       };
-    
+
       this.loading.operations = true;
       try {
         const { data, error } = await supabase
@@ -343,7 +356,7 @@ export const useDeckStore = defineStore("decks", {
           .insert([fullCardData])
           .select()
           .single();
-    
+
         if (error) throw error;
         if (data) {
           const deckCards = this.cards[data.deck_id] || [];
@@ -422,21 +435,14 @@ export const useDeckStore = defineStore("decks", {
       const deckSettings = this.currentDeck?.settings?.fsrs || {
         request_retention: 0.9,
         maximum_stability: 36500,
-        weights: [2.2, 0.7, 2.6, 1.7, 0.5, -0.2, 0.2, 1.0, -0.5, -0.1, 0.5, -0.1, 0.8]
+        weights: [
+          2.2, 0.7, 2.6, 1.7, 0.5, -0.2, 0.2, 1.0, -0.5, -0.1, 0.5, -0.1, 0.8,
+        ],
       };
 
       // Calculate FSRS updates
-      const {
-        stability,
-        difficulty,
-        newState,
-        scheduledDays,
-        elapsed_days
-      } = this.calculateFSRSUpdate(
-        this.currentCard,
-        rating,
-        deckSettings
-      );
+      const { stability, difficulty, newState, scheduledDays, elapsed_days } =
+        this.calculateFSRSUpdate(this.currentCard, rating, deckSettings);
 
       // Calculate new due date based on scheduled days
       const dueDate = new Date();
@@ -453,7 +459,7 @@ export const useDeckStore = defineStore("decks", {
         due_date: dueDate.toISOString(),
         last_review_date: new Date().toISOString(),
         last_review_rating: rating,
-        reps: (this.currentCard.reps || 0) + 1
+        reps: (this.currentCard.reps || 0) + 1,
       });
 
       // Move to next card in study session
@@ -474,21 +480,26 @@ export const useDeckStore = defineStore("decks", {
       const w = settings.weights;
       const stability = card.stability || 0;
       const difficulty = card.difficulty || 0;
-    
+
       let newStability = stability;
       let newDifficulty = difficulty;
-      let newState: "new" | "learning" | "review" | "relearning" = card.state as any;
+      let newState: "new" | "learning" | "review" | "relearning" =
+        card.state as any;
       let scheduledDays = 0;
-    
-      const elapsedDays = card.last_review_date 
-        ? (new Date().getTime() - new Date(card.last_review_date).getTime()) / (1000 * 60 * 60 * 24)
+
+      const elapsedDays = card.last_review_date
+        ? (new Date().getTime() - new Date(card.last_review_date).getTime()) /
+          (1000 * 60 * 60 * 24)
         : 0;
-    
+
       // Calculate retrievability
-      const r = stability > 0 
-        ? Math.exp(Math.log(settings.request_retention) * elapsedDays / stability)
-        : 0;
-    
+      const r =
+        stability > 0
+          ? Math.exp(
+              (Math.log(settings.request_retention) * elapsedDays) / stability
+            )
+          : 0;
+
       // Update parameters based on rating and retrievability
       switch (rating) {
         case "again":
@@ -516,17 +527,20 @@ export const useDeckStore = defineStore("decks", {
           scheduledDays = Math.ceil(newStability * (1 + w[10] * (1 - r)) * 1.3);
           break;
       }
-    
+
       // Enforce bounds
       newDifficulty = Math.min(Math.max(newDifficulty, -3), 3);
-      newStability = Math.min(Math.max(newStability, 0.1), settings.maximum_stability);
-      
+      newStability = Math.min(
+        Math.max(newStability, 0.1),
+        settings.maximum_stability
+      );
+
       return {
         stability: newStability,
         difficulty: newDifficulty,
         newState,
         scheduledDays,
-        elapsed_days: elapsedDays
+        elapsed_days: elapsedDays,
       };
     },
 
@@ -605,9 +619,11 @@ export const useDeckStore = defineStore("decks", {
       const settings = (this.currentDeck?.settings as DeckSettings)?.fsrs || {
         request_retention: 0.9,
         maximum_stability: 36500,
-        weights: [2.2, 0.7, 2.6, 1.7, 0.5, -0.2, 0.2, 1.0, -0.5, -0.1, 0.5, -0.1, 0.8],
+        weights: [
+          2.2, 0.7, 2.6, 1.7, 0.5, -0.2, 0.2, 1.0, -0.5, -0.1, 0.5, -0.1, 0.8,
+        ],
         learning_steps: [1, 10],
-        enable_fsrs: true
+        enable_fsrs: true,
       };
 
       // Get today's start timestamp (midnight)
@@ -615,61 +631,71 @@ export const useDeckStore = defineStore("decks", {
       today.setHours(0, 0, 0, 0);
 
       // Count new cards already studied today
-      const newCardsStudiedToday = deckCards.filter(card => 
-        card.last_review_date && 
-        new Date(card.last_review_date) >= today && 
-        card.state === "new"
+      const newCardsStudiedToday = deckCards.filter(
+        (card) =>
+          card.last_review_date &&
+          new Date(card.last_review_date) >= today &&
+          card.state === "new"
       ).length;
-    
+
       // Filter cards due for review using FSRS settings
       const dueCards = deckCards.filter((card) => {
         const dueDate = new Date(card.due_date);
         const now = new Date();
-    
+
         // If FSRS is disabled, use simple due date check
         if (!settings.enable_fsrs) {
           return card.state === "new" || dueDate <= now;
         }
-    
+
         // For new cards, respect the daily new cards limit
         if (card.state === "new") {
-          return newCardsStudiedToday < (this.currentDeck?.daily_new_cards_limit || 20);
+          return (
+            newCardsStudiedToday <
+            (this.currentDeck?.daily_new_cards_limit || 20)
+          );
         }
-    
+
         // For learning/relearning cards, use learning steps
         if (card.state === "learning" || card.state === "relearning") {
           return dueDate <= now;
         }
-    
+
         // For review cards, check due date and daily review limit
         if (card.state === "review") {
-          const reviewsToday = deckCards.filter(c => 
-            c.last_review_date && 
-            new Date(c.last_review_date) >= today && 
-            c.state === "review"
+          const reviewsToday = deckCards.filter(
+            (c) =>
+              c.last_review_date &&
+              new Date(c.last_review_date) >= today &&
+              c.state === "review"
           ).length;
-          return dueDate <= now && reviewsToday < (this.currentDeck?.daily_review_limit || 100);
+          return (
+            dueDate <= now &&
+            reviewsToday < (this.currentDeck?.daily_review_limit || 100)
+          );
         }
-    
+
         return false;
       });
-    
+
       // Sort cards: new -> learning/relearning -> review
       const sortedDueCards = dueCards.sort((a, b) => {
         const stateOrder = {
           learning: 0,
           relearning: 0,
           new: 1,
-          review: 2
+          review: 2,
         };
         const aOrder = stateOrder[a.state as keyof typeof stateOrder];
         const bOrder = stateOrder[b.state as keyof typeof stateOrder];
         if (aOrder === bOrder) {
-          return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
+          return (
+            new Date(a.due_date).getTime() - new Date(b.due_date).getTime()
+          );
         }
         return aOrder - bOrder;
       });
-    
+
       this.studySession = {
         currentCardIndex: 0,
         remainingCards: sortedDueCards,
@@ -705,13 +731,14 @@ export const useDeckStore = defineStore("decks", {
     async forkDeck(deckId: string) {
       const authStore = useAuthStore();
       if (!authStore.user) throw new Error("Please sign in to fork this deck");
-    
+
       this.loading.operations = true;
       try {
         // First ensure we have the source deck data
-        const sourceDeck = this.getDeckById(deckId) || (await this.fetchDeckById(deckId));
+        const sourceDeck =
+          this.getDeckById(deckId) || (await this.fetchDeckById(deckId));
         if (!sourceDeck) throw new Error("Deck not found");
-    
+
         // Create new deck as a fork with FSRS settings
         const { data: newDeck, error: deckError } = await supabase
           .from("decks")
@@ -735,29 +762,32 @@ export const useDeckStore = defineStore("decks", {
               daily_review_limit: sourceDeck.daily_review_limit,
               // Initialize deck settings with FSRS
               settings: {
-                ...(sourceDeck.settings as object || {}),
+                ...((sourceDeck.settings as object) || {}),
                 fsrs: {
                   request_retention: 0.9,
                   maximum_stability: 36500,
-                  weights: [2.2, 0.7, 2.6, 1.7, 0.5, -0.2, 0.2, 1.0, -0.5, -0.1, 0.5, -0.1, 0.8],
+                  weights: [
+                    2.2, 0.7, 2.6, 1.7, 0.5, -0.2, 0.2, 1.0, -0.5, -0.1, 0.5,
+                    -0.1, 0.8,
+                  ],
                   learning_steps: [1, 10],
-                  enable_fsrs: true
-                }
-              }
+                  enable_fsrs: true,
+                },
+              },
             },
           ])
           .select()
           .single();
-    
+
         if (deckError) throw deckError;
         if (!newDeck) throw new Error("Failed to create forked deck");
-    
+
         // Copy all cards from source deck
         const { data: sourceCards } = await supabase
           .from("cards")
           .select("*")
           .eq("deck_id", deckId);
-    
+
         if (sourceCards && sourceCards.length > 0) {
           const newCards = sourceCards.map((card) => ({
             deck_id: newDeck.id,
@@ -780,27 +810,29 @@ export const useDeckStore = defineStore("decks", {
             last_review_rating: null,
             lapses_count: 0,
             // Copy FSRS parameters from new deck settings
-            request_retention: (newDeck.settings as DeckSettings).fsrs.request_retention,
-            maximum_stability: (newDeck.settings as DeckSettings).fsrs.maximum_stability,
+            request_retention: (newDeck.settings as DeckSettings).fsrs
+              .request_retention,
+            maximum_stability: (newDeck.settings as DeckSettings).fsrs
+              .maximum_stability,
             w: (newDeck.settings as DeckSettings).fsrs.weights,
             // Set timestamps
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           }));
-    
+
           const { error: cardsError } = await supabase
             .from("cards")
             .insert(newCards);
-    
+
           if (cardsError) throw cardsError;
         }
-    
+
         // Update fork count on original deck
         await supabase
           .from("decks")
           .update({ fork_count: (sourceDeck.fork_count || 0) + 1 })
           .eq("id", deckId);
-    
+
         // Update local state
         this.decks.unshift(newDeck);
         return newDeck;
@@ -909,8 +941,8 @@ export const useDeckStore = defineStore("decks", {
     async duplicateCard(cardId: string) {
       const card = Object.values(this.cards)
         .flat()
-        .find(c => c.id === cardId);
-      
+        .find((c) => c.id === cardId);
+
       if (!card) throw new Error("Card not found");
 
       this.loading.operations = true;
@@ -920,23 +952,25 @@ export const useDeckStore = defineStore("decks", {
 
         const { data, error } = await supabase
           .from("cards")
-          .insert([{
-            ...cardWithoutId,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            // Reset FSRS fields for the new card
-            stability: 0,
-            difficulty: 0,
-            elapsed_days: 0,
-            scheduled_days: 0,
-            reps: 0,
-            state: "new",
-            status: "new",
-            due_date: new Date().toISOString(),
-            last_review_date: null,
-            last_review_rating: null,
-            lapses_count: 0
-          }])
+          .insert([
+            {
+              ...cardWithoutId,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+              // Reset FSRS fields for the new card
+              stability: 0,
+              difficulty: 0,
+              elapsed_days: 0,
+              scheduled_days: 0,
+              reps: 0,
+              state: "new",
+              status: "new",
+              due_date: new Date().toISOString(),
+              last_review_date: null,
+              last_review_rating: null,
+              lapses_count: 0,
+            },
+          ])
           .select()
           .single();
 
@@ -947,11 +981,12 @@ export const useDeckStore = defineStore("decks", {
         }
         return data;
       } catch (error) {
-        this.error = error instanceof Error ? error.message : "Error duplicating card";
+        this.error =
+          error instanceof Error ? error.message : "Error duplicating card";
         throw error;
       } finally {
         this.loading.operations = false;
       }
-    }
+    },
   },
 });

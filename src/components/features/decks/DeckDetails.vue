@@ -151,7 +151,7 @@ const availableNewCards = computed(() => {
                             <span class="leading-none truncate">{{ props.deck.title }}</span>
                         </h1>
                         <RouterLink v-if="props.deck.visibility === 'public'" :to="`/discover/deck/${props.deck.id}`"
-                            class="flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-200 transition-colors pl-1">
+                            class="flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-200 transition-colors pl-1 duration-75">
                             <Globe2 :size="14" />
                             <span class="leading-none">View public page</span>
                         </RouterLink>
@@ -164,7 +164,7 @@ const availableNewCards = computed(() => {
                 class="flex gap-2 motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity relative z-[5]">
                 <div v-if="isOwner" class="relative z-[5]" ref="dropdownRef">
                     <!-- Show dropdown button on small screens -->
-                    <button @click.stop="toggleDropdown" class="w-10 button lg:hidden">
+                    <button @click.stop="toggleDropdown" class="w-10 button lg:hidden" title="More options">
                         <MoreVertical :size="18" />
                     </button>
 
@@ -190,10 +190,10 @@ const availableNewCards = computed(() => {
 
                     <!-- Show regular buttons on large screens -->
                     <div class="hidden lg:flex">
-                        <button class="w-10 button" @click="startEdit">
+                        <button class="w-10 button" @click="startEdit" title="Edit deck">
                             <Pencil :size="18" />
                         </button>
-                        <button @click="handleDelete" class="w-10 button">
+                        <button @click="handleDelete" class="w-10 button" title="Delete deck">
                             <Trash2 :size="18" />
                         </button>
                         <button class="flex items-center gap-2 ml-2 w-28 button-visible" @click="handleCardsClick">

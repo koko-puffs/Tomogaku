@@ -23,7 +23,7 @@ const isLoading = ref(true);
 
 const selectCard = async (cardId: string) => {
   selectedCard.value = cardId;
-  
+
   // Only update route if we're not already there
   if (route.params.cardId !== cardId) {
     await router.push(`/learn/${route.params.deckId}/cards/${cardId}`);
@@ -34,7 +34,7 @@ onMounted(async () => {
   try {
     isLoading.value = true;
     await deckStore.fetchCards(route.params.deckId as string);
-    
+
     // If there's a cardId in the route, use that
     if (route.params.cardId) {
       selectedCard.value = route.params.cardId as string;
@@ -92,7 +92,12 @@ const handleCreateCard = async () => {
   }
 };
 
-const handleUpdateCard = async (updates: { front_content: string; back_content: string; tags: string[] }) => {
+const handleUpdateCard = async (updates: {
+  front_content: string;
+  back_content: string;
+  tags: string[];
+  position: number | null;
+}) => {
   if (!selectedCard.value || !route.params.deckId) return;
 
   try {
@@ -124,23 +129,25 @@ const navigateToCard = async (cardId: string) => {
   await router.push(`/learn/${route.params.deckId}/cards/${cardId}`);
 };
 
+const cardListRef = ref<{ filteredCards: any[] } | null>(null);
+
 const handlePreviousCard = () => {
-  if (!selectedCard.value || !route.params.deckId) return;
-  
-  const cards = deckStore.getCardsByDeckId(route.params.deckId as string);
+  if (!selectedCard.value || !cardListRef.value) return;
+
+  const cards = cardListRef.value.filteredCards;
   const currentIndex = cards.findIndex(card => card.id === selectedCard.value);
-  
+
   if (currentIndex > 0) {
     navigateToCard(cards[currentIndex - 1].id);
   }
 };
 
 const handleNextCard = () => {
-  if (!selectedCard.value || !route.params.deckId) return;
-  
-  const cards = deckStore.getCardsByDeckId(route.params.deckId as string);
+  if (!selectedCard.value || !cardListRef.value) return;
+
+  const cards = cardListRef.value.filteredCards;
   const currentIndex = cards.findIndex(card => card.id === selectedCard.value);
-  
+
   if (currentIndex < cards.length - 1) {
     navigateToCard(cards[currentIndex + 1].id);
   }
@@ -161,38 +168,27 @@ watch(
   <div class="motion-preset-fade motion-duration-150">
     <PageLayout>
       <template #sidebar>
-        <RouterLink 
-          :to="`/learn/${deckId}`"
-          class="flex items-center justify-start gap-2 pl-2 pr-4 mb-4 button"
-        >
-          <ChevronLeft :size="20" />
-          <span class="text-sm truncate">
+        <RouterLink :to="`/learn/${deckId}`"
+          class="flex items-center justify-start h-6 gap-2 pr-3 mb-2.5 transition-colors duration-75 text-neutral-400 hover:text-neutral-200">
+          <ChevronLeft :size="22" />
+          <span class="text-sm truncate mt-0.5">
             {{ deckStore.getDeckById(deckId)?.title || 'Loading...' }}
           </span>
         </RouterLink>
 
-        <CardList 
-          :deck-id="deckId" 
-          :selected-card="selectedCard" 
-          @select-card="selectCard" 
-          @create-card="handleCreateCard" 
-        />
+        <CardList ref="cardListRef" :deck-id="deckId" :selected-card="selectedCard" @select-card="selectCard"
+          @create-card="handleCreateCard" />
       </template>
 
       <template #content>
         <div v-if="isLoading" class="flex items-center justify-center mt-20 text-neutral-500">
           <LoadingSpinner :size="32" />
         </div>
-        <div v-else-if="selectedCard && deckStore.getCardsByDeckId(deckId).find(card => card.id === selectedCard)" 
+        <div v-else-if="selectedCard && deckStore.getCardsByDeckId(deckId).find(card => card.id === selectedCard)"
           class="space-y-6">
-          <CardDetails 
-            :card="deckStore.getCardsByDeckId(deckId).find(card => card.id === selectedCard)!" 
-            @update="handleUpdateCard"
-            @delete="handleDeleteCard"
-            @duplicate="handleDuplicateCard"
-            @previous="handlePreviousCard"
-            @next="handleNextCard"
-          />
+          <CardDetails :card="deckStore.getCardsByDeckId(deckId).find(card => card.id === selectedCard)!"
+            @update="handleUpdateCard" @delete="handleDeleteCard" @duplicate="handleDuplicateCard"
+            @previous="handlePreviousCard" @next="handleNextCard" />
         </div>
         <div v-else class="flex items-center justify-center mt-16 text-neutral-500">
           Select a card to view details
@@ -201,11 +197,6 @@ watch(
     </PageLayout>
   </div>
 
-  <DeleteModal 
-    ref="deleteModalRef" 
-    @confirm="confirmDeleteCard" 
-    title="Delete Card?" 
-    mainMessage="Are you sure you want to delete this card?" 
-    subMessage="This action cannot be undone." 
-  />
+  <DeleteModal ref="deleteModalRef" @confirm="confirmDeleteCard" title="Delete Card?"
+    mainMessage="Are you sure you want to delete this card?" subMessage="This action cannot be undone." />
 </template>

@@ -176,7 +176,7 @@ const handleDelete = () => {
                         </h1>
                         <RouterLink v-if="props.deck.is_forked && props.deck.original_deck_id"
                             :to="`/discover/deck/${props.deck.original_deck_id}`"
-                            class="flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-200 transition-colors pl-1">
+                            class="flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-200 transition-colors pl-1 duration-75">
                             <GitFork :size="14" />
                             <span class="leading-none">View original deck</span>
                         </RouterLink>
@@ -189,7 +189,7 @@ const handleDelete = () => {
                 class="flex gap-2 motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity relative z-[15]">
                 <div v-if="isOwner" class="relative z-[15]" ref="dropdownRef">
                     <!-- Show dropdown button on small screens -->
-                    <button @click.stop="toggleDropdown" class="w-10 button lg:hidden">
+                    <button @click.stop="toggleDropdown" class="w-10 button lg:hidden" title="More options">
                         <MoreVertical :size="18" />
                     </button>
 
@@ -210,10 +210,10 @@ const handleDelete = () => {
 
                     <!-- Show regular buttons on large screens -->
                     <div class="hidden lg:flex">
-                        <button class="w-10 button" @click="startEdit">
+                        <button class="w-10 button" @click="startEdit" title="Edit deck">
                             <Edit2 :size="18" />
                         </button>
-                        <button @click="handleDelete" class="w-10 button">
+                        <button @click="handleDelete" class="w-10 button" title="Delete deck">
                             <Trash2 :size="18" />
                         </button>
                     </div>
@@ -225,7 +225,6 @@ const handleDelete = () => {
                 </button>
             </div>
         </div>
-
 
         <!-- Author Info - Add lower z-index -->
         <div v-if="author"

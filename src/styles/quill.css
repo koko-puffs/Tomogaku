@@ -726,7 +726,7 @@
     content: attr(data-label);
   }
   .ql-snow .ql-picker.ql-header {
-    width: 120px;
+    width: 95px;
   }
   .ql-snow .ql-picker.ql-header .ql-picker-label::before,
   .ql-snow .ql-picker.ql-header .ql-picker-item::before {
