@@ -4,6 +4,7 @@ import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import DeckEditForm from './DeckEditForm.vue';
 import { useAuthStore } from '../../../stores/authStore';
+import { useDeckStore } from '../../../stores/deckStore';
 
 const props = defineProps<{
     deck: any;
@@ -12,6 +13,7 @@ const props = defineProps<{
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
+const deckStore = useDeckStore();
 
 // Add ownership check
 const isOwner = computed(() => {
@@ -101,6 +103,30 @@ watch(() => route.hash, (newHash) => {
         router.replace({ hash: '' });
     }
 });
+
+const handleCardsClick = () => {
+    closeDropdown();
+    router.push(`/learn/${props.deck.id}/cards`);
+};
+
+const availableNewCards = computed(() => {
+    // Get today's start timestamp
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Count new cards already studied today
+    const newCardsStudiedToday = deckStore.cards[props.deck.id]?.filter(card => 
+        card.last_review_date && 
+        new Date(card.last_review_date) >= today && 
+        card.state === "new"
+    ).length || 0;
+
+    // Calculate remaining new cards allowed today
+    const remainingNewCards = (props.deck.daily_new_cards_limit || 20) - newCardsStudiedToday;
+
+    // Return the minimum between total new cards and remaining allowed
+    return Math.min(props.deck.new_cards_count, Math.max(0, remainingNewCards));
+});
 </script>
 
 <template>
@@ -145,7 +171,7 @@ watch(() => route.hash, (newHash) => {
                     <!-- Dropdown menu -->
                     <div v-if="isDropdownOpen"
                         class="absolute right-0 w-48 py-2 mt-1 border rounded-lg shadow-xl bg-neutral-900 border-neutral-800 motion-translate-x-in-[0%] motion-translate-y-in-[-4%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity z-[5]">
-                        <button @click="emit('cards'); closeDropdown()"
+                        <button @click="handleCardsClick"
                             class="flex items-center w-full px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
                             <Layers3 :size="16" class="mr-2" />
                             Cards
@@ -170,7 +196,7 @@ watch(() => route.hash, (newHash) => {
                         <button @click="handleDelete" class="w-10 button">
                             <Trash2 :size="18" />
                         </button>
-                        <button class="flex items-center gap-2 ml-2 w-28 button-visible" @click="emit('cards')">
+                        <button class="flex items-center gap-2 ml-2 w-28 button-visible" @click="handleCardsClick">
                             <Layers3 :size="18" />
                             <span>Cards</span>
                         </button>
@@ -191,19 +217,25 @@ watch(() => route.hash, (newHash) => {
                 <div class="space-y-2">
                     <div class="flex items-center justify-between">
                         <span class="text-neutral-400">New:</span>
-                        <span class="text-cyan-400">10</span>
+                        <span :class="availableNewCards > 0 ? 'text-cyan-400' : 'text-neutral-400'">
+                            {{ availableNewCards }}
+                        </span>
                     </div>
                     <div class="h-px bg-neutral-800"></div>
 
                     <div class="flex items-center justify-between py-0.5">
                         <span class="text-neutral-400">To-review:</span>
-                        <span class="text-green-400">25</span>
+                        <span :class="props.deck.review_cards_count > 0 ? 'text-green-400' : 'text-neutral-400'">
+                            {{ props.deck.review_cards_count }}
+                        </span>
                     </div>
                     <div class="h-px bg-neutral-800"></div>
 
                     <div class="flex items-center justify-between">
                         <span class="text-neutral-400">Learning:</span>
-                        <span class="text-orange-400">60</span>
+                        <span :class="props.deck.learning_cards_count > 0 ? 'text-orange-400' : 'text-neutral-400'">
+                            {{ props.deck.learning_cards_count }}
+                        </span>
                     </div>
                 </div>
             </div>

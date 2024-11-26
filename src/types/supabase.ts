@@ -1,9 +1,23 @@
+interface FSRSSettings {
+  request_retention: number;
+  maximum_stability: number;
+  weights: number[];
+  learning_steps: number[];
+  enable_fsrs: boolean;
+}
+
+interface DeckSettings {
+  fsrs: FSRSSettings;
+  [key: string]: any;
+}
+
 export type Json =
   | string
   | number
   | boolean
   | null
   | { [key: string]: Json | undefined }
+  | DeckSettings
   | Json[];
 
 export interface Database {
@@ -24,6 +38,7 @@ export interface Database {
           new_cards_count: number;
           learning_cards_count: number;
           review_cards_count: number;
+          relearning_cards_count: number;
           due_cards_count: number;
           next_due_date: string | null;
           daily_new_cards_limit: number;
@@ -51,6 +66,7 @@ export interface Database {
           new_cards_count?: number;
           learning_cards_count?: number;
           review_cards_count?: number;
+          relearning_cards_count?: number;
           due_cards_count?: number;
           next_due_date?: string | null;
           daily_new_cards_limit?: number;
@@ -78,6 +94,7 @@ export interface Database {
           new_cards_count?: number;
           learning_cards_count?: number;
           review_cards_count?: number;
+          relearning_cards_count?: number;
           due_cards_count?: number;
           next_due_date?: string | null;
           daily_new_cards_limit?: number;
@@ -101,24 +118,24 @@ export interface Database {
           note: string | null;
           created_at: string;
           updated_at: string;
-          status: "new" | "learning" | "reviewing" | "graduated" | "suspended";
+          status: "new" | "learning" | "review" | "relearning";
+          state: "new" | "learning" | "review" | "relearning";
           due_date: string;
-          interval: number;
-          ease_factor: number;
-          steps_index: number;
-          reviews_count: number;
+          stability: number;
+          difficulty: number;
+          elapsed_days: number;
+          scheduled_days: number;
+          reps: number;
           lapses_count: number;
-          consecutive_correct: number;
           last_review_date: string | null;
           last_review_rating: "again" | "hard" | "good" | "easy" | null;
-          learning_steps: number[];
-          graduating_interval: number;
-          easy_interval: number;
-          minimum_interval: number;
-          maximum_interval: number;
+          request_retention: number;
+          maximum_stability: number;
+          w: number[];
           position: number | null;
           deleted_at: string | null;
           formatting_settings: Json;
+          tags: string[] | null;
         };
         Insert: {
           id?: string;
@@ -128,24 +145,24 @@ export interface Database {
           note?: string | null;
           created_at?: string;
           updated_at?: string;
-          status?: "new" | "learning" | "reviewing" | "graduated" | "suspended";
+          status?: "new" | "learning" | "review" | "relearning";
+          state?: "new" | "learning" | "review" | "relearning";
           due_date?: string;
-          interval?: number;
-          ease_factor?: number;
-          steps_index?: number;
-          reviews_count?: number;
+          stability?: number;
+          difficulty?: number;
+          elapsed_days?: number;
+          scheduled_days?: number;
+          reps?: number;
           lapses_count?: number;
-          consecutive_correct?: number;
           last_review_date?: string | null;
           last_review_rating?: "again" | "hard" | "good" | "easy" | null;
-          learning_steps?: number[];
-          graduating_interval?: number;
-          easy_interval?: number;
-          minimum_interval?: number;
-          maximum_interval?: number;
+          request_retention?: number;
+          maximum_stability?: number;
+          w?: number[];
           position?: number | null;
           deleted_at?: string | null;
           formatting_settings?: Json;
+          tags?: string[] | null;
         };
         Update: {
           id?: string;
@@ -155,24 +172,24 @@ export interface Database {
           note?: string | null;
           created_at?: string;
           updated_at?: string;
-          status?: "new" | "learning" | "reviewing" | "graduated" | "suspended";
+          status?: "new" | "learning" | "review" | "relearning";
+          state?: "new" | "learning" | "review" | "relearning";
           due_date?: string;
-          interval?: number;
-          ease_factor?: number;
-          steps_index?: number;
-          reviews_count?: number;
+          stability?: number;
+          difficulty?: number;
+          elapsed_days?: number;
+          scheduled_days?: number;
+          reps?: number;
           lapses_count?: number;
-          consecutive_correct?: number;
           last_review_date?: string | null;
           last_review_rating?: "again" | "hard" | "good" | "easy" | null;
-          learning_steps?: number[];
-          graduating_interval?: number;
-          easy_interval?: number;
-          minimum_interval?: number;
-          maximum_interval?: number;
+          request_retention?: number;
+          maximum_stability?: number;
+          w?: number[];
           position?: number | null;
           deleted_at?: string | null;
           formatting_settings?: Json;
+          tags?: string[] | null;
         };
       };
       comments: {
@@ -402,7 +419,7 @@ export interface Database {
       account_type: "free" | "premium" | "admin";
       gender_type: "male" | "female" | "non_binary" | "prefer_not_to_say";
       deck_visibility: "private" | "public" | "unlisted";
-      card_status: "new" | "learning" | "reviewing" | "graduated" | "suspended";
+      card_status: "new" | "learning" | "review" | "relearning";
       difficulty_rating: "again" | "hard" | "good" | "easy";
       comment_status: "active" | "hidden" | "flagged" | "deleted";
     };

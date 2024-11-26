@@ -13,6 +13,7 @@
     "@formkit/auto-animate": "^0.8.2",
     "@supabase/supabase-js": "^2.46.1",
     "@vercel/node": "^3.2.12",
+    "@vueup/vue-quill": "^1.2.0",
     "date-fns": "^4.1.0",
     "lucide-vue-next": "^0.460.0",
     "marked": "^15.0.1",

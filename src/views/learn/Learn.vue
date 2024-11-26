@@ -12,6 +12,7 @@ import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
 
 defineProps<{
   deckId?: string;
+  cardId?: string;
 }>();
 
 const router = useRouter();
@@ -141,35 +142,37 @@ const scrollToTop = () => {
   <div class="motion-preset-fade motion-duration-150">
     <!-- Gradient overlay -->
     <div class="absolute inset-0 z-[20] pointer-events-none bg-gradient-to-b from-pink-950/5 to-transparent"></div>
-    <PageLayout>
-      <!-- <template #header>
-          <div class="flex items-center justify-between w-full">
-            Test Header Content
+    
+    <!-- Show either the main learn view or the cards view based on the route -->
+    <RouterView v-if="route.name === 'cards'" :deck-id="deckId" :card-id="cardId" />
+    
+    <template v-else>
+      <PageLayout>
+        <template #sidebar>
+          <DeckList :selected-deck="selectedDeck" @select-deck="selectDeck" @create-deck="openCreateDeckModal" />
+        </template>
+
+        <template #content>
+          <div v-if="isLoading" class="flex items-center justify-center mt-20 text-neutral-500">
+            <LoadingSpinner :size="32" />
           </div>
-        </template> -->
-
-      <template #sidebar>
-        <DeckList :selected-deck="selectedDeck" @select-deck="selectDeck" @create-deck="openCreateDeckModal" />
-      </template>
-
-      <template #content>
-        <div v-if="isLoading" class="flex items-center justify-center mt-20 text-neutral-500">
-          <LoadingSpinner :size="32" />
-        </div>
-        <div v-else-if="currentDeck" class="space-y-6">
-          <DeckDetails :deck="currentDeck" @update="handleEditDeck" @delete="handleDeleteDeck" @study="handleStudyDeck"
-            @cards="handleViewCards" />
-          <template v-if="currentDeck.visibility !== 'private'">
-            <CommentSection :deck-id="currentDeck.id" />
-          </template>
-        </div>
-        <div v-else class="flex items-center justify-center mt-16 text-neutral-500">
-          Select a deck to view details
-        </div>
-      </template>
-    </PageLayout>
+          <div v-else-if="currentDeck" class="space-y-6">
+            <DeckDetails :deck="currentDeck" @update="handleEditDeck" @delete="handleDeleteDeck" @study="handleStudyDeck"
+              @cards="handleViewCards" />
+            <template v-if="currentDeck.visibility !== 'private'">
+              <CommentSection :deck-id="currentDeck.id" />
+            </template>
+          </div>
+          <div v-else class="flex items-center justify-center mt-16 text-neutral-500">
+            Select a deck to view details
+          </div>
+        </template>
+      </PageLayout>
+    </template>
   </div>
+  
   <CreateDeckModal ref="createDeckModalRef" @created="selectDeck" />
-  <DeleteModal ref="deleteModalRef" @confirm="confirmDeleteDeck" title="Delete Deck?"
-    mainMessage="Deleting this deck will also delete all the cards in it." subMessage="This action cannot be undone." />
+  <DeleteModal ref="deleteModalRef" @confirm="confirmDeleteDeck" 
+    title="Delete Deck?" mainMessage="Deleting this deck will also delete all the cards in it." 
+    subMessage="This action cannot be undone." />
 </template>

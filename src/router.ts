@@ -20,6 +20,15 @@ const router = createRouter({
       component: () => import("./views/learn/Learn.vue"),
       meta: { requiresAuth: true },
       props: true,
+      children: [
+        {
+          path: "cards/:cardId?",
+          name: "cards",
+          component: () => import("./views/learn/Cards.vue"),
+          meta: { requiresAuth: true },
+          props: true,
+        }
+      ]
     },
     {
       path: "/discover",

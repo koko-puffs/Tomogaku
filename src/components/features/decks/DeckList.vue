@@ -38,6 +38,25 @@ onUnmounted(() => {
         clearInterval(refreshInterval.value);
     }
 });
+
+const getAvailableNewCards = (deck: any) => {
+    // Get today's start timestamp
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Count new cards already studied today
+    const newCardsStudiedToday = deckStore.cards[deck.id]?.filter(card => 
+        card.last_review_date && 
+        new Date(card.last_review_date) >= today && 
+        card.state === "new"
+    ).length || 0;
+
+    // Calculate remaining new cards allowed today
+    const remainingNewCards = (deck.daily_new_cards_limit || 20) - newCardsStudiedToday;
+
+    // Return the minimum between total new cards and remaining allowed
+    return Math.min(deck.new_cards_count, Math.max(0, remainingNewCards));
+};
 </script>
 
 <template>
@@ -53,7 +72,7 @@ onUnmounted(() => {
         <!-- Deck List -->
         <div class="space-y-2">
             <div v-for="deck in deckStore.userDecks" :key="deck.id"
-                class="relative px-4 py-3 group motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity"
+                class="relative px-4 py-3 group motion-translate-y-in-[-4%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity"
                 :class="[
                     selectedDeck === deck.id
                         ? 'panel-active'
@@ -71,21 +90,26 @@ onUnmounted(() => {
                 </div>
                 <div class="flex justify-between px-8 text-sm">
                     <span class="relative">
-                        <span class="peer text-cyan-400">{{ 10 }}</span>
-                        <div
-                            class="absolute invisible p-2 text-sm font-medium transition-all -translate-x-1/2 -translate-y-1 border rounded-md shadow-lg opacity-0 pointer-events-none border-neutral-800 left-1/2 bottom-full bg-neutral-900 w-max text-neutral-400 peer-hover:visible peer-hover:opacity-100">
+                        <span class="peer" :class="getAvailableNewCards(deck) > 0 ? 'text-cyan-400' : 'text-neutral-400'">
+                            {{ getAvailableNewCards(deck) }}
+                        </span>
+                        <div class="absolute invisible p-2 text-sm font-medium transition-all -translate-x-1/2 -translate-y-1 border rounded-md shadow-lg opacity-0 pointer-events-none border-neutral-800 left-1/2 bottom-full bg-neutral-900 w-max text-neutral-400 peer-hover:visible peer-hover:opacity-100">
                             New cards due
                         </div>
                     </span>
                     <span class="relative">
-                        <span class="text-green-400 peer">{{ 25 }}</span>
+                        <span class="peer" :class="deck.review_cards_count > 0 ? 'text-green-400' : 'text-neutral-400'">
+                            {{ deck.review_cards_count }}
+                        </span>
                         <div
                             class="absolute invisible p-2 text-sm font-medium transition-all -translate-x-1/2 -translate-y-1 border rounded-md shadow-lg opacity-0 pointer-events-none border-neutral-800 left-1/2 bottom-full bg-neutral-900 w-max text-neutral-400 peer-hover:visible peer-hover:opacity-100">
                             To-review cards due
                         </div>
                     </span>
                     <span class="relative">
-                        <span class="text-orange-400 peer">{{ 60 }}</span>
+                        <span class="peer" :class="deck.learning_cards_count > 0 ? 'text-orange-400' : 'text-neutral-400'">
+                            {{ deck.learning_cards_count }}
+                        </span>
                         <div
                             class="absolute invisible p-2 text-sm font-medium transition-all -translate-x-1/2 -translate-y-1 border rounded-md shadow-lg opacity-0 pointer-events-none border-neutral-800 left-1/2 bottom-full bg-neutral-900 w-max text-neutral-400 peer-hover:visible peer-hover:opacity-100">
                             Learning cards due

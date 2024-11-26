@@ -87,19 +87,19 @@ const removeTag = (tagToRemove: string) => {
     <div class="p-4 panel">
         <div class="space-y-4">
             <div class="space-y-2">
-                <label class="block text-sm">Title</label>
+                <label class="block pl-1 text-sm text-neutral-400">Title</label>
                 <input v-model="editTitle" type="text" class="w-full input-lighter-filled"
                     placeholder="Enter deck title" />
             </div>
 
             <div class="space-y-2">
-                <label class="block text-sm">Description (optional)</label>
+                <label class="block pl-1 text-sm text-neutral-400">Description (optional)</label>
                 <textarea v-model="editDescription" rows="3" class="w-full h-48 resize-none input-lighter-filled !-mb-2"
                     placeholder="Enter deck description" />
             </div>
 
             <div class="space-y-2">
-                <label class="block text-sm">Tags (optional)</label>
+                <label class="block pl-1 text-sm text-neutral-400">Tags (optional)</label>
                 <div class="relative space-y-2">
                     <input v-model="newTag" @keydown.enter.prevent="addTag" type="text"
                         class="w-full input-lighter-filled" placeholder="Type a tag and press Enter" />
@@ -119,7 +119,7 @@ const removeTag = (tagToRemove: string) => {
             <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div class="flex items-center gap-2">
                     <div class="flex items-center gap-3">
-                        <span class="text-sm -mb-0.5">Visibility:</span>
+                        <span class="text-sm -mb-0.5 text-neutral-400 pl-1">Visibility:</span>
                         <ToggleSlider v-model="isPublic" />
                         <div class="flex items-center gap-1.5">
                             <component :is="editVisibility === 'public' ? Globe2 : Lock" :size="16"

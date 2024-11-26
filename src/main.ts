@@ -7,6 +7,7 @@ import { useAuthStore } from "./stores/authStore.ts";
 import { useDeckStore } from "./stores/deckStore.ts";
 import { useUsersStore } from "./stores/usersStore.ts";
 import { useCommentsStore } from "./stores/commentsStore.ts";
+import { QuillEditor } from "@vueup/vue-quill";
 import router from "./router";
 
 const app = createApp(App);
@@ -14,6 +15,7 @@ const app = createApp(App);
 app.use(router);
 app.use(createPinia());
 app.use(autoAnimatePlugin);
+app.component("VueQuillEditor", QuillEditor);
 
 const authStore = useAuthStore();
 const deckStore = useDeckStore();
