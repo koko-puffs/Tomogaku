@@ -152,7 +152,7 @@ const handlePositionInput = (event: Event) => {
 <template>
   <div
     class="panel motion-translate-x-in-[0%] motion-translate-y-in-[-1%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
-    <!-- Move the Action Buttons to the top -->
+    <!-- Action Buttons -->
     <div class="flex items-center justify-between p-4">
       <div class="flex gap-2">
         <button @click="handlePrevious" class="flex items-center w-10 gap-1 button-lighter-visible"

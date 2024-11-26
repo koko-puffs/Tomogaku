@@ -106,7 +106,12 @@ watch(() => route.hash, (newHash) => {
 
 const handleCardsClick = () => {
     closeDropdown();
-    router.push(`/learn/${props.deck.id}/cards`);
+    const cards = deckStore.cards[props.deck.id] || [];
+    if (cards.length > 0) {
+        router.push(`/learn/${props.deck.id}/cards/${cards[0].id}`);
+    } else {
+        router.push(`/learn/${props.deck.id}/cards`);
+    }
 };
 
 const availableNewCards = computed(() => {
