@@ -38,7 +38,7 @@ watch(() => props.card.id, () => {
   editPosition.value = null;
   newTag.value = '';
   tagError.value = '';
-  
+
   // Then set new values on next tick
   nextTick(() => {
     editFrontContent.value = props.card.front_content || '';
@@ -50,9 +50,9 @@ watch(() => props.card.id, () => {
 
 const hasChanges = computed(() => {
   return editFrontContent.value !== props.card.front_content ||
-         editBackContent.value !== props.card.back_content ||
-         !areArraysEqual(editTags.value, props.card.tags || []) ||
-         editPosition.value !== props.card.position;
+    editBackContent.value !== props.card.back_content ||
+    !areArraysEqual(editTags.value, props.card.tags || []) ||
+    editPosition.value !== props.card.position;
 });
 
 const areArraysEqual = (arr1: string[], arr2: string[]) => {
@@ -64,7 +64,7 @@ const handleUpdate = () => {
   const trimmedFront = editFrontContent.value.trim();
   // Check if the content is empty or only contains HTML whitespace/tags
   const isEmpty = !trimmedFront || trimmedFront === '<p></p>' || trimmedFront === '<p><br></p>';
-  
+
   if (isEmpty || !hasChanges.value) return;
 
   emit('update', {
@@ -126,7 +126,7 @@ const handlePositionInput = (event: Event) => {
   event.stopPropagation();
   const input = event.target as HTMLInputElement;
   const value = input.value;
-  
+
   // Allow empty value (null position)
   if (!value) {
     editPosition.value = null;
@@ -145,45 +145,38 @@ const handlePositionInput = (event: Event) => {
 </script>
 
 <template>
-  <div class="panel motion-translate-x-in-[0%] motion-translate-y-in-[-1%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+  <div
+    class="panel motion-translate-x-in-[0%] motion-translate-y-in-[-1%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
     <!-- Move the Action Buttons to the top -->
     <div class="flex items-center justify-between p-4">
       <div class="flex gap-2">
-        <button @click="handlePrevious" 
-          class="flex items-center w-10 gap-1 button-lighter-visible" 
+        <button @click="handlePrevious" class="flex items-center w-10 gap-1 button-lighter-visible"
           title="Previous card">
           <ChevronLeft :size="18" />
         </button>
-        <button @click="handleNext" 
-          class="flex items-center w-10 gap-1 mr-2 button-lighter-visible" 
-          title="Next card">
+        <button @click="handleNext" class="flex items-center w-10 gap-1 mr-2 button-lighter-visible" title="Next card">
           <ChevronRight :size="18" />
         </button>
       </div>
 
       <div class="flex gap-2">
-        <button @click="emit('delete')" 
-          class="flex items-center w-10 gap-1 button-lighter-visible" 
-          title="Delete card">
+        <button @click="emit('delete')" class="flex items-center w-10 gap-1 button-lighter-visible" title="Delete card">
           <Trash2 :size="18" />
         </button>
-        <button @click="emit('duplicate')" 
-          class="flex items-center w-10 gap-1 button-lighter-visible" 
+        <button @click="emit('duplicate')" class="flex items-center w-10 gap-1 button-lighter-visible"
           title="Duplicate card">
           <Copy :size="18" />
         </button>
         <div class="w-px bg-neutral-800"></div>
-        <button @click="resetForm" 
-          :disabled="!hasChanges" 
-          :class="[
-            'button-lighter-visible flex items-center gap-2 w-10 md:w-24',
-            { 'text-neutral-600 pointer-events-none': !hasChanges }
-          ]">
+        <button @click="resetForm" :disabled="!hasChanges" :class="[
+          'button-lighter-visible flex items-center gap-2 w-10 md:w-24',
+          { 'text-neutral-600 pointer-events-none': !hasChanges }
+        ]">
           <RotateCcw :size="18" />
           <span class="hidden md:inline">Reset</span>
         </button>
-        <button @click="handleUpdate" 
-          :disabled="!editFrontContent.trim() || editFrontContent.trim() === '<p></p>' || editFrontContent.trim() === '<p><br></p>' || !hasChanges" 
+        <button @click="handleUpdate"
+          :disabled="!editFrontContent.trim() || editFrontContent.trim() === '<p></p>' || editFrontContent.trim() === '<p><br></p>' || !hasChanges"
           :class="[
             editFrontContent.trim() && editFrontContent.trim() !== '<p></p>' && editFrontContent.trim() !== '<p><br></p>' && hasChanges
               ? 'button-accept-visible flex items-center gap-2 w-10 md:w-24'
@@ -204,25 +197,15 @@ const handlePositionInput = (event: Event) => {
       <!-- Front Content -->
       <div class="space-y-2">
         <label class="block text-sm text-neutral-400">Front</label>
-        <QuillEditor
-          :key="`front-${props.card.id}`"
-          v-model:content="editFrontContent"
-          contentType="html"
-          toolbar="essential"
-          theme="snow"
-        />
+        <QuillEditor :key="`front-${props.card.id}`" v-model:content="editFrontContent" contentType="html"
+          toolbar="essential" theme="snow" />
       </div>
 
       <!-- Back Content -->
       <div class="space-y-2">
         <label class="block text-sm text-neutral-400">Back</label>
-        <QuillEditor
-          :key="`back-${props.card.id}`"
-          v-model:content="editBackContent"
-          contentType="html"
-          toolbar="essential"
-          theme="snow"
-        />
+        <QuillEditor :key="`back-${props.card.id}`" v-model:content="editBackContent" contentType="html"
+          toolbar="essential" theme="snow" />
       </div>
 
       <div class="h-px bg-neutral-800"></div>
@@ -233,13 +216,8 @@ const handlePositionInput = (event: Event) => {
         <div class="flex-1 space-y-2">
           <label class="block text-sm text-neutral-400">Tags</label>
           <div class="relative">
-            <input 
-              v-model="newTag" 
-              @keydown.enter.prevent="addTag" 
-              type="text" 
-              class="w-full input-lighter-filled"
-              placeholder="Type a tag and press Enter" 
-            />
+            <input v-model="newTag" @keydown.enter.prevent="addTag" type="text" class="w-full input-lighter-filled"
+              placeholder="Type a tag and press Enter" />
             <p v-if="tagError" class="absolute mt-1 text-sm text-red-500">{{ tagError }}</p>
           </div>
           <div class="flex flex-wrap gap-2">
@@ -254,17 +232,10 @@ const handlePositionInput = (event: Event) => {
         </div>
 
         <!-- Position Section -->
-        <div class="space-y-2 w-28">
+        <div class="w-24 space-y-2">
           <label class="block text-sm text-neutral-400">Position</label>
-          <input
-            type="number"
-            :value="editPosition"
-            @input="handlePositionInput"
-            @keydown.stop
-            class="w-full input-lighter-filled"
-            min="1"
-            placeholder="#"
-          />
+          <input type="number" :value="editPosition" @input="handlePositionInput" @keydown.stop
+            class="w-full input-lighter-filled" min="1" placeholder="#" />
         </div>
       </div>
     </div>

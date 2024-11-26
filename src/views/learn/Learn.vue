@@ -142,10 +142,10 @@ const scrollToTop = () => {
   <div class="motion-preset-fade motion-duration-150">
     <!-- Gradient overlay -->
     <div class="absolute inset-0 z-[20] pointer-events-none bg-gradient-to-b from-pink-950/5 to-transparent"></div>
-    
+
     <!-- Show either the main learn view or the cards view based on the route -->
     <RouterView v-if="route.name === 'cards'" :deck-id="deckId" :card-id="cardId" />
-    
+
     <template v-else>
       <PageLayout>
         <template #sidebar>
@@ -157,8 +157,8 @@ const scrollToTop = () => {
             <LoadingSpinner :size="32" />
           </div>
           <div v-else-if="currentDeck" class="space-y-6">
-            <DeckDetails :deck="currentDeck" @update="handleEditDeck" @delete="handleDeleteDeck" @study="handleStudyDeck"
-              @cards="handleViewCards" />
+            <DeckDetails :deck="currentDeck" @update="handleEditDeck" @delete="handleDeleteDeck"
+              @study="handleStudyDeck" @cards="handleViewCards" />
             <template v-if="currentDeck.visibility !== 'private'">
               <CommentSection :deck-id="currentDeck.id" />
             </template>
@@ -170,9 +170,8 @@ const scrollToTop = () => {
       </PageLayout>
     </template>
   </div>
-  
+
   <CreateDeckModal ref="createDeckModalRef" @created="selectDeck" />
-  <DeleteModal ref="deleteModalRef" @confirm="confirmDeleteDeck" 
-    title="Delete Deck?" mainMessage="Deleting this deck will also delete all the cards in it." 
-    subMessage="This action cannot be undone." />
+  <DeleteModal ref="deleteModalRef" @confirm="confirmDeleteDeck" title="Delete Deck?"
+    mainMessage="Deleting this deck will also delete all the cards in it." subMessage="This action cannot be undone." />
 </template>

@@ -67,10 +67,10 @@ const currentSortText = computed(() => {
 // Filter cards
 const filteredCards = computed(() => {
     let cards = deckStore.getCardsByDeckId(props.deckId);
-    
+
     // Apply search filter
     if (searchQuery.value) {
-        cards = cards.filter(card => 
+        cards = cards.filter(card =>
             stripHtml(card.front_content).toLowerCase().includes(searchQuery.value.toLowerCase()) ||
             stripHtml(card.back_content).toLowerCase().includes(searchQuery.value.toLowerCase())
         );
@@ -78,14 +78,14 @@ const filteredCards = computed(() => {
 
     // Apply tag filter
     if (selectedTags.value.length > 0) {
-        cards = cards.filter(card => 
+        cards = cards.filter(card =>
             card.tags?.some(tag => selectedTags.value.includes(tag))
         );
     }
 
     // Apply status filter
     if (selectedStatus.value.length > 0) {
-        cards = cards.filter(card => 
+        cards = cards.filter(card =>
             selectedStatus.value.includes(card.status)
         );
     }
@@ -115,7 +115,7 @@ const stripHtml = (html: string) => {
 
 // Expose the filtered cards to the parent
 defineExpose({
-  filteredCards
+    filteredCards
 });
 </script>
 
@@ -126,15 +126,11 @@ defineExpose({
             <h2 class="pl-1 text-xl font-bold">Cards ({{ filteredCards.length }})</h2>
             <div class="flex">
                 <!-- Filter Button -->
-                <button 
-                    @click="showFilters = !showFilters" 
-                    title="Filter cards"
-                    class="w-10"
-                    :class="[
-                        showFilters 
-                            ? 'button-lighter-visible hover:bg-neutral-800 bg-neutral-800 hover:border-neutral-700/70' 
-                            : 'button'
-                    ]">
+                <button @click="showFilters = !showFilters" title="Filter cards" class="w-10" :class="[
+                    showFilters
+                        ? 'button-lighter-visible hover:bg-neutral-800 bg-neutral-800 hover:border-neutral-700/70'
+                        : 'button'
+                ]">
                     <Filter :size="18" />
                 </button>
 
@@ -145,14 +141,13 @@ defineExpose({
         </div>
 
         <!-- Filter Section -->
-        <div v-if="showFilters" 
+        <div v-if="showFilters"
             class="w-full p-4 space-y-4 panel motion-translate-y-in-[-1.5%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
             <!-- Sort Options -->
             <div class="space-y-2">
                 <label class="text-sm text-neutral-400">Sort by</label>
                 <div class="relative" ref="sortDropdownRef">
-                    <button 
-                        @click.stop="isSortDropdownOpen = !isSortDropdownOpen"
+                    <button @click.stop="isSortDropdownOpen = !isSortDropdownOpen"
                         class="flex items-center justify-between w-full px-3 input-lighter-filled">
                         <span>{{ currentSortText }}</span>
                         <ArrowUpDown :size="16" />
@@ -160,9 +155,7 @@ defineExpose({
 
                     <div v-if="isSortDropdownOpen"
                         class="absolute left-0 right-0 z-10 w-full py-2 mt-1 border rounded-lg shadow-xl bg-neutral-900 border-neutral-800 motion-translate-y-in-[-4%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity">
-                        <button 
-                            v-for="option in ['newest', 'oldest', 'position', 'due date']"
-                            :key="option"
+                        <button v-for="option in ['newest', 'oldest', 'position', 'due date']" :key="option"
                             @click="handleSortSelect(option as SortOption)"
                             class="flex items-center w-full px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800"
                             :class="{ 'text-white': sortBy === option, 'text-neutral-400': sortBy !== option }">
@@ -175,9 +168,7 @@ defineExpose({
             <!-- Search -->
             <div class="space-y-2">
                 <label class="text-sm text-neutral-400">Search</label>
-                <input type="text" 
-                    v-model="searchQuery"
-                    class="w-full input-lighter-filled"
+                <input type="text" v-model="searchQuery" class="w-full input-lighter-filled"
                     placeholder="Search cards...">
             </div>
 
@@ -185,13 +176,9 @@ defineExpose({
             <div class="space-y-2">
                 <label class="text-sm text-neutral-400">Status</label>
                 <div class="space-y-1">
-                    <label v-for="status in ['new', 'learning', 'review', 'relearning']" 
-                        :key="status" 
+                    <label v-for="status in ['new', 'learning', 'review', 'relearning']" :key="status"
                         class="flex items-center gap-2">
-                        <input type="checkbox" 
-                            :value="status"
-                            v-model="selectedStatus"
-                            class="checkbox">
+                        <input type="checkbox" :value="status" v-model="selectedStatus" class="checkbox">
                         <span class="text-sm capitalize mt-0.5">{{ status }}</span>
                     </label>
                 </div>
@@ -201,17 +188,12 @@ defineExpose({
             <div class="space-y-2">
                 <label class="text-sm text-neutral-400">Tags</label>
                 <div class="space-y-1">
-                    <div v-if="deckStore.getUniqueTags(deckId).length === 0" 
-                        class="pl-1 text-sm text-neutral-500">
+                    <div v-if="deckStore.getUniqueTags(deckId).length === 0" class="pl-1 text-sm text-neutral-500">
                         —
                     </div>
-                    <label v-else v-for="tag in deckStore.getUniqueTags(deckId)" 
-                        :key="tag" 
+                    <label v-else v-for="tag in deckStore.getUniqueTags(deckId)" :key="tag"
                         class="flex items-center gap-2">
-                        <input type="checkbox" 
-                            :value="tag"
-                            v-model="selectedTags"
-                            class="checkbox">
+                        <input type="checkbox" :value="tag" v-model="selectedTags" class="checkbox">
                         <span class="text-sm mt-0.5">{{ tag }}</span>
                     </label>
                 </div>
@@ -222,27 +204,24 @@ defineExpose({
 
         <!-- Card List -->
         <div class="space-y-1.5">
-            <div v-for="card in filteredCards" 
-                :key="card.id"
+            <div v-for="card in filteredCards" :key="card.id"
                 class="relative pl-4 pr-2 py-3 h-10 flex items-center justify-between group motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity"
                 :class="[
                     selectedCard === card.id
                         ? 'panel-active'
                         : 'panel-clickable hover:bg-neutral-800/50'
-                ]"
-                @click="emit('select-card', card.id)">
-                
+                ]" @click="emit('select-card', card.id)">
+
                 <div class="flex items-center flex-1 min-w-0 gap-2">
                     <!-- Position number - only show if exists -->
                     <span v-if="card.position" class="text-sm text-neutral-400">#{{ card.position }}</span>
-                    
+
                     <!-- Front of card preview -->
                     <div class="text-sm truncate">{{ stripHtml(card.front_content) }}</div>
                 </div>
 
                 <!-- Status tag -->
-                <span class="px-2 py-1 text-xs rounded-md text-neutral-400 shrink-0"
-                :class="[
+                <span class="px-2 py-1 text-xs rounded-md text-neutral-400 shrink-0" :class="[
                     selectedCard === card.id
                         ? 'bg-neutral-700'
                         : 'bg-neutral-800'

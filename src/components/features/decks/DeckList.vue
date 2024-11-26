@@ -45,9 +45,9 @@ const getAvailableNewCards = (deck: any) => {
     today.setHours(0, 0, 0, 0);
 
     // Count new cards already studied today
-    const newCardsStudiedToday = deckStore.cards[deck.id]?.filter(card => 
-        card.last_review_date && 
-        new Date(card.last_review_date) >= today && 
+    const newCardsStudiedToday = deckStore.cards[deck.id]?.filter(card =>
+        card.last_review_date &&
+        new Date(card.last_review_date) >= today &&
         card.state === "new"
     ).length || 0;
 
@@ -90,10 +90,12 @@ const getAvailableNewCards = (deck: any) => {
                 </div>
                 <div class="flex justify-between px-8 text-sm">
                     <span class="relative">
-                        <span class="peer" :class="getAvailableNewCards(deck) > 0 ? 'text-cyan-400' : 'text-neutral-400'">
+                        <span class="peer"
+                            :class="getAvailableNewCards(deck) > 0 ? 'text-cyan-400' : 'text-neutral-400'">
                             {{ getAvailableNewCards(deck) }}
                         </span>
-                        <div class="absolute invisible p-2 text-sm font-medium transition-all -translate-x-1/2 -translate-y-1 border rounded-md shadow-lg opacity-0 pointer-events-none border-neutral-800 left-1/2 bottom-full bg-neutral-900 w-max text-neutral-400 peer-hover:visible peer-hover:opacity-100">
+                        <div
+                            class="absolute invisible p-2 text-sm font-medium transition-all -translate-x-1/2 -translate-y-1 border rounded-md shadow-lg opacity-0 pointer-events-none border-neutral-800 left-1/2 bottom-full bg-neutral-900 w-max text-neutral-400 peer-hover:visible peer-hover:opacity-100">
                             New cards due
                         </div>
                     </span>
@@ -107,7 +109,8 @@ const getAvailableNewCards = (deck: any) => {
                         </div>
                     </span>
                     <span class="relative">
-                        <span class="peer" :class="deck.learning_cards_count > 0 ? 'text-orange-400' : 'text-neutral-400'">
+                        <span class="peer"
+                            :class="deck.learning_cards_count > 0 ? 'text-orange-400' : 'text-neutral-400'">
                             {{ deck.learning_cards_count }}
                         </span>
                         <div

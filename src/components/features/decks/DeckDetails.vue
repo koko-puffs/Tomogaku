@@ -115,9 +115,9 @@ const availableNewCards = computed(() => {
     today.setHours(0, 0, 0, 0);
 
     // Count new cards already studied today
-    const newCardsStudiedToday = deckStore.cards[props.deck.id]?.filter(card => 
-        card.last_review_date && 
-        new Date(card.last_review_date) >= today && 
+    const newCardsStudiedToday = deckStore.cards[props.deck.id]?.filter(card =>
+        card.last_review_date &&
+        new Date(card.last_review_date) >= today &&
         card.state === "new"
     ).length || 0;
 
@@ -250,8 +250,7 @@ const availableNewCards = computed(() => {
 
                 <!-- Tags -->
                 <div v-if="props.deck.tags?.length" class="space-y-2">
-                    <div class="flex flex-wrap gap-2">
-                        <span v-for="tag in props.deck.tags" :key="tag"
+                    <div class="flex flex-wrap gap-2"> <span v-for="tag in props.deck.tags" :key="tag"
                             class="px-2 py-1 text-xs rounded-md bg-neutral-800 text-neutral-400">
                             {{ tag }}
                         </span>

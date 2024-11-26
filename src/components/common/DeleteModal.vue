@@ -24,11 +24,9 @@
                     :disabled="loading">
                     <LoadingSpinner v-if="loading" class="w-5 h-5" />
                     <span v-else class="relative z-10">{{ isHolding ? 'Hold...' : 'Delete' }}</span>
-                    <div class="absolute inset-0 bg-white opacity-30"
-                        :class="[
-                            isHolding ? 'transition-[width] duration-[600ms] ease-in' : 'transition-[width] duration-150',
-                            ]"
-                        :style="{ width: `${holdProgress}%` }" />
+                    <div class="absolute inset-0 bg-white opacity-30" :class="[
+                        isHolding ? 'transition-[width] duration-[600ms] ease-in' : 'transition-[width] duration-150',
+                    ]" :style="{ width: `${holdProgress}%` }" />
                 </button>
             </div>
         </template>
@@ -93,7 +91,7 @@ const startDelete = () => {
 
     isHolding.value = true;
     holdProgress.value = 0;
-    
+
     // Small delay to ensure the initial 0% is registered
     requestAnimationFrame(() => {
         holdProgress.value = 100;
