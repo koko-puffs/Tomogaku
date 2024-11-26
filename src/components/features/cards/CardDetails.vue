@@ -48,9 +48,14 @@ watch(() => props.card.id, () => {
   });
 }, { immediate: true });
 
+// Add this helper function
+const cleanContent = (content: string) => {
+  return content.replace(/<span class="ql-cursor">.*?<\/span>/g, '');
+};
+
 const hasChanges = computed(() => {
-  return editFrontContent.value !== props.card.front_content ||
-    editBackContent.value !== props.card.back_content ||
+  return cleanContent(editFrontContent.value) !== cleanContent(props.card.front_content) ||
+    cleanContent(editBackContent.value) !== cleanContent(props.card.back_content) ||
     !areArraysEqual(editTags.value, props.card.tags || []) ||
     editPosition.value !== props.card.position;
 });
