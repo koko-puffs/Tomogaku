@@ -61,12 +61,28 @@ const handleDeleteCard = async () => {
 };
 
 const confirmDeleteCard = async () => {
-  if (!selectedCard.value || !route.params.deckId) return;
+  if (!selectedCard.value || !route.params.deckId || !cardListRef.value) return;
 
   try {
+    // Get the current card's index before deletion
+    const cards = cardListRef.value.filteredCards;
+    const currentIndex = cards.findIndex(card => card.id === selectedCard.value);
+    
+    // Delete the card
     await deckStore.deleteCard(route.params.deckId as string, selectedCard.value);
-    selectedCard.value = null;
-    await router.push(`/learn/${route.params.deckId}/cards`);
+    
+    // Select the previous card if it exists, otherwise select the next card
+    if (currentIndex > 0) {
+      // There is a previous card
+      await router.push(`/learn/${route.params.deckId}/cards/${cards[currentIndex - 1].id}`);
+    } else if (cards.length > 1) {
+      // We're deleting the first card, select the new first card
+      await router.push(`/learn/${route.params.deckId}/cards/${cards[1].id}`);
+    } else {
+      // No cards left
+      selectedCard.value = null;
+      await router.push(`/learn/${route.params.deckId}/cards`);
+    }
   } catch (error) {
     console.error('Failed to delete card:', error);
   }
@@ -187,8 +203,12 @@ watch(
         <div v-else-if="selectedCard && deckStore.getCardsByDeckId(deckId).find(card => card.id === selectedCard)"
           class="space-y-6">
           <CardDetails :card="deckStore.getCardsByDeckId(deckId).find(card => card.id === selectedCard)!"
-            @update="handleUpdateCard" @delete="handleDeleteCard" @duplicate="handleDuplicateCard"
-            @previous="handlePreviousCard" @next="handleNextCard" />
+            @update="handleUpdateCard" 
+            @delete="confirmDeleteCard" 
+            @delete-with-modal="handleDeleteCard" 
+            @duplicate="handleDuplicateCard"
+            @previous="handlePreviousCard" 
+            @next="handleNextCard" />
         </div>
         <div v-else class="flex items-center justify-center mt-16 text-neutral-500">
           Select a card to view details

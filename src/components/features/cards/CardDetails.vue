@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed, nextTick } from 'vue';
+import { ref, watch, computed, nextTick, onMounted, onUnmounted } from 'vue';
 import { Copy, ChevronLeft, ChevronRight, RotateCcw, Save, Trash2, X } from 'lucide-vue-next';
 import { QuillEditor } from '@vueup/vue-quill';
 import '../../../styles/quill.css';
@@ -17,6 +17,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   'update': [updates: { front_content: string; back_content: string; tags: string[]; position: number | null }];
   'delete': [];
+  'delete-with-modal': [];
   'duplicate': [];
   'previous': [];
   'next': [];
@@ -28,6 +29,7 @@ const editTags = ref<string[]>([...(props.card.tags || [])]);
 const newTag = ref('');
 const tagError = ref('');
 const editPosition = ref<number | null>(props.card.position);
+const isShiftPressed = ref(false);
 
 // Update watch to properly reset all fields
 watch(() => props.card.id, () => {
@@ -127,6 +129,53 @@ const handleNext = () => {
   emit('next');
 };
 
+const handleDelete = (event: MouseEvent) => {
+  if (event.shiftKey) {
+    // If shift is pressed, delete immediately
+    emit('delete');
+  } else {
+    // Otherwise, emit the normal delete event which will show the modal
+    emit('delete-with-modal');
+  }
+};
+
+const handleKeyDown = (event: KeyboardEvent) => {
+  // Only handle keyboard events if not typing in an input or editor
+  if (event.target instanceof HTMLElement && 
+      (event.target.tagName === 'INPUT' || 
+       event.target.className.includes('ql-editor'))) {
+    return;
+  }
+
+  if (event.key === 'ArrowLeft') {
+    handlePrevious();
+  } else if (event.key === 'ArrowRight') {
+    handleNext();
+  }
+};
+
+// Add event listeners for shift key
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyDown);
+  window.addEventListener('keydown', handleShiftDown);
+  window.addEventListener('keyup', handleShiftUp);
+});
+
+const handleShiftDown = (e: KeyboardEvent) => {
+  if (e.key === 'Shift') isShiftPressed.value = true;
+};
+
+const handleShiftUp = (e: KeyboardEvent) => {
+  if (e.key === 'Shift') isShiftPressed.value = false;
+};
+
+// Update unmount to remove all listeners
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyDown);
+  window.removeEventListener('keydown', handleShiftDown);
+  window.removeEventListener('keyup', handleShiftUp);
+});
+
 const handlePositionInput = (event: Event) => {
   event.stopPropagation();
   const input = event.target as HTMLInputElement;
@@ -169,7 +218,12 @@ const handlePositionInput = (event: Event) => {
           title="Duplicate card">
           <Copy :size="18" />
         </button>
-        <button @click="emit('delete')" class="flex items-center w-10 gap-1 button-lighter-visible" title="Delete card">
+        <button @click="handleDelete" 
+          :class="[
+            'flex items-center w-10 gap-1',
+            isShiftPressed ? 'button-cancel-visible' : 'button-lighter-visible'
+          ]"
+          title="Delete card (Hold Shift to delete without confirmation)">
           <Trash2 :size="18" />
         </button>
         <div class="w-px bg-neutral-800"></div>

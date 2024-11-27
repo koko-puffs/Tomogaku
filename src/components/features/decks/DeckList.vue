@@ -3,6 +3,7 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import { GitFork, Globe2, Plus } from 'lucide-vue-next';
 import { useDeckStore } from '../../../stores/deckStore';
 import { useAuthStore } from '../../../stores/authStore';
+import { useCardStats } from '../../../composables/useCardStats';
 
 defineProps<{
     selectedDeck: string | null;
@@ -38,25 +39,6 @@ onUnmounted(() => {
         clearInterval(refreshInterval.value);
     }
 });
-
-const getAvailableNewCards = (deck: any) => {
-    // Get today's start timestamp
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    // Count new cards already studied today
-    const newCardsStudiedToday = deckStore.cards[deck.id]?.filter(card =>
-        card.last_review_date &&
-        new Date(card.last_review_date) >= today &&
-        card.state === "new"
-    ).length || 0;
-
-    // Calculate remaining new cards allowed today
-    const remainingNewCards = (deck.daily_new_cards_limit || 20) - newCardsStudiedToday;
-
-    // Return the minimum between total new cards and remaining allowed
-    return Math.min(deck.new_cards_count, Math.max(0, remainingNewCards));
-};
 </script>
 
 <template>
@@ -91,8 +73,8 @@ const getAvailableNewCards = (deck: any) => {
                 <div class="flex justify-between px-8 text-sm">
                     <span class="relative">
                         <span class="peer"
-                            :class="getAvailableNewCards(deck) > 0 ? 'text-cyan-400' : 'text-neutral-400'">
-                            {{ getAvailableNewCards(deck) }}
+                            :class="useCardStats(deck.id).availableNewCards.value > 0 ? 'text-cyan-400' : 'text-neutral-400'">
+                            {{ useCardStats(deck.id).availableNewCards.value }}
                         </span>
                         <div
                             class="absolute invisible p-2 text-sm font-medium transition-all -translate-x-1/2 -translate-y-1 border rounded-md shadow-lg opacity-0 pointer-events-none border-neutral-800 left-1/2 bottom-full bg-neutral-900 w-max text-neutral-400 peer-hover:visible peer-hover:opacity-100">
@@ -100,8 +82,9 @@ const getAvailableNewCards = (deck: any) => {
                         </div>
                     </span>
                     <span class="relative">
-                        <span class="peer" :class="deck.review_cards_count > 0 ? 'text-green-400' : 'text-neutral-400'">
-                            {{ deck.review_cards_count }}
+                        <span class="peer" 
+                            :class="useCardStats(deck.id).dueReviewCards.value > 0 ? 'text-green-400' : 'text-neutral-400'">
+                            {{ useCardStats(deck.id).dueReviewCards.value }}
                         </span>
                         <div
                             class="absolute invisible p-2 text-sm font-medium transition-all -translate-x-1/2 -translate-y-1 border rounded-md shadow-lg opacity-0 pointer-events-none border-neutral-800 left-1/2 bottom-full bg-neutral-900 w-max text-neutral-400 peer-hover:visible peer-hover:opacity-100">
@@ -110,8 +93,8 @@ const getAvailableNewCards = (deck: any) => {
                     </span>
                     <span class="relative">
                         <span class="peer"
-                            :class="deck.learning_cards_count > 0 ? 'text-orange-400' : 'text-neutral-400'">
-                            {{ deck.learning_cards_count }}
+                            :class="useCardStats(deck.id).dueLearningCards.value > 0 ? 'text-orange-400' : 'text-neutral-400'">
+                            {{ useCardStats(deck.id).dueLearningCards.value }}
                         </span>
                         <div
                             class="absolute invisible p-2 text-sm font-medium transition-all -translate-x-1/2 -translate-y-1 border rounded-md shadow-lg opacity-0 pointer-events-none border-neutral-800 left-1/2 bottom-full bg-neutral-900 w-max text-neutral-400 peer-hover:visible peer-hover:opacity-100">

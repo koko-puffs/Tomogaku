@@ -23,6 +23,7 @@ interface DeckState {
     completedCards: Card[];
   };
   deckLikes: Map<string, boolean>; // Keyed by deck_id
+  deckStats: Map<string, DeckStats>;
 }
 
 interface FSRSSettings {
@@ -36,6 +37,24 @@ interface FSRSSettings {
 interface DeckSettings {
   fsrs: FSRSSettings;
   [key: string]: any; // For other potential settings
+}
+
+interface DeckStats {
+  new_count: number;
+  new_studied_today: number;
+  due_review_count: number;
+  review_studied_today: number;
+  due_learning_count: number;
+}
+
+interface DeckWithStats extends Deck {
+  stats: {
+    new_count: number;
+    new_studied_today: number;
+    due_review_count: number;
+    review_studied_today: number;
+    due_learning_count: number;
+  }
 }
 
 export const useDeckStore = defineStore("decks", {
@@ -56,6 +75,7 @@ export const useDeckStore = defineStore("decks", {
       completedCards: [],
     },
     deckLikes: new Map(),
+    deckStats: new Map<string, DeckStats>(),
   }),
 
   getters: {
@@ -136,15 +156,26 @@ export const useDeckStore = defineStore("decks", {
     async fetchDecksByUserId(userId: string) {
       this.loading.decks = true;
       try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
         const { data, error } = await supabase
-          .from("decks")
-          .select("*")
-          .eq("user_id", userId)
-          .is("deleted_at", null)
-          .order("created_at", { ascending: false });
+          .rpc('get_decks_with_stats', {
+            p_user_id: userId,
+            p_today: today.toISOString()
+          });
 
         if (error) throw error;
-        this.decks = data;
+        
+        if (data) {
+          // Update decks
+          this.decks = data.map((deckWithStats: DeckWithStats) => {
+            const { stats, ...deck } = deckWithStats;
+            // Update stats map
+            this.deckStats.set(deck.id, stats);
+            return deck;
+          });
+        }
       } catch (error) {
         this.error =
           error instanceof Error
@@ -462,6 +493,8 @@ export const useDeckStore = defineStore("decks", {
         reps: (this.currentCard.reps || 0) + 1,
       });
 
+      await this.updateDeckStats(this.currentCard.deck_id);
+
       // Move to next card in study session
       this.studySession.completedCards.push(this.currentCard);
       this.studySession.remainingCards.shift();
@@ -544,164 +577,104 @@ export const useDeckStore = defineStore("decks", {
       };
     },
 
-    /* startStudySession(deckId: string) {
+    startStudySession(deckId: string) {
       const deckCards = this.cards[deckId] || [];
-      // Get deck's FSRS settings with defaults
+      const now = new Date();
+      const today = new Date(now);
+      today.setHours(0, 0, 0, 0);
+
+      // Get FSRS settings
       const settings = (this.currentDeck?.settings as DeckSettings)?.fsrs || {
         request_retention: 0.9,
         maximum_stability: 36500,
         weights: [2.2, 0.7, 2.6, 1.7, 0.5, -0.2, 0.2, 1.0, -0.5, -0.1, 0.5, -0.1, 0.8],
-        learning_steps: [1, 10],
         enable_fsrs: true
       };
-    
-      // Filter cards due for review using FSRS settings
-      const dueCards = deckCards.filter((card) => {
-        const dueDate = new Date(card.due_date);
-        const now = new Date();
-    
-        // If FSRS is disabled, use simple due date check
-        if (!settings.enable_fsrs) {
-          return card.state === "new" || dueDate <= now;
-        }
-    
-        // For new cards, respect the daily new cards limit
-        if (card.state === "new") {
-          const newCardsToday = this.studySession.completedCards.filter(
-            c => c.state === "new"
-          ).length;
-          return newCardsToday < (this.currentDeck?.daily_new_cards_limit || 20);
-        }
-    
-        // For learning/relearning cards, use learning steps
-        if (card.state === "learning" || card.state === "relearning") {
-          return dueDate <= now;
-        }
-    
-        // For review cards, check due date and daily review limit
-        if (card.state === "review") {
-          const reviewsToday = this.studySession.completedCards.filter(
-            c => c.state === "review"
-          ).length;
-          return dueDate <= now && reviewsToday < (this.currentDeck?.daily_review_limit || 100);
-        }
-    
-        return false;
-      });
-    
-      // Sort cards: new -> learning/relearning -> review
-      const sortedDueCards = dueCards.sort((a, b) => {
-        const stateOrder = {
-          learning: 0,
-          relearning: 0,
-          new: 1,
-          review: 2
-        };
-        const aOrder = stateOrder[a.state as keyof typeof stateOrder];
-        const bOrder = stateOrder[b.state as keyof typeof stateOrder];
-        if (aOrder === bOrder) {
-          return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
-        }
-        return aOrder - bOrder;
-      });
-    
-      this.studySession = {
-        currentCardIndex: 0,
-        remainingCards: sortedDueCards,
-        completedCards: [],
-      };
-      this.currentCard = sortedDueCards[0] || null;
-    },
- */
-    startStudySession(deckId: string) {
-      const deckCards = this.cards[deckId] || [];
-      // Get deck's FSRS settings with defaults
-      const settings = (this.currentDeck?.settings as DeckSettings)?.fsrs || {
-        request_retention: 0.9,
-        maximum_stability: 36500,
-        weights: [
-          2.2, 0.7, 2.6, 1.7, 0.5, -0.2, 0.2, 1.0, -0.5, -0.1, 0.5, -0.1, 0.8,
-        ],
-        learning_steps: [1, 10],
-        enable_fsrs: true,
-      };
 
-      // Get today's start timestamp (midnight)
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      // Count new cards already studied today
-      const newCardsStudiedToday = deckCards.filter(
-        (card) =>
-          card.last_review_date &&
-          new Date(card.last_review_date) >= today &&
-          card.state === "new"
+      // Count new cards that have been reviewed today
+      const newCardsStudiedToday = deckCards.filter(c => 
+        c.last_review_date && 
+        new Date(c.last_review_date) >= today && 
+        (c.status === 'learning' || c.status === 'review') && // Cards that were new but have been studied
+        new Date(c.created_at) >= today // Cards created today
       ).length;
 
-      // Filter cards due for review using FSRS settings
-      const dueCards = deckCards.filter((card) => {
+      // Calculate remaining new cards limit
+      const dailyNewCardsLimit = this.currentDeck?.daily_new_cards_limit || 20;
+      const remainingNewCardsLimit = Math.max(0, dailyNewCardsLimit - newCardsStudiedToday);
+
+      // Filter due cards based on status and due date
+      const dueCards = deckCards.filter(card => {
+        if (card.deleted_at) return false;
+        
         const dueDate = new Date(card.due_date);
-        const now = new Date();
 
         // If FSRS is disabled, use simple due date check
         if (!settings.enable_fsrs) {
-          return card.state === "new" || dueDate <= now;
-        }
-
-        // For new cards, respect the daily new cards limit
-        if (card.state === "new") {
-          return (
-            newCardsStudiedToday <
-            (this.currentDeck?.daily_new_cards_limit || 20)
-          );
-        }
-
-        // For learning/relearning cards, use learning steps
-        if (card.state === "learning" || card.state === "relearning") {
+          if (card.status === 'new') {
+            return newCardsStudiedToday < dailyNewCardsLimit;
+          }
           return dueDate <= now;
         }
 
-        // For review cards, check due date and daily review limit
-        if (card.state === "review") {
-          const reviewsToday = deckCards.filter(
-            (c) =>
-              c.last_review_date &&
-              new Date(c.last_review_date) >= today &&
-              c.state === "review"
+        // New cards - respect daily limit
+        if (card.status === 'new') {
+          return newCardsStudiedToday < dailyNewCardsLimit;
+        }
+
+        // Learning/Relearning cards (check due date)
+        if (card.status === 'learning' || card.status === 'relearning') {
+          return dueDate <= now;
+        }
+
+        // Review cards (check due date and daily limit)
+        if (card.status === 'review') {
+          const reviewsToday = deckCards.filter(c => 
+            c.last_review_date && 
+            new Date(c.last_review_date) >= today && 
+            c.status === 'review'
           ).length;
-          return (
-            dueDate <= now &&
-            reviewsToday < (this.currentDeck?.daily_review_limit || 100)
-          );
+          return dueDate <= now && 
+                 reviewsToday < (this.currentDeck?.daily_review_limit || 100);
         }
 
         return false;
       });
 
-      // Sort cards: new -> learning/relearning -> review
-      const sortedDueCards = dueCards.sort((a, b) => {
-        const stateOrder = {
+      // Limit the number of new cards included
+      const newCards = dueCards
+        .filter(card => card.status === 'new')
+        .slice(0, remainingNewCardsLimit);
+      const otherCards = dueCards.filter(card => card.status !== 'new');
+      const limitedDueCards = [...otherCards, ...newCards];
+
+      // Sort cards by priority and due date
+      const sortedDueCards = limitedDueCards.sort((a, b) => {
+        const statusOrder = {
           learning: 0,
           relearning: 0,
-          new: 1,
-          review: 2,
+          review: 1,
+          new: 2
         };
-        const aOrder = stateOrder[a.state as keyof typeof stateOrder];
-        const bOrder = stateOrder[b.state as keyof typeof stateOrder];
-        if (aOrder === bOrder) {
-          return (
-            new Date(a.due_date).getTime() - new Date(b.due_date).getTime()
-          );
-        }
-        return aOrder - bOrder;
+        return statusOrder[a.status] - statusOrder[b.status] || 
+               new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
       });
 
+      // Update study session
       this.studySession = {
         currentCardIndex: 0,
         remainingCards: sortedDueCards,
-        completedCards: [],
+        completedCards: []
       };
       this.currentCard = sortedDueCards[0] || null;
+
+      // Log counts for debugging
+      console.log('Due cards by category:', {
+        new: sortedDueCards.filter(c => c.status === 'new').length,
+        learning: sortedDueCards.filter(c => c.status === 'learning').length,
+        relearning: sortedDueCards.filter(c => c.status === 'relearning').length,
+        review: sortedDueCards.filter(c => c.status === 'review').length,
+      });
     },
 
     async fetchPublicDecksByUserId(userId: string) {
@@ -987,6 +960,36 @@ export const useDeckStore = defineStore("decks", {
       } finally {
         this.loading.operations = false;
       }
+    },
+
+    async updateDeckStats(deckId: string) {
+      const cards = this.cards[deckId] || [];
+      
+      // Calculate counts
+      const newCount = cards.filter(c => c.state === 'new').length;
+      const learningCount = cards.filter(c => c.state === 'learning').length;
+      const reviewCount = cards.filter(c => c.state === 'review').length;
+      const relearningCount = cards.filter(c => c.state === 'relearning').length;
+      
+      // Calculate due cards
+      const now = new Date();
+      const dueCount = cards.filter(c => new Date(c.due_date) <= now).length;
+      
+      // Find next due date
+      const nextDueDate = cards
+        .map(c => new Date(c.due_date))
+        .filter(d => d > now)
+        .sort((a, b) => a.getTime() - b.getTime())[0];
+        
+      await this.updateDeck(deckId, {
+        new_cards_count: newCount,
+        learning_cards_count: learningCount,
+        review_cards_count: reviewCount,
+        relearning_cards_count: relearningCount,
+        due_cards_count: dueCount,
+        next_due_date: nextDueDate?.toISOString() || null,
+        last_studied_at: new Date().toISOString()
+      });
     },
   },
 });

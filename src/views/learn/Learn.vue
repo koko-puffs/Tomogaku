@@ -9,6 +9,7 @@ import DeckList from '../../components/features/decks/DeckList.vue';
 import DeckDetails from '../../components/features/decks/DeckDetails.vue';
 import CommentSection from '../../components/features/decks/CommentSection.vue';
 import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
+import StudySession from '../../components/features/study/StudySession.vue';
 
 defineProps<{
   deckId?: string;
@@ -118,8 +119,15 @@ const handleEditDeck = async (updates: { title: string, description: string | nu
   }
 };
 
+const isStudying = ref(false);
+
 const handleStudyDeck = () => {
-  // Implement study functionality
+  if (!selectedDeck.value) return;
+  isStudying.value = true;
+};
+
+const handleCloseStudy = () => {
+  isStudying.value = false;
 };
 
 const handleViewCards = () => {
@@ -140,34 +148,42 @@ const scrollToTop = () => {
 
 <template>
   <div class="motion-preset-fade motion-duration-150">
-    <!-- Gradient overlay -->
-    <div class="absolute inset-0 z-[20] pointer-events-none bg-gradient-to-b from-pink-950/5 to-transparent"></div>
-
-    <!-- Show either the main learn view or the cards view based on the route -->
-    <RouterView v-if="route.name === 'cards'" :deck-id="deckId" :card-id="cardId" />
-
+    <template v-if="isStudying && selectedDeck">
+      <StudySession 
+        :deck-id="selectedDeck" 
+        @close="handleCloseStudy" 
+      />
+    </template>
     <template v-else>
-      <PageLayout>
-        <template #sidebar>
-          <DeckList :selected-deck="selectedDeck" @select-deck="selectDeck" @create-deck="openCreateDeckModal" />
-        </template>
+      <!-- Gradient overlay -->
+      <div class="absolute inset-0 z-[20] pointer-events-none bg-gradient-to-b from-pink-950/5 to-transparent"></div>
 
-        <template #content>
-          <div v-if="isLoading" class="flex items-center justify-center mt-20 text-neutral-500">
-            <LoadingSpinner :size="32" />
-          </div>
-          <div v-else-if="currentDeck" class="space-y-6">
-            <DeckDetails :deck="currentDeck" @update="handleEditDeck" @delete="handleDeleteDeck"
-              @study="handleStudyDeck" @cards="handleViewCards" />
-            <template v-if="currentDeck.visibility !== 'private'">
-              <CommentSection :deck-id="currentDeck.id" />
-            </template>
-          </div>
-          <div v-else class="flex items-center justify-center mt-16 text-neutral-500">
-            Select a deck to view details
-          </div>
-        </template>
-      </PageLayout>
+      <!-- Show either the main learn view or the cards view based on the route -->
+      <RouterView v-if="route.name === 'cards'" :deck-id="deckId" :card-id="cardId" />
+
+      <template v-else>
+        <PageLayout>
+          <template #sidebar>
+            <DeckList :selected-deck="selectedDeck" @select-deck="selectDeck" @create-deck="openCreateDeckModal" />
+          </template>
+
+          <template #content>
+            <div v-if="isLoading" class="flex items-center justify-center mt-20 text-neutral-500">
+              <LoadingSpinner :size="32" />
+            </div>
+            <div v-else-if="currentDeck" class="space-y-6">
+              <DeckDetails :deck="currentDeck" @update="handleEditDeck" @delete="handleDeleteDeck"
+                @study="handleStudyDeck" @cards="handleViewCards" />
+              <template v-if="currentDeck.visibility !== 'private'">
+                <CommentSection :deck-id="currentDeck.id" />
+              </template>
+            </div>
+            <div v-else class="flex items-center justify-center mt-16 text-neutral-500">
+              Select a deck to view details
+            </div>
+          </template>
+        </PageLayout>
+      </template>
     </template>
   </div>
 

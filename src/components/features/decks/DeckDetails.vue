@@ -5,6 +5,7 @@ import { RouterLink, useRoute, useRouter } from 'vue-router';
 import DeckEditForm from './DeckEditForm.vue';
 import { useAuthStore } from '../../../stores/authStore';
 import { useDeckStore } from '../../../stores/deckStore';
+import { useCardStats } from '../../../composables/useCardStats';
 
 const props = defineProps<{
     deck: any;
@@ -113,25 +114,6 @@ const handleCardsClick = () => {
         router.push(`/learn/${props.deck.id}/cards`);
     }
 };
-
-const availableNewCards = computed(() => {
-    // Get today's start timestamp
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    // Count new cards already studied today
-    const newCardsStudiedToday = deckStore.cards[props.deck.id]?.filter(card =>
-        card.last_review_date &&
-        new Date(card.last_review_date) >= today &&
-        card.state === "new"
-    ).length || 0;
-
-    // Calculate remaining new cards allowed today
-    const remainingNewCards = (props.deck.daily_new_cards_limit || 20) - newCardsStudiedToday;
-
-    // Return the minimum between total new cards and remaining allowed
-    return Math.min(props.deck.new_cards_count, Math.max(0, remainingNewCards));
-});
 </script>
 
 <template>
@@ -222,24 +204,24 @@ const availableNewCards = computed(() => {
                 <div class="space-y-2">
                     <div class="flex items-center justify-between">
                         <span class="text-neutral-400">New:</span>
-                        <span :class="availableNewCards > 0 ? 'text-cyan-400' : 'text-neutral-400'">
-                            {{ availableNewCards }}
+                        <span :class="useCardStats(deck.id).availableNewCards.value > 0 ? 'text-cyan-400' : 'text-neutral-400'">
+                            {{ useCardStats(deck.id).availableNewCards.value }}
                         </span>
                     </div>
                     <div class="h-px bg-neutral-800"></div>
 
                     <div class="flex items-center justify-between py-0.5">
                         <span class="text-neutral-400">To-review:</span>
-                        <span :class="props.deck.review_cards_count > 0 ? 'text-green-400' : 'text-neutral-400'">
-                            {{ props.deck.review_cards_count }}
+                        <span :class="useCardStats(deck.id).dueReviewCards.value > 0 ? 'text-green-400' : 'text-neutral-400'">
+                            {{ useCardStats(deck.id).dueReviewCards.value }}
                         </span>
                     </div>
                     <div class="h-px bg-neutral-800"></div>
 
                     <div class="flex items-center justify-between">
                         <span class="text-neutral-400">Learning:</span>
-                        <span :class="props.deck.learning_cards_count > 0 ? 'text-orange-400' : 'text-neutral-400'">
-                            {{ props.deck.learning_cards_count }}
+                        <span :class="useCardStats(deck.id).dueLearningCards.value > 0 ? 'text-orange-400' : 'text-neutral-400'">
+                            {{ useCardStats(deck.id).dueLearningCards.value }}
                         </span>
                     </div>
                 </div>
