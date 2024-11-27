@@ -201,13 +201,13 @@ const availableNewCards = computed(() => {
                         <button @click="handleDelete" class="w-10 button" title="Delete deck">
                             <Trash2 :size="18" />
                         </button>
-                        <button class="flex items-center gap-2 ml-2 w-28 button-visible" @click="handleCardsClick">
+                        <button class="flex items-center w-24 gap-2 ml-2 button-visible" @click="handleCardsClick">
                             <Layers3 :size="18" />
                             <span>Cards</span>
                         </button>
                     </div>
                 </div>
-                <button class="flex items-center gap-2 button-pink-visible w-28" @click="emit('study')">
+                <button class="flex items-center w-24 gap-2 button-pink-visible" @click="emit('study')">
                     <BookOpen :size="18" />
                     <span>Study</span>
                 </button>
