@@ -522,7 +522,7 @@
   }
   .ql-snow .ql-stroke {
     fill: none;
-    @apply stroke-neutral-200;
+    @apply stroke-neutral-400;
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-width: 2;
@@ -535,7 +535,7 @@
   }
   .ql-snow .ql-fill,
   .ql-snow .ql-stroke.ql-fill {
-    @apply fill-neutral-200;
+    @apply fill-neutral-400;
   }
   .ql-snow .ql-empty {
     fill: none;

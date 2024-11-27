@@ -72,7 +72,7 @@ const scrollToTop = () => {
       <div class="flex items-center justify-start flex-1">
         <router-link to="/" class="relative flex items-center h-10 text-xl font-bold" style="top: -1px;"
           @click="scrollToTop">
-          <span class="sm:hidden">tg</span>
+          <span class="mt-1 sm:hidden">共学</span>
           <span class="hidden sm:inline">tomogaku</span>
         </router-link>
       </div>

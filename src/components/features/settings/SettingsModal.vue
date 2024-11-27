@@ -7,7 +7,7 @@
       <!-- Header -->
       <div class="flex items-center justify-between px-3 py-3 border-b border-neutral-800">
         <h2 class="pl-2 text-xl font-semibold">Settings</h2>
-        <button @click="closeModal" class="p-2 transition-colors rounded-lg hover:bg-neutral-800">
+        <button @click="closeModal" class="p-2 rounded-lg hover:bg-neutral-800">
           <X :size="20" />
         </button>
       </div>
@@ -18,7 +18,7 @@
         <div class="w-64 border-r border-neutral-800">
           <nav class="p-4 space-y-1">
             <button v-for="tab in tabs" :key="tab.id" @click="activeTab = tab.id"
-              class="flex items-center w-full px-4 py-2 text-sm transition-colors rounded-lg"
+              class="flex items-center w-full px-4 py-2 text-sm rounded-lg"
               :class="activeTab === tab.id ? 'bg-neutral-800' : 'hover:bg-neutral-800/50'">
               <component :is="tab.icon" :size="18" class="mr-3" />
               {{ tab.name }}
