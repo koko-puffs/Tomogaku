@@ -165,12 +165,12 @@ const handlePositionInput = (event: Event) => {
       </div>
 
       <div class="flex gap-2">
-        <button @click="emit('delete')" class="flex items-center w-10 gap-1 button-lighter-visible" title="Delete card">
-          <Trash2 :size="18" />
-        </button>
         <button @click="emit('duplicate')" class="flex items-center w-10 gap-1 button-lighter-visible"
           title="Duplicate card">
           <Copy :size="18" />
+        </button>
+        <button @click="emit('delete')" class="flex items-center w-10 gap-1 button-lighter-visible" title="Delete card">
+          <Trash2 :size="18" />
         </button>
         <div class="w-px bg-neutral-800"></div>
         <button @click="resetForm" :disabled="!hasChanges" :class="[
