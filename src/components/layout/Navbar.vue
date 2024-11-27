@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useAuthStore } from '../../stores/authStore.ts'
-import { useRouter, useRoute } from "vue-router";
+import { useRoute } from "vue-router";
 import LoadingSpinner from "../common/LoadingSpinner.vue";
 import SettingsModal from '../features/settings/SettingsModal.vue'
 import { ref, onMounted, onUnmounted } from 'vue'
 import { UserCircle2, Settings, LogOut, BookOpen, Compass, Activity } from 'lucide-vue-next'
 
 const authStore = useAuthStore()
-const router = useRouter()
+//const router = useRouter()
 const route = useRoute()
 
 const isDropdownOpen = ref(false)
@@ -49,7 +49,8 @@ onUnmounted(() => {
 
 const handleLogout = async () => {
   await authStore.logout()
-  await router.push('/')
+  //await router.push('/')
+  window.location.reload()
 }
 
 const handleDiscordSignIn = () => {

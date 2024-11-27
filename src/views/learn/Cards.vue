@@ -169,7 +169,7 @@ watch(
     <PageLayout>
       <template #sidebar>
         <RouterLink :to="`/learn/${deckId}`"
-          class="flex items-center justify-start h-6 gap-2 pr-3 mb-2.5 transition-colors duration-75 text-neutral-400 hover:text-neutral-200">
+          class="flex items-center justify-start h-6 gap-2 pr-3 mb-2.5 text-neutral-400 hover:text-neutral-200">
           <ChevronLeft :size="22" />
           <span class="text-sm truncate mt-0.5">
             {{ deckStore.getDeckById(deckId)?.title || 'Loading...' }}

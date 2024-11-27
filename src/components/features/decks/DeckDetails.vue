@@ -156,7 +156,7 @@ const availableNewCards = computed(() => {
                             <span class="leading-none truncate">{{ props.deck.title }}</span>
                         </h1>
                         <RouterLink v-if="props.deck.visibility === 'public'" :to="`/discover/deck/${props.deck.id}`"
-                            class="flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-200 transition-colors pl-1 duration-75">
+                            class="flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-200 pl-1">
                             <Globe2 :size="14" />
                             <span class="leading-none">View public page</span>
                         </RouterLink>

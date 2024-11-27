@@ -229,7 +229,7 @@ const handlePositionInput = (event: Event) => {
             <span v-for="tag in editTags" :key="tag"
               class="flex items-center gap-1 px-2 py-1 text-sm rounded-md bg-neutral-800">
               {{ tag }}
-              <button @click="removeTag(tag)" class="pl-1 transition-colors rounded-full hover:text-red-400">
+              <button @click="removeTag(tag)" class="pl-1 rounded-full hover:text-red-400">
                 <X :size="14" />
               </button>
             </span>

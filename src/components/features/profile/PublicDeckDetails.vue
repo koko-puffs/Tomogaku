@@ -176,7 +176,7 @@ const handleDelete = () => {
                         </h1>
                         <RouterLink v-if="props.deck.is_forked && props.deck.original_deck_id"
                             :to="`/discover/deck/${props.deck.original_deck_id}`"
-                            class="flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-200 transition-colors pl-1 duration-75">
+                            class="flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-200 pl-1">
                             <GitFork :size="14" />
                             <span class="leading-none">View original deck</span>
                         </RouterLink>
@@ -230,13 +230,13 @@ const handleDelete = () => {
         <div v-if="author"
             class="flex items-center justify-between motion-translate-y-in-[-6%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity relative z-[1]">
             <div class="flex items-center gap-3">
-                <router-link :to="`/discover/user/${author.id}`" class="transition-opacity hover:opacity-80">
+                <router-link :to="`/discover/user/${author.id}`" class="hover:opacity-80">
                     <img :src="author.avatar_url || '/default-avatar.png'" :alt="author.username"
                         class="object-cover w-10 h-10 rounded-full" />
                 </router-link>
                 <div class="flex flex-col space-y-1">
                     <router-link :to="`/discover/user/${author.id}`"
-                        class="font-medium leading-none transition-colors hover:text-neutral-300">
+                        class="font-medium leading-none hover:text-neutral-300">
                         {{ author.username }}
                     </router-link>
                     <span class="text-sm leading-none text-neutral-500">{{ author.followers_count }} follower(s)</span>

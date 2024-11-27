@@ -35,8 +35,8 @@
     text-align: left;
     white-space: pre-wrap;
     word-wrap: break-word;
-    @apply bg-neutral-800/70 text-neutral-200 rounded-lg border-t border-t-neutral-700/40
-      hover:border-t-neutral-700 focus:border-t-neutral-200;
+    @apply bg-neutral-800/70 text-neutral-200 rounded-lg border-t border-t-neutral-700/50
+      hover:border-t-neutral-600 focus:border-t-neutral-200;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
     min-height: 100px;
@@ -403,7 +403,7 @@
   .ql-snow.ql-toolbar button,
   .ql-snow .ql-toolbar button {
     @apply bg-transparent border border-transparent select-none rounded-lg text-sm
-      hover:bg-neutral-900 hover:border-neutral-800 transition-all duration-75
+      hover:bg-neutral-900 hover:border-neutral-800
       cursor-pointer;
     height: 32px;
     width: 32px;
@@ -602,8 +602,8 @@
     padding: 2px 4px;
   }
   .ql-snow .ql-editor pre.ql-syntax {
-    background-color: #23241f;
-    color: #f8f8f2;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
     overflow: visible;
   }
   .ql-snow .ql-editor img {

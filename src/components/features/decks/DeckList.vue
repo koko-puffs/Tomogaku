@@ -85,7 +85,7 @@ const getAvailableNewCards = (deck: any) => {
                 </div>
                 <div class="text-sm truncate max-w-[160px]">{{ deck.title }}</div>
                 <!-- Divider -->
-                <div class="w-full h-px my-3 transition-all duration-75"
+                <div class="w-full h-px my-3"
                     :class="[selectedDeck === deck.id ? 'bg-neutral-700' : 'bg-neutral-800']">
                 </div>
                 <div class="flex justify-between px-8 text-sm">

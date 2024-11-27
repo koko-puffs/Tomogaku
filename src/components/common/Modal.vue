@@ -7,7 +7,7 @@
                 <h2 class="pl-2 text-xl font-semibold">
                     <slot name="title" />
                 </h2>
-                <button @click="$emit('close')" class="p-2 transition-colors rounded-lg hover:bg-neutral-800">
+                <button @click="$emit('close')" class="p-2 rounded-lg hover:bg-neutral-800">
                     <X :size="20" />
                 </button>
             </div>

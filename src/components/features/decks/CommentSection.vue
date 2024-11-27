@@ -165,12 +165,12 @@ const confirmDeleteComment = async () => {
 
             <!-- Sort Buttons -->
             <div class="flex text-sm">
-                <button @click="sortBy = 'newest'" class="px-3 py-1.5 rounded-lg transition-colors duration-75" :class="sortBy === 'newest'
+                <button @click="sortBy = 'newest'" class="px-3 py-1.5 rounded-lg" :class="sortBy === 'newest'
                     ? 'bg-neutral-400/10 text-neutral-200'
                     : 'text-neutral-400 hover:text-neutral-200'">
                     Newest
                 </button>
-                <button @click="sortBy = 'likes'" class="px-3 py-1.5 rounded-lg transition-colors duration-75" :class="sortBy === 'likes'
+                <button @click="sortBy = 'likes'" class="px-3 py-1.5 rounded-lg" :class="sortBy === 'likes'
                     ? 'bg-neutral-400/10 text-neutral-200'
                     : 'text-neutral-400 hover:text-neutral-200'">
                     Most Liked
@@ -220,14 +220,14 @@ const confirmDeleteComment = async () => {
                 <div class="flex items-start justify-between">
                     <div class="flex items-center gap-3">
                         <router-link :to="`/discover/user/${comment.user_id}`"
-                            class="transition-opacity hover:opacity-80">
+                            class="hover:opacity-80">
                             <img :src="usersStore.getUserProfile(comment.user_id)?.avatar_url"
                                 :alt="usersStore.getUserProfile(comment.user_id)?.username"
                                 class="w-8 h-8 rounded-full bg-neutral-700" />
                         </router-link>
                         <div class="flex flex-col">
                             <router-link :to="`/discover/user/${comment.user_id}`"
-                                class="text-sm font-medium transition-colors hover:text-neutral-300">
+                                class="text-sm font-medium hover:text-neutral-300">
                                 {{ usersStore.getUserProfile(comment.user_id)?.username || 'Anonymous' }}
                             </router-link>
                             <span class="text-xs text-neutral-400">
@@ -325,13 +325,13 @@ const confirmDeleteComment = async () => {
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center gap-2">
                                 <router-link :to="`/discover/user/${reply.user_id}`"
-                                    class="transition-opacity hover:opacity-80">
+                                    class="hover:opacity-80">
                                     <img :src="usersStore.getUserProfile(reply.user_id)?.avatar_url"
                                         :alt="usersStore.getUserProfile(reply.user_id)?.username"
                                         class="w-6 h-6 rounded-full bg-neutral-700" />
                                 </router-link>
                                 <router-link :to="`/discover/user/${reply.user_id}`"
-                                    class="text-xs font-medium transition-colors hover:text-neutral-300">
+                                    class="text-xs font-medium hover:text-neutral-300">
                                     {{ usersStore.getUserProfile(reply.user_id)?.username || 'Anonymous' }}
                                 </router-link>
                                 <span class="text-xs text-neutral-400">

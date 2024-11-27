@@ -28,7 +28,7 @@
               <!-- Follow Button -->
               <div class="flex justify-center">
                 <button @click="handleFollowToggle" :disabled="followLoading || !canFollow || followStatusLoading"
-                  class="w-full h-10 px-4 transition-colors duration-200 rounded-lg" :class="{
+                  class="w-full h-10 px-4 rounded-lg" :class="{
                     'button-accept-visible': !isFollowing && canFollow && !followStatusLoading,
                     'button-lighter-visible': isFollowing && canFollow && !followStatusLoading,
                     'button-disabled': !canFollow || followStatusLoading
