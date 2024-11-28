@@ -11,6 +11,20 @@ const props = defineProps<{
     back_content: string;
     tags: string[] | null;
     position: number | null;
+    due_date: string;
+    stability: number;
+    difficulty: number;
+    elapsed_days: number;
+    scheduled_days: number;
+    reps: number;
+    lapses_count: number;
+    last_review_date: string | null;
+    last_review_rating: "again" | "hard" | "good" | "easy" | null;
+    request_retention: number;
+    maximum_stability: number;
+    w: number[];
+    state: "new" | "learning" | "review" | "relearning";
+    status: "new" | "learning" | "review" | "relearning";
   };
 }>();
 
@@ -30,6 +44,7 @@ const newTag = ref('');
 const tagError = ref('');
 const editPosition = ref<number | null>(props.card.position);
 const isShiftPressed = ref(false);
+const showDebug = ref(false);
 
 // Update watch to properly reset all fields
 watch(() => props.card.id, () => {
@@ -196,6 +211,11 @@ const handlePositionInput = (event: Event) => {
     input.value = editPosition.value?.toString() ?? '';
   }
 };
+
+const formatDate = (date: string | null) => {
+  if (!date) return 'Never';
+  return new Date(date).toLocaleString();
+};
 </script>
 
 <template>
@@ -295,6 +315,62 @@ const handlePositionInput = (event: Event) => {
           <label class="block text-sm text-neutral-400">Position</label>
           <input type="number" :value="editPosition" @input="handlePositionInput" @keydown.stop
             class="w-full input-lighter-filled" min="1" placeholder="#" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Debug Panel -->
+    <div class="mt-4">
+      <button 
+        @click="showDebug = !showDebug"
+        class="w-full px-4 py-2 text-sm text-left rounded-md text-neutral-400 hover:bg-neutral-800"
+      >
+        Debug Info {{ showDebug ? '▼' : '▶' }}
+      </button>
+      
+      <div v-if="showDebug" class="p-4 mt-2 space-y-4 text-sm border rounded-md border-neutral-700">
+        <div class="grid grid-cols-2 gap-4">
+          <!-- Status Info -->
+          <div>
+            <h4 class="mb-2 font-medium text-neutral-300">Status</h4>
+            <div class="space-y-1 text-neutral-400">
+              <p>State: <span class="text-neutral-300">{{ card.state }}</span></p>
+              <p>Status: <span class="text-neutral-300">{{ card.status }}</span></p>
+              <p>Due Date: <span class="text-neutral-300">{{ formatDate(card.due_date) }}</span></p>
+            </div>
+          </div>
+
+          <!-- Review Info -->
+          <div>
+            <h4 class="mb-2 font-medium text-neutral-300">Review History</h4>
+            <div class="space-y-1 text-neutral-400">
+              <p>Last Review: <span class="text-neutral-300">{{ formatDate(card.last_review_date) }}</span></p>
+              <p>Last Rating: <span class="text-neutral-300">{{ card.last_review_rating || 'None' }}</span></p>
+              <p>Total Reviews: <span class="text-neutral-300">{{ card.reps }}</span></p>
+              <p>Lapses: <span class="text-neutral-300">{{ card.lapses_count }}</span></p>
+            </div>
+          </div>
+
+          <!-- FSRS Parameters -->
+          <div>
+            <h4 class="mb-2 font-medium text-neutral-300">FSRS Parameters</h4>
+            <div class="space-y-1 text-neutral-400">
+              <p>Stability: <span class="text-neutral-300">{{ card.stability.toFixed(2) }}</span></p>
+              <p>Difficulty: <span class="text-neutral-300">{{ card.difficulty.toFixed(2) }}</span></p>
+              <p>Elapsed Days: <span class="text-neutral-300">{{ card.elapsed_days.toFixed(2) }}</span></p>
+              <p>Scheduled Days: <span class="text-neutral-300">{{ card.scheduled_days.toFixed(2) }}</span></p>
+            </div>
+          </div>
+
+          <!-- FSRS Settings -->
+          <div>
+            <h4 class="mb-2 font-medium text-neutral-300">FSRS Settings</h4>
+            <div class="space-y-1 text-neutral-400">
+              <p>Request Retention: <span class="text-neutral-300">{{ card.request_retention.toFixed(2) }}</span></p>
+              <p>Maximum Stability: <span class="text-neutral-300">{{ card.maximum_stability }}</span></p>
+              <p>Weights: <span class="text-xs text-neutral-300">{{ card.w.map(w => w.toFixed(2)).join(', ') }}</span></p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

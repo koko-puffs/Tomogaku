@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
 import { useDeckStore } from '../../stores/deckStore';
+import { useCardStore } from '../../stores/cardStore';
 import PageLayout from '../../components/common/PageLayout.vue';
 import { useRoute, useRouter } from 'vue-router';
 import CardList from '../../components/features/cards/CardList.vue';
@@ -18,6 +19,7 @@ defineProps<{
 const router = useRouter();
 const route = useRoute();
 const deckStore = useDeckStore();
+const cardStore = useCardStore();
 const selectedCard = ref<string | null>(null);
 const isLoading = ref(true);
 
@@ -33,14 +35,14 @@ const selectCard = async (cardId: string) => {
 onMounted(async () => {
   try {
     isLoading.value = true;
-    await deckStore.fetchCards(route.params.deckId as string);
+    await cardStore.fetchCards(route.params.deckId as string);
 
     // If there's a cardId in the route, use that
     if (route.params.cardId) {
       selectedCard.value = route.params.cardId as string;
     } else {
       // If no card is selected, select the first card if available
-      const cards = deckStore.getCardsByDeckId(route.params.deckId as string);
+      const cards = cardStore.getCardsByDeckId(route.params.deckId as string);
       if (cards.length > 0) {
         await selectCard(cards[0].id);
       }
@@ -69,7 +71,7 @@ const confirmDeleteCard = async () => {
     const currentIndex = cards.findIndex(card => card.id === selectedCard.value);
     
     // Delete the card
-    await deckStore.deleteCard(route.params.deckId as string, selectedCard.value);
+    await cardStore.deleteCard(route.params.deckId as string, selectedCard.value);
     
     // Select the previous card if it exists, otherwise select the next card
     if (currentIndex > 0) {
@@ -93,7 +95,7 @@ const handleCreateCard = async () => {
   if (!deckId) return;
 
   try {
-    const newCard = await deckStore.createCard({
+    const newCard = await cardStore.createCard({
       deck_id: deckId,
       front_content: '<p>New Card</p>',
       back_content: '',
@@ -117,7 +119,7 @@ const handleUpdateCard = async (updates: {
   if (!selectedCard.value || !route.params.deckId) return;
 
   try {
-    await deckStore.updateCard(selectedCard.value, {
+    await cardStore.updateCard(selectedCard.value, {
       ...updates,
       deck_id: route.params.deckId as string,
     });
@@ -130,7 +132,7 @@ const handleDuplicateCard = async () => {
   if (!selectedCard.value || !route.params.deckId) return;
 
   try {
-    const newCard = await deckStore.duplicateCard(selectedCard.value);
+    const newCard = await cardStore.duplicateCard(selectedCard.value);
     if (newCard) {
       selectedCard.value = newCard.id;
       await router.push(`/learn/${route.params.deckId}/cards/${newCard.id}`);
@@ -200,9 +202,9 @@ watch(
         <div v-if="isLoading" class="flex items-center justify-center mt-20 text-neutral-500">
           <LoadingSpinner :size="32" />
         </div>
-        <div v-else-if="selectedCard && deckStore.getCardsByDeckId(deckId).find(card => card.id === selectedCard)"
+        <div v-else-if="selectedCard && cardStore.getCardsByDeckId(deckId).find(card => card.id === selectedCard)"
           class="space-y-6">
-          <CardDetails :card="deckStore.getCardsByDeckId(deckId).find(card => card.id === selectedCard)!"
+          <CardDetails :card="cardStore.getCardsByDeckId(deckId).find(card => card.id === selectedCard)!"
             @update="handleUpdateCard" 
             @delete="confirmDeleteCard" 
             @delete-with-modal="handleDeleteCard" 

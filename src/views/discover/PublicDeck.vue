@@ -2,6 +2,7 @@
 import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useDeckStore } from '../../stores/deckStore';
+import { useSocialStore } from '../../stores/socialStore';
 import { useUsersStore } from '../../stores/usersStore';
 import PageLayoutMirrored from '../../components/common/PageLayoutMirrored.vue';
 import PublicDeckDetails from '../../components/features/profile/PublicDeckDetails.vue';
@@ -15,6 +16,7 @@ const props = defineProps<{
 
 const router = useRouter();
 const deckStore = useDeckStore();
+const socialStore = useSocialStore();
 const usersStore = useUsersStore();
 const loading = ref(true);
 const error = ref<string | null>(null);
@@ -40,7 +42,7 @@ const fetchDeckData = async () => {
         // Fetch additional data
         await Promise.all([
             usersStore.fetchUserProfile(deck.user_id),
-            deckStore.fetchDeckLikes([deck.id]),
+            socialStore.fetchDeckLikes([deck.id]),
         ]);
 
     } catch (e) {

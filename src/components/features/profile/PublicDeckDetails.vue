@@ -1,21 +1,20 @@
 <script setup lang="ts">
 import { GitFork, Heart, Clock, RefreshCw, Layers3, Edit2, Trash2, MoreVertical } from 'lucide-vue-next';
 import { ref, onMounted, computed, watch, onUnmounted } from 'vue';
-import { useDeckStore } from '../../../stores/deckStore';
 import { useUsersStore } from '../../../stores/usersStore';
 import { formatDistanceToNow } from 'date-fns';
 import type { Database } from '../../../types/supabase';
 import { useRouter, useRoute } from 'vue-router';
 import DeckEditForm from '../decks/DeckEditForm.vue';
 import { useAuthStore } from '../../../stores/authStore';
-
+import { useSocialStore } from '../../../stores/socialStore';
 type UserProfile = Database['public']['Tables']['user_profiles']['Row'];
 
 const props = defineProps<{
     deck: any;
 }>();
 
-const deckStore = useDeckStore();
+const socialStore = useSocialStore();
 const usersStore = useUsersStore();
 const isForking = ref(false);
 const isLiking = ref(false);
@@ -36,7 +35,7 @@ onMounted(async () => {
 const handleFork = async () => {
     isForking.value = true;
     try {
-        const newDeck = await deckStore.forkDeck(props.deck.id);
+        const newDeck = await socialStore.forkDeck(props.deck.id);
         router.push(`/learn/${newDeck.id}`);
     } catch (error) {
         console.error('Failed to fork deck:', error);
@@ -48,7 +47,7 @@ const handleFork = async () => {
 const handleLike = async () => {
     isLiking.value = true;
     try {
-        const likeDelta = await deckStore.toggleDeckLike(props.deck.id);
+        const likeDelta = await socialStore.toggleDeckLike(props.deck.id);
         localLikesCount.value += likeDelta;
     } catch (error) {
         console.error('Failed to toggle like:', error);
@@ -246,12 +245,12 @@ const handleDelete = () => {
                 class="flex items-center gap-1.5 px-3 py-2.5 group active:scale-90 transition-transform"
                 :disabled="isLiking">
                 <Heart :size="18" :class="{
-                    'text-rose-400 fill-rose-400': deckStore.isDeckLiked(props.deck.id),
-                    'text-neutral-400 group-hover:text-neutral-300': !deckStore.isDeckLiked(props.deck.id)
+                    'text-rose-400 fill-rose-400': socialStore.isDeckLiked(props.deck.id),
+                    'text-neutral-400 group-hover:text-neutral-300': !socialStore.isDeckLiked(props.deck.id)
                 }" />
                 <span class="text-sm leading-none -mb-0.5" :class="{
-                    'text-rose-400': deckStore.isDeckLiked(props.deck.id),
-                    'text-neutral-400 group-hover:text-neutral-300': !deckStore.isDeckLiked(props.deck.id)
+                    'text-rose-400': socialStore.isDeckLiked(props.deck.id),
+                    'text-neutral-400 group-hover:text-neutral-300': !socialStore.isDeckLiked(props.deck.id)
                 }">{{ localLikesCount }}</span>
             </button>
         </div>

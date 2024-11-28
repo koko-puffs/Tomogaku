@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useDeckStore } from '../../../stores/deckStore';
+import { useStudyStore } from '../../../stores/studyStore';
 import { ArrowLeft, ThumbsUp, ThumbsDown, Zap, Rocket } from 'lucide-vue-next';
 // Import Quill CSS
 import '../../../styles/quill.css';
@@ -13,14 +13,14 @@ const emit = defineEmits<{
   'close': [];
 }>();
 
-const deckStore = useDeckStore();
+const studyStore = useStudyStore();
 const showAnswer = ref(false);
 
 // Start study session when component mounts
-deckStore.startStudySession(props.deckId);
+studyStore.startStudySession(props.deckId);
 
-const currentCard = computed(() => deckStore.currentCard);
-const progress = computed(() => deckStore.studyProgress);
+const currentCard = computed(() => studyStore.currentCard);
+const progress = computed(() => studyStore.studyProgress);
 
 const handleShowAnswer = () => {
   showAnswer.value = true;
@@ -29,7 +29,7 @@ const handleShowAnswer = () => {
 const handleResponse = async (rating: 'again' | 'hard' | 'good' | 'easy') => {
   if (!currentCard.value) return;
   
-  await deckStore.recordCardReview(currentCard.value.id, rating);
+  await studyStore.recordCardReview(currentCard.value.id, rating);
   showAnswer.value = false;
 };
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue';
 import { useDeckStore } from '../../stores/deckStore';
+import { useCardStore } from '../../stores/cardStore';
 import PageLayout from '../../components/common/PageLayout.vue';
 import { useRoute, useRouter } from 'vue-router';
 import CreateDeckModal from '../../components/features/decks/CreateDeckModal.vue';
@@ -19,6 +20,7 @@ defineProps<{
 const router = useRouter();
 const route = useRoute();
 const deckStore = useDeckStore();
+const cardStore = useCardStore();
 const selectedDeck = ref<string | null>(null);
 const isLoading = ref(true);
 
@@ -34,12 +36,12 @@ const selectDeck = async (deckId: string) => {
       // Fetch both deck and cards if we don't have the deck
       await Promise.all([
         deckStore.fetchDeckById(deckId),
-        deckStore.fetchCards(deckId)
+        cardStore.fetchCards(deckId)
       ]);
       deck = deckStore.getDeckById(deckId);
     } else {
       // If we have the deck, just ensure cards are loaded
-      await deckStore.fetchCards(deckId);
+      await cardStore.fetchCards(deckId);
     }
 
     if (!deck) {

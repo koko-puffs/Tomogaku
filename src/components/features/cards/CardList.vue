@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Plus, Filter, ArrowUpDown } from 'lucide-vue-next';
-import { useDeckStore } from '../../../stores/deckStore';
+import { useCardStore } from '../../../stores/cardStore';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 
 const props = defineProps<{
@@ -13,7 +13,7 @@ const emit = defineEmits<{
     'create-card': [];
 }>();
 
-const deckStore = useDeckStore();
+const cardStore = useCardStore();
 
 type CardStatus = 'new' | 'learning' | 'review' | 'relearning';
 
@@ -66,7 +66,7 @@ const currentSortText = computed(() => {
 
 // Filter cards
 const filteredCards = computed(() => {
-    let cards = deckStore.getCardsByDeckId(props.deckId);
+    let cards = cardStore.getCardsByDeckId(props.deckId);
 
     // Apply search filter
     if (searchQuery.value) {
@@ -188,10 +188,10 @@ defineExpose({
             <div class="space-y-2">
                 <label class="text-sm text-neutral-400">Tags</label>
                 <div class="space-y-1">
-                    <div v-if="deckStore.getUniqueTags(deckId).length === 0" class="pl-1 text-sm text-neutral-500">
+                    <div v-if="cardStore.getUniqueTags(deckId).length === 0" class="pl-1 text-sm text-neutral-500">
                         —
                     </div>
-                    <label v-else v-for="tag in deckStore.getUniqueTags(deckId)" :key="tag"
+                    <label v-else v-for="tag in cardStore.getUniqueTags(deckId)" :key="tag"
                         class="flex items-center gap-2">
                         <input type="checkbox" :value="tag" v-model="selectedTags" class="checkbox">
                         <span class="text-sm mt-0.5">{{ tag }}</span>

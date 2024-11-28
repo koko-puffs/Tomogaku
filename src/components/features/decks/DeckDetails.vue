@@ -4,7 +4,7 @@ import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import DeckEditForm from './DeckEditForm.vue';
 import { useAuthStore } from '../../../stores/authStore';
-import { useDeckStore } from '../../../stores/deckStore';
+import { useCardStore } from '../../../stores/cardStore';
 import { useCardStats } from '../../../composables/useCardStats';
 
 const props = defineProps<{
@@ -14,8 +14,7 @@ const props = defineProps<{
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
-const deckStore = useDeckStore();
-
+const cardStore = useCardStore();
 // Add ownership check
 const isOwner = computed(() => {
     return authStore.user?.id === props.deck.user_id;
@@ -107,7 +106,7 @@ watch(() => route.hash, (newHash) => {
 
 const handleCardsClick = () => {
     closeDropdown();
-    const cards = deckStore.cards[props.deck.id] || [];
+    const cards = cardStore.cards[props.deck.id] || [];
     if (cards.length > 0) {
         router.push(`/learn/${props.deck.id}/cards/${cards[0].id}`);
     } else {
