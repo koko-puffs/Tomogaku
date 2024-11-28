@@ -595,8 +595,7 @@ export const useDeckStore = defineStore("decks", {
       const newCardsStudiedToday = deckCards.filter(c => 
         c.last_review_date && 
         new Date(c.last_review_date) >= today && 
-        (c.status === 'learning' || c.status === 'review') && // Cards that were new but have been studied
-        new Date(c.created_at) >= today // Cards created today
+        (c.status === 'learning' || c.status === 'review') // Cards that were new but have been studied
       ).length;
 
       // Calculate remaining new cards limit
