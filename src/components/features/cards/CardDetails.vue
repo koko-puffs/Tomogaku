@@ -3,29 +3,12 @@ import { ref, watch, computed, nextTick, onMounted, onUnmounted } from 'vue';
 import { Copy, ChevronLeft, ChevronRight, RotateCcw, Save, Trash2, X } from 'lucide-vue-next';
 import { QuillEditor } from '@vueup/vue-quill';
 import '../../../styles/quill.css';
+import { Database } from '../../../types/supabase';
+
+type Card = Database['public']['Tables']['cards']['Row'];
 
 const props = defineProps<{
-  card: {
-    id: string;
-    front_content: string;
-    back_content: string;
-    tags: string[] | null;
-    position: number | null;
-    due_date: string;
-    stability: number;
-    difficulty: number;
-    elapsed_days: number;
-    scheduled_days: number;
-    reps: number;
-    lapses_count: number;
-    last_review_date: string | null;
-    last_review_rating: "again" | "hard" | "good" | "easy" | null;
-    request_retention: number;
-    maximum_stability: number;
-    w: number[];
-    state: "new" | "learning" | "review" | "relearning";
-    status: "new" | "learning" | "review" | "relearning";
-  };
+  card: Card;
 }>();
 
 const emit = defineEmits<{
@@ -335,8 +318,7 @@ const formatDate = (date: string | null) => {
             <h4 class="mb-2 font-medium text-neutral-300">Status</h4>
             <div class="space-y-1 text-neutral-400">
               <p>State: <span class="text-neutral-300">{{ card.state }}</span></p>
-              <p>Status: <span class="text-neutral-300">{{ card.status }}</span></p>
-              <p>Due Date: <span class="text-neutral-300">{{ formatDate(card.due_date) }}</span></p>
+              <p>Due Date: <span class="text-neutral-300">{{ formatDate(card.due) }}</span></p>
             </div>
           </div>
 
@@ -344,10 +326,8 @@ const formatDate = (date: string | null) => {
           <div>
             <h4 class="mb-2 font-medium text-neutral-300">Review History</h4>
             <div class="space-y-1 text-neutral-400">
-              <p>Last Review: <span class="text-neutral-300">{{ formatDate(card.last_review_date) }}</span></p>
-              <p>Last Rating: <span class="text-neutral-300">{{ card.last_review_rating || 'None' }}</span></p>
               <p>Total Reviews: <span class="text-neutral-300">{{ card.reps }}</span></p>
-              <p>Lapses: <span class="text-neutral-300">{{ card.lapses_count }}</span></p>
+              <p>Lapses: <span class="text-neutral-300">{{ card.lapses }}</span></p>
             </div>
           </div>
 
@@ -355,20 +335,10 @@ const formatDate = (date: string | null) => {
           <div>
             <h4 class="mb-2 font-medium text-neutral-300">FSRS Parameters</h4>
             <div class="space-y-1 text-neutral-400">
-              <p>Stability: <span class="text-neutral-300">{{ card.stability.toFixed(2) }}</span></p>
-              <p>Difficulty: <span class="text-neutral-300">{{ card.difficulty.toFixed(2) }}</span></p>
-              <p>Elapsed Days: <span class="text-neutral-300">{{ card.elapsed_days.toFixed(2) }}</span></p>
-              <p>Scheduled Days: <span class="text-neutral-300">{{ card.scheduled_days.toFixed(2) }}</span></p>
-            </div>
-          </div>
-
-          <!-- FSRS Settings -->
-          <div>
-            <h4 class="mb-2 font-medium text-neutral-300">FSRS Settings</h4>
-            <div class="space-y-1 text-neutral-400">
-              <p>Request Retention: <span class="text-neutral-300">{{ card.request_retention.toFixed(2) }}</span></p>
-              <p>Maximum Stability: <span class="text-neutral-300">{{ card.maximum_stability }}</span></p>
-              <p>Weights: <span class="text-xs text-neutral-300">{{ card.w.map(w => w.toFixed(2)).join(', ') }}</span></p>
+              <p>Stability: <span class="text-neutral-300">{{ card.stability?.toFixed(2) }}</span></p>
+              <p>Difficulty: <span class="text-neutral-300">{{ card.difficulty?.toFixed(2) }}</span></p>
+              <p>Elapsed Days: <span class="text-neutral-300">{{ card.elapsed_days?.toFixed(2) }}</span></p>
+              <p>Scheduled Days: <span class="text-neutral-300">{{ card.scheduled_days?.toFixed(2) }}</span></p>
             </div>
           </div>
         </div>

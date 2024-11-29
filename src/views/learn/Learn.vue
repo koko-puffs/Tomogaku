@@ -11,7 +11,6 @@ import DeckDetails from '../../components/features/decks/DeckDetails.vue';
 import CommentSection from '../../components/features/decks/CommentSection.vue';
 import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
 import StudySession from '../../components/features/study/StudySession.vue';
-
 defineProps<{
   deckId?: string;
   cardId?: string;
@@ -128,10 +127,6 @@ const handleStudyDeck = () => {
   isStudying.value = true;
 };
 
-const handleCloseStudy = () => {
-  isStudying.value = false;
-};
-
 const handleViewCards = () => {
   // Implement view cards functionality
 };
@@ -153,7 +148,7 @@ const scrollToTop = () => {
     <template v-if="isStudying && selectedDeck">
       <StudySession 
         :deck-id="selectedDeck" 
-        @close="handleCloseStudy" 
+        @close="isStudying = false"
       />
     </template>
     <template v-else>

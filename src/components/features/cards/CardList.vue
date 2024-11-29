@@ -2,6 +2,7 @@
 import { Plus, Filter, ArrowUpDown } from 'lucide-vue-next';
 import { useCardStore } from '../../../stores/cardStore';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { State } from 'ts-fsrs';
 
 const props = defineProps<{
     deckId: string;
@@ -15,13 +16,38 @@ const emit = defineEmits<{
 
 const cardStore = useCardStore();
 
-type CardStatus = 'new' | 'learning' | 'review' | 'relearning';
-
 // Add filter state
 const showFilters = ref(false);
 const searchQuery = ref('');
 const selectedTags = ref<string[]>([]);
-const selectedStatus = ref<CardStatus[]>([]);
+const selectedState = ref<State[]>([]);
+
+// Add helper function to convert string status to State enum
+const getStateFromString = (status: string): State => {
+    switch (status) {
+        case 'new': return State.New; // 0
+        case 'learning': return State.Learning; // 1
+        case 'review': return State.Review; // 2
+        case 'relearning': return State.Relearning; // 3
+        default: return State.New;
+    }
+};
+
+// Add computed for two-way binding of status checkboxes
+const selectedStatus = computed({
+    get: () => selectedState.value.map(state => {
+        switch (state) {
+            case State.New: return 'new';
+            case State.Learning: return 'learning';
+            case State.Review: return 'review';
+            case State.Relearning: return 'relearning';
+            default: return 'new';
+        }
+    }),
+    set: (values: string[]) => {
+        selectedState.value = values.map(getStateFromString);
+    }
+});
 
 // Add sort state
 type SortOption = 'newest' | 'oldest' | 'position' | 'due date';
@@ -84,9 +110,9 @@ const filteredCards = computed(() => {
     }
 
     // Apply status filter
-    if (selectedStatus.value.length > 0) {
+    if (selectedState.value.length > 0) {
         cards = cards.filter(card =>
-            selectedStatus.value.includes(card.status)
+            card.state !== null && selectedState.value.includes(card.state as State)
         );
     }
 
@@ -94,13 +120,16 @@ const filteredCards = computed(() => {
     return [...cards].sort((a, b) => {
         switch (sortBy.value) {
             case 'newest':
-                return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+                return (b.created_at ? new Date(b.created_at).getTime() : 0) - 
+                       (a.created_at ? new Date(a.created_at).getTime() : 0);
             case 'oldest':
-                return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+                return (a.created_at ? new Date(a.created_at).getTime() : 0) - 
+                       (b.created_at ? new Date(b.created_at).getTime() : 0);
             case 'position':
                 return (a.position ?? Infinity) - (b.position ?? Infinity);
             case 'due date':
-                return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
+                return (a.due ? new Date(a.due).getTime() : 0) - 
+                       (b.due ? new Date(b.due).getTime() : 0);
             default:
                 return 0;
         }
@@ -213,20 +242,20 @@ defineExpose({
                 ]" @click="emit('select-card', card.id)">
 
                 <div class="flex items-center flex-1 min-w-0 gap-2">
-                    <!-- Position number - only show if exists -->
                     <span v-if="card.position" class="text-sm text-neutral-400">#{{ card.position }}</span>
-
-                    <!-- Front of card preview -->
                     <div class="text-sm truncate">{{ stripHtml(card.front_content) }}</div>
                 </div>
 
-                <!-- Status tag -->
+                <!-- Updated status tag -->
                 <span class="px-2 py-1 text-xs rounded-md text-neutral-400 shrink-0" :class="[
                     selectedCard === card.id
                         ? 'bg-neutral-700/70'
                         : 'bg-neutral-800'
                 ]">
-                    {{ card.status }}
+                    {{ card.state === State.New ? 'new' :
+                       card.state === State.Learning ? 'learning' :
+                       card.state === State.Review ? 'review' :
+                       card.state === State.Relearning ? 'relearning' : 'new' }}
                 </span>
             </div>
         </div>

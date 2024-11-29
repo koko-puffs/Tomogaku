@@ -1,128 +1,197 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useStudyStore } from '../../../stores/studyStore';
-import { ArrowLeft, ThumbsUp, ThumbsDown, Zap, Rocket } from 'lucide-vue-next';
-// Import Quill CSS
-import '../../../styles/quill.css';
+import { ref, onMounted } from 'vue';
+import { useFSRSStore } from '../../../stores/fsrsStore';
+import { useDeckStore } from '../../../stores/deckStore';
+import { useAuthStore } from '../../../stores/authStore';
+import { Rating } from 'ts-fsrs';
+import type { Card } from '../../../types/deck.types';
 
 const props = defineProps<{
   deckId: string;
 }>();
 
 const emit = defineEmits<{
-  'close': [];
+  (e: 'close'): void;
 }>();
 
-const studyStore = useStudyStore();
-const showAnswer = ref(false);
+const fsrsStore = useFSRSStore();
+const deckStore = useDeckStore();
+const authStore = useAuthStore();
 
-// Start study session when component mounts
-studyStore.startStudySession(props.deckId);
+const currentCard = ref<Card | null>(null);
+const isFlipped = ref(false);
+const stats = ref<{
+  totalCards: number;
+  completedCards: number;
+  remainingCards: number;
+  newCardsStudied: number;
+  reviewsCompleted: number;
+} | null>(null);
+const isLoading = ref(true);
 
-const currentCard = computed(() => studyStore.currentCard);
-const progress = computed(() => studyStore.studyProgress);
+const startSession = async () => {
+  try {
+    isLoading.value = true;
+    const deck = await deckStore.getDeckById(props.deckId);
+    if (!deck) throw new Error('Deck not found');
 
-const handleShowAnswer = () => {
-  showAnswer.value = true;
+    await fsrsStore.startStudySession(props.deckId, deck.daily_new_cards_limit, deck.daily_review_limit);
+    currentCard.value = fsrsStore.getNextCard();
+    stats.value = fsrsStore.getStudySessionStats();
+  } catch (error) {
+    console.error('Failed to start study session:', error);
+  } finally {
+    isLoading.value = false;
+  }
 };
 
-const handleResponse = async (rating: 'again' | 'hard' | 'good' | 'easy') => {
+const handleAnswer = async (rating: Rating) => {
+  if (!currentCard.value || !authStore.user) return;
+
+  try {
+    isLoading.value = true;
+    await fsrsStore.processReview(currentCard.value, rating, authStore.user.id);
+    
+    // Get next card
+    currentCard.value = fsrsStore.getNextCard();
+    if (currentCard.value) {
+      isFlipped.value = false;
+    }
+    
+    // Update stats
+    stats.value = fsrsStore.getStudySessionStats();
+  } catch (error) {
+    console.error('Failed to process review:', error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const endSession = async () => {
   if (!currentCard.value) return;
   
-  await studyStore.recordCardReview(currentCard.value.id, rating);
-  showAnswer.value = false;
+  try {
+    await fsrsStore.endStudySession(props.deckId);
+    emit('close');
+  } catch (error) {
+    console.error('Failed to end session:', error);
+  }
 };
 
-const getButtonClass = (rating: string) => {
-  const baseClass = 'flex items-center gap-2 px-4 py-2 rounded-lg transition-colors';
-  switch (rating) {
-    case 'again':
-      return `${baseClass} bg-red-500/10 hover:bg-red-500/20 text-red-400`;
-    case 'hard':
-      return `${baseClass} bg-orange-500/10 hover:bg-orange-500/20 text-orange-400`;
-    case 'good':
-      return `${baseClass} bg-green-500/10 hover:bg-green-500/20 text-green-400`;
-    case 'easy':
-      return `${baseClass} bg-blue-500/10 hover:bg-blue-500/20 text-blue-400`;
-    default:
-      return baseClass;
+onMounted(startSession);
+
+const flipCard = () => {
+  isFlipped.value = true;
+};
+
+const getKeyboardShortcuts = (e: KeyboardEvent) => {
+  if (!currentCard.value) return;
+  
+  switch(e.key) {
+    case ' ':
+      if (!isFlipped.value) {
+        flipCard();
+      }
+      break;
+    case '1':
+      if (isFlipped.value) handleAnswer(Rating.Again);
+      break;
+    case '2':
+      if (isFlipped.value) handleAnswer(Rating.Hard);
+      break;
+    case '3':
+      if (isFlipped.value) handleAnswer(Rating.Good);
+      break;
+    case '4':
+      if (isFlipped.value) handleAnswer(Rating.Easy);
+      break;
   }
 };
 </script>
 
 <template>
-  <div class="flex flex-col h-full">
-    <!-- Header -->
-    <div class="flex items-center justify-between p-4 border-b border-neutral-800">
-      <button class="flex items-center gap-2 text-neutral-400 hover:text-neutral-200" @click="emit('close')">
-        <ArrowLeft :size="20" />
-        <span>Exit</span>
-      </button>
-      <div class="text-neutral-400">
-        {{ progress.completed }} / {{ progress.total }}
-      </div>
-    </div>
-
-    <!-- Main Content -->
-    <div v-if="currentCard" class="flex-1 p-4">
-      <!-- Question Side -->
-      <div class="max-w-2xl mx-auto space-y-8">
-        <div class="ql-snow">
-          <div class="p-6 !rounded-lg ql-editor ql-container border-none !bg-neutral-900">
-            <div v-html="currentCard.front_content"></div>
-          </div>
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-950/90" 
+       @keydown="getKeyboardShortcuts" 
+       tabindex="0">
+    <div class="w-full max-w-3xl overflow-hidden rounded-lg shadow-xl bg-neutral-900">
+      <!-- Header with stats -->
+      <div class="flex items-center justify-between p-4 border-b border-neutral-800">
+        <div class="flex gap-4 text-sm text-neutral-400">
+          <span>New: {{ stats?.newCardsStudied || 0 }}</span>
+          <span>Review: {{ stats?.reviewsCompleted || 0 }}</span>
+          <span>Remaining: {{ stats?.remainingCards || 0 }}</span>
         </div>
-
-        <!-- Answer Side -->
-        <div v-if="showAnswer" class="ql-snow">
-          <div class="p-6 !rounded-lg ql-editor ql-container border-none !bg-neutral-900">
-            <div v-html="currentCard.back_content"></div>
-          </div>
-        </div>
-
-        <!-- Response Buttons -->
-        <div class="flex justify-center gap-2">
-          <template v-if="!showAnswer">
-            <button 
-              class="px-4 py-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200"
-              @click="handleShowAnswer"
-            >
-              Show Answer
-            </button>
-          </template>
-          <template v-else>
-            <button :class="getButtonClass('again')" @click="handleResponse('again')">
-              <ThumbsDown :size="18" />
-              <span>Again</span>
-            </button>
-            <button :class="getButtonClass('hard')" @click="handleResponse('hard')">
-              <Zap :size="18" />
-              <span>Hard</span>
-            </button>
-            <button :class="getButtonClass('good')" @click="handleResponse('good')">
-              <ThumbsUp :size="18" />
-              <span>Good</span>
-            </button>
-            <button :class="getButtonClass('easy')" @click="handleResponse('easy')">
-              <Rocket :size="18" />
-              <span>Easy</span>
-            </button>
-          </template>
-        </div>
-      </div>
-    </div>
-
-    <!-- Session Complete -->
-    <div v-else class="flex items-center justify-center flex-1">
-      <div class="space-y-4 text-center">
-        <h2 class="text-2xl font-bold text-neutral-200">Session Complete!</h2>
-        <p class="text-neutral-400">You've reviewed all cards for now.</p>
-        <button 
-          class="px-4 py-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200"
-          @click="emit('close')"
-        >
-          Return to Deck
+        <button @click="endSession" 
+                class="text-neutral-400 hover:text-neutral-200">
+          Close
         </button>
+      </div>
+
+      <!-- Main content -->
+      <div class="p-6" v-if="!isLoading">
+        <template v-if="currentCard">
+          <!-- Card content -->
+          <div class="min-h-[200px] flex flex-col items-center justify-center p-4">
+            <div v-if="!isFlipped" 
+                 class="text-center cursor-pointer" 
+                 @click="flipCard">
+              <div class="whitespace-pre-wrap">{{ currentCard.front_content }}</div>
+              <div class="mt-4 text-sm text-neutral-500">Click to flip</div>
+            </div>
+            <div v-else 
+                 class="text-center">
+              <div class="whitespace-pre-wrap">{{ currentCard.back_content }}</div>
+            </div>
+          </div>
+
+          <!-- Answer buttons -->
+          <div v-if="isFlipped" 
+               class="flex justify-center gap-2 mt-6">
+            <button @click="handleAnswer(Rating.Again)"
+                    class="px-4 py-2 bg-red-600 rounded hover:bg-red-700"
+                    title="Shortcut: 1">
+              Again
+            </button>
+            <button @click="handleAnswer(Rating.Hard)"
+                    class="px-4 py-2 bg-yellow-600 rounded hover:bg-yellow-700"
+                    title="Shortcut: 2">
+              Hard
+            </button>
+            <button @click="handleAnswer(Rating.Good)"
+                    class="px-4 py-2 bg-green-600 rounded hover:bg-green-700"
+                    title="Shortcut: 3">
+              Good
+            </button>
+            <button @click="handleAnswer(Rating.Easy)"
+                    class="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700"
+                    title="Shortcut: 4">
+              Easy
+            </button>
+          </div>
+          <div v-else 
+               class="mt-4 text-sm text-center text-neutral-500">
+            Press spacebar to flip
+          </div>
+        </template>
+        
+        <!-- Session complete -->
+        <template v-else>
+          <div class="py-12 text-center">
+            <h3 class="mb-2 text-xl font-semibold">Session Complete!</h3>
+            <p class="mb-6 text-neutral-400">
+              You've reviewed {{ stats?.completedCards }} cards
+            </p>
+            <button @click="endSession"
+                    class="px-4 py-2 rounded bg-neutral-700 hover:bg-neutral-600">
+              Close Session
+            </button>
+          </div>
+        </template>
+      </div>
+
+      <!-- Loading state -->
+      <div v-else class="flex justify-center p-6">
+        <div class="w-8 h-8 border-t-2 rounded-full animate-spin border-neutral-200"></div>
       </div>
     </div>
   </div>

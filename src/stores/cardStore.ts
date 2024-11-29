@@ -3,11 +3,9 @@ import { supabase } from "../supabase";
 import { useAuthStore } from "./authStore";
 import { useDeckStore } from "./deckStore";
 import { 
-  Card, 
-  DeckSettings, 
-  FSRSSettings,
-  CardStatus 
+  Card,
 } from "../types/deck.types";
+import { State } from "ts-fsrs";
 
 interface CardState {
   cards: Record<string, Card[]>; // Keyed by deck_id
@@ -73,13 +71,9 @@ export const useCardStore = defineStore("cards", {
         throw new Error("You do not have permission to add cards to this deck");
       }
 
-      // Get deck settings
-      const deckSettings = deck.settings as DeckSettings;
-      const fsrsSettings = deckSettings?.fsrs || this.getDefaultFSRSSettings();
-
       this.loading = true;
       try {
-        const fullCardData = this.prepareNewCardData(cardData, fsrsSettings);
+        const fullCardData = this.prepareNewCardData(cardData);
         
         const { data, error } = await supabase
           .from("cards")
@@ -165,8 +159,36 @@ export const useCardStore = defineStore("cards", {
 
       this.loading = true;
       try {
-        const { id, ...cardWithoutId } = card;
-        const newCardData = this.prepareNewCardData(cardWithoutId);
+        // Only keep non-FSRS fields
+        const { 
+          id, 
+          stability, 
+          difficulty, 
+          elapsed_days, 
+          scheduled_days, 
+          reps, 
+          state, 
+          due, 
+          last_review,
+          lapses,
+          created_at,
+          updated_at,
+          ...cardWithoutFSRSFields 
+        } = card;
+
+        const newCardData = {
+          ...cardWithoutFSRSFields,
+          // Reset FSRS fields to initial values
+          stability: 0,
+          difficulty: 0,
+          elapsed_days: 0,
+          scheduled_days: 0,
+          reps: 0,
+          state: 0, // State.New
+          due: new Date().toISOString(),
+          last_review: null,
+          lapses: 0,
+        };
 
         const { data, error } = await supabase
           .from("cards")
@@ -188,41 +210,22 @@ export const useCardStore = defineStore("cards", {
       }
     },
 
-    // Helper methods
-    getDefaultFSRSSettings(): FSRSSettings {
+    prepareNewCardData(cardData: Partial<Card>): Partial<Card> {
       return {
-        request_retention: 0.9,
-        maximum_stability: 36500,
-        weights: [2.2, 0.7, 2.6, 1.7, 0.5, -0.2, 0.2, 1.0, -0.5, -0.1, 0.5, -0.1, 0.8],
-        learning_steps: [1, 10],
-        enable_fsrs: true,
-      };
-    },
-
-    prepareNewCardData(cardData: Partial<Card>, fsrsSettings?: FSRSSettings): Partial<Card> {
-      const settings = fsrsSettings || this.getDefaultFSRSSettings();
-      
-      return {
-        ...cardData,
         // FSRS core fields
         stability: 0,
         difficulty: 0,
         elapsed_days: 0,
         scheduled_days: 0,
         reps: 0,
-        state: "new" as CardStatus,
-        status: "new" as CardStatus,
-        // FSRS parameters
-        request_retention: settings.request_retention,
-        maximum_stability: settings.maximum_stability,
-        w: settings.weights,
+        state: State.New,
         // Initialize dates
-        due_date: new Date().toISOString(),
-        last_review_date: null,
-        last_review_rating: null,
-        lapses_count: 0,
+        due: new Date().toISOString(),
+        last_review: null,
+        lapses: 0,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
+        ...cardData,
       };
     },
   },

@@ -149,7 +149,6 @@ export const useSocialStore = defineStore("social", {
             back_content: card.back_content,
             note: card.note,
             tags: card.tags,
-            formatting_settings: card.formatting_settings,
             position: card.position,
             // Reset all FSRS and study-related fields
             stability: 0,
@@ -157,15 +156,10 @@ export const useSocialStore = defineStore("social", {
             elapsed_days: 0,
             scheduled_days: 0,
             reps: 0,
-            state: "new",
-            status: "new",
-            due_date: new Date().toISOString(),
-            last_review_date: null,
-            last_review_rating: null,
-            lapses_count: 0,
-            request_retention: (newDeck.settings as any).fsrs.request_retention,
-            maximum_stability: (newDeck.settings as any).fsrs.maximum_stability,
-            w: (newDeck.settings as any).fsrs.weights,
+            state: 0,
+            due: new Date().toISOString(),
+            last_review: null,
+            lapses: 0,
           }));
 
           const { error: cardsError } = await supabase
