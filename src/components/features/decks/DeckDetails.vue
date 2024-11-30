@@ -113,6 +113,14 @@ const handleCardsClick = () => {
         router.push(`/learn/${props.deck.id}/cards`);
     }
 };
+
+// Add a computed property to check if there are any cards to study
+const hasCardsToStudy = computed(() => {
+    const stats = useCardStats(props.deck.id);
+    return stats.availableNewCards.value > 0 || 
+           stats.dueReviewCards.value > 0 || 
+           stats.dueLearningCards.value > 0;
+});
 </script>
 
 <template>
@@ -188,7 +196,14 @@ const handleCardsClick = () => {
                         </button>
                     </div>
                 </div>
-                <button class="flex items-center w-24 gap-2 button-pink-visible" @click="emit('study')">
+                <button class="flex items-center w-24 gap-2" 
+                        @click="emit('study')"
+                        :disabled="!hasCardsToStudy"
+                        :class="{
+                          'button-pink-visible': hasCardsToStudy,
+                          'opacity-50 button-visible cursor-default pointer-events-none': !hasCardsToStudy
+                        }"
+                        :title="hasCardsToStudy ? 'Study deck' : 'No cards due for study'">
                     <BookOpen :size="18" />
                     <span>Study</span>
                 </button>

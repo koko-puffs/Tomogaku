@@ -22,37 +22,12 @@ const ratingToString = (rating: Rating): ReviewLog["rating"] => {
   return map[rating];
 };
 
-interface CardRecord {
-  id: string;
-  deck_id: string;
-  // FSRS specific fields aligned with database
-  due: Date | string; // timestamp without time zone in DB
-  stability: number; // double precision in DB
-  difficulty: number; // double precision in DB
-  elapsed_days: number; // double precision in DB
-  scheduled_days: number; // double precision in DB
-  reps: number; // integer in DB
-  lapses: number; // integer in DB
-  state: State; // integer in DB (0-3)
-  last_review: Date | string | null; // timestamp without time zone in DB
-  // Database specific fields
-  front_content: string; // renamed from front to match DB
-  back_content: string; // renamed from back to match DB
-  note: string | null;
-  created_at: string;
-  updated_at: string;
-  position: number | null;
-  deleted_at: string | null;
-  tags: string[] | null;
-}
-
 interface StudyState {
   scheduler: ReturnType<typeof fsrs>;
-  currentCard: CardRecord | null;
+  currentCard: Card | null;
   reviewLogs: ReviewLog[];
   fsrsParameters: FSRSParameters;
   studySession: StudySession | null;
-  cardStartTime: number;
 }
 
 export const useFSRSStore = defineStore("fsrs", {
@@ -71,7 +46,6 @@ export const useFSRSStore = defineStore("fsrs", {
       enable_short_term: true,
     },
     studySession: null,
-    cardStartTime: 0,
   }),
 
   actions: {
@@ -82,33 +56,35 @@ export const useFSRSStore = defineStore("fsrs", {
       this.scheduler = fsrs(this.fsrsParameters);
     },
 
-    toFSRSCard(cardRecord: CardRecord): FSRSCard {
+    toFSRSCard(card: Card): FSRSCard {
       return {
-        due: new Date(cardRecord.due),
-        stability: cardRecord.stability,
-        difficulty: cardRecord.difficulty,
-        elapsed_days: cardRecord.elapsed_days,
-        scheduled_days: cardRecord.scheduled_days,
-        reps: cardRecord.reps,
-        lapses: cardRecord.lapses,
-        state: cardRecord.state,
-        last_review: cardRecord.last_review
-          ? new Date(cardRecord.last_review)
+        due: new Date(card.due),
+        stability: card.stability,
+        difficulty: card.difficulty,
+        elapsed_days: card.elapsed_days,
+        scheduled_days: card.scheduled_days,
+        reps: card.reps,
+        lapses: card.lapses,
+        state: card.state,
+        last_review: card.last_review
+          ? new Date(card.last_review)
           : new Date(),
       };
     },
 
-    createNewCard(deckId: string): Partial<CardRecord> {
+    createNewCard(deckId: string): Partial<Card> {
       const emptyCard = createEmptyCard();
       return {
         deck_id: deckId,
         ...emptyCard,
+        due: emptyCard.due.toISOString(),
+        last_review: emptyCard.last_review?.toISOString() || null,
         front_content: "",
         back_content: "",
-      };
+      } as Partial<Card>;
     },
 
-    getSchedule(card: CardRecord): Record<Rating, RecordLogItem> {
+    getSchedule(card: Card): Record<Rating, RecordLogItem> {
       const fsrsCard = this.toFSRSCard(card);
       return this.scheduler.repeat(fsrsCard, new Date());
     },
@@ -228,17 +204,15 @@ export const useFSRSStore = defineStore("fsrs", {
         return null;
       }
 
-      this.cardStartTime = Date.now();
       return this.studySession.remainingCards[
         this.studySession.currentCardIndex
       ];
     },
 
     // Process a review and update the study session
-    async processReview(card: Card, rating: Rating, userId: string) {
-      const reviewDuration = Date.now() - this.cardStartTime;
+    async processReview(card: Card, rating: Rating, userId: string, reviewDuration: number) {
       const result = await this.recordReview(
-        this.toCardRecord(card),
+        card,
         rating,
         userId,
         reviewDuration
@@ -299,16 +273,17 @@ export const useFSRSStore = defineStore("fsrs", {
       this.studySession = null;
     },
 
-    async recordReview(card: CardRecord, rating: Rating, userId: string, reviewDuration: number) {
+    async recordReview(card: Card, rating: Rating, userId: string, reviewDuration: number) {
       const schedule = this.getSchedule(card);
       const result = schedule[rating];
 
       // Update card in database
-      const updatedCard: Partial<CardRecord> = {
+      const updatedCard = {
+        ...card,
         ...result.card,
-        id: card.id,
-        deck_id: card.deck_id,
-      };
+        due: result.card.due.toISOString(),
+        last_review: result.card.last_review?.toISOString() || null,
+      } as Card;
 
       // Create review log with explicit review_duration_ms
       const reviewLog: Partial<ReviewLog> = {
@@ -339,11 +314,11 @@ export const useFSRSStore = defineStore("fsrs", {
       }
     },
 
-    getRetrievability(card: CardRecord): string | number {
+    getRetrievability(card: Card): string | number {
       return this.scheduler.get_retrievability(this.toFSRSCard(card));
     },
 
-    async updateCard(card: Partial<CardRecord>) {
+    async updateCard(card: Partial<Card>) {
       const { data, error } = await supabase
         .from("cards")
         .update(card)
@@ -364,7 +339,7 @@ export const useFSRSStore = defineStore("fsrs", {
       return data;
     },
 
-    resetCard(card: CardRecord) {
+    resetCard(card: Card) {
       const emptyCard = createEmptyCard();
       return {
         ...card,
@@ -373,30 +348,16 @@ export const useFSRSStore = defineStore("fsrs", {
       };
     },
 
-    async forgetCard(card: CardRecord) {
+    async forgetCard(card: Card) {
       const result = this.scheduler.forget(this.toFSRSCard(card), new Date());
       const updatedCard = {
         ...card,
         ...result.card,
-      };
+        due: result.card.due.toISOString(),
+        last_review: result.card.last_review?.toISOString() || null,
+      } as Card;
       await this.updateCard(updatedCard);
       return updatedCard;
-    },
-
-    toCardRecord(card: Card): CardRecord {
-      return {
-        ...card,
-        due: card.due || new Date().toISOString(),
-        stability: card.stability || 0,
-        difficulty: card.difficulty || 0,
-        elapsed_days: card.elapsed_days || 0,
-        scheduled_days: card.scheduled_days || 0,
-        reps: card.reps || 0,
-        lapses: card.lapses || 0,
-        state: card.state || State.New,
-        created_at: card.created_at || new Date().toISOString(),
-        updated_at: card.updated_at || new Date().toISOString(),
-      };
     },
   },
 });

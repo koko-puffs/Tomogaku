@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useFSRSStore } from '../../../stores/fsrsStore';
 import { useDeckStore } from '../../../stores/deckStore';
 import { useAuthStore } from '../../../stores/authStore';
 import { Rating } from 'ts-fsrs';
 import type { Card } from '../../../types/deck.types';
+import LoadingSpinner from '../../common/LoadingSpinner.vue';
 
 const props = defineProps<{
   deckId: string;
@@ -28,6 +29,10 @@ const stats = ref<{
   reviewsCompleted: number;
 } | null>(null);
 const isLoading = ref(true);
+const cardStartTime = ref<number>(0);
+const cardFlipTime = ref<number>(0);
+const elapsedTime = ref(0);
+const timerInterval = ref<number | null>(null);
 
 const startSession = async () => {
   try {
@@ -38,6 +43,9 @@ const startSession = async () => {
     await fsrsStore.startStudySession(props.deckId, deck.daily_new_cards_limit, deck.daily_review_limit);
     currentCard.value = fsrsStore.getNextCard();
     stats.value = fsrsStore.getStudySessionStats();
+    cardStartTime.value = Date.now();
+    elapsedTime.value = 0;
+    timerInterval.value = window.setInterval(updateTimer, 10);
   } catch (error) {
     console.error('Failed to start study session:', error);
   } finally {
@@ -50,12 +58,15 @@ const handleAnswer = async (rating: Rating) => {
 
   try {
     isLoading.value = true;
-    await fsrsStore.processReview(currentCard.value, rating, authStore.user.id);
+    const reviewDuration = cardFlipTime.value - cardStartTime.value;
+    await fsrsStore.processReview(currentCard.value, rating, authStore.user.id, reviewDuration);
     
     // Get next card
     currentCard.value = fsrsStore.getNextCard();
     if (currentCard.value) {
       isFlipped.value = false;
+      cardStartTime.value = Date.now();
+      elapsedTime.value = 0;
     }
     
     // Update stats
@@ -68,8 +79,6 @@ const handleAnswer = async (rating: Rating) => {
 };
 
 const endSession = async () => {
-  if (!currentCard.value) return;
-  
   try {
     await fsrsStore.endStudySession(props.deckId);
     emit('close');
@@ -78,21 +87,23 @@ const endSession = async () => {
   }
 };
 
-onMounted(startSession);
+onMounted(() => {
+  document.body.classList.add('overflow-hidden');
+  startSession();
+});
 
 const flipCard = () => {
   isFlipped.value = true;
+  cardFlipTime.value = Date.now();
+  if (timerInterval.value) {
+    clearInterval(timerInterval.value);
+  }
 };
 
 const getKeyboardShortcuts = (e: KeyboardEvent) => {
   if (!currentCard.value) return;
   
   switch(e.key) {
-    case ' ':
-      if (!isFlipped.value) {
-        flipCard();
-      }
-      break;
     case '1':
       if (isFlipped.value) handleAnswer(Rating.Again);
       break;
@@ -107,91 +118,138 @@ const getKeyboardShortcuts = (e: KeyboardEvent) => {
       break;
   }
 };
+
+const updateTimer = () => {
+  if (!isFlipped.value) {
+    elapsedTime.value = Date.now() - cardStartTime.value;
+  }
+};
+
+onUnmounted(() => {
+  document.body.classList.remove('overflow-hidden');
+  if (timerInterval.value) {
+    clearInterval(timerInterval.value);
+  }
+});
+
+const formattedTime = computed(() => {
+  const seconds = Math.floor(elapsedTime.value / 1000);
+  const milliseconds = Math.floor((elapsedTime.value % 1000) / 10);
+  return `${seconds}.${milliseconds.toString().padStart(2, '0')}s`;
+});
+
+// Add this to ensure focus when mounted
+const container = ref<HTMLElement | null>(null);
 </script>
 
 <template>
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-950/90" 
-       @keydown="getKeyboardShortcuts" 
-       tabindex="0">
-    <div class="w-full max-w-3xl overflow-hidden rounded-lg shadow-xl bg-neutral-900">
-      <!-- Header with stats -->
-      <div class="flex items-center justify-between p-4 border-b border-neutral-800">
-        <div class="flex gap-4 text-sm text-neutral-400">
-          <span>New: {{ stats?.newCardsStudied || 0 }}</span>
-          <span>Review: {{ stats?.reviewsCompleted || 0 }}</span>
-          <span>Remaining: {{ stats?.remainingCards || 0 }}</span>
+  <div class="fixed inset-0 flex items-center justify-center p-4 bg-neutral-950/90" 
+       @keydown.prevent="getKeyboardShortcuts" 
+       tabindex="0"
+       ref="container">
+    <div class="w-full max-w-3xl mx-auto overflow-hidden rounded-lg shadow-xl bg-neutral-900">
+      <!-- Header with stats and progress -->
+      <div class="border-b border-neutral-800">
+        <!-- Progress bar -->
+        <div class="h-1 bg-neutral-800">
+          <div class="h-full transition-all duration-300 bg-pink-600"
+               :style="{ width: `${stats ? (stats.completedCards / (stats.completedCards + stats.remainingCards) * 100) : 0}%` }">
+          </div>
         </div>
-        <button @click="endSession" 
-                class="text-neutral-400 hover:text-neutral-200">
-          Close
-        </button>
+        
+        <div class="flex items-center justify-between p-4">
+          <div class="flex gap-4 text-sm text-neutral-400">
+            <span>New: {{ stats?.newCardsStudied || 0 }}</span>
+            <span>Review: {{ stats?.reviewsCompleted || 0 }}</span>
+            <span>Remaining: {{ stats?.remainingCards || 0 }}</span>
+          </div>
+          <button @click="endSession" 
+                  class="text-neutral-400 hover:text-neutral-200">
+            Close
+          </button>
+        </div>
       </div>
 
       <!-- Main content -->
-      <div class="p-6" v-if="!isLoading">
-        <template v-if="currentCard">
-          <!-- Card content -->
-          <div class="min-h-[200px] flex flex-col items-center justify-center p-4">
-            <div v-if="!isFlipped" 
-                 class="text-center cursor-pointer" 
-                 @click="flipCard">
+      <div class="p-6">
+        <template v-if="!isLoading && currentCard">
+          <!-- Card content - now with fixed height -->
+          <div class="space-y-6 panel min-h-[300px]">
+            <div class="absolute font-mono text-sm top-2 right-2 text-neutral-500">
+              {{ formattedTime }}
+            </div>
+            
+            <!-- Front content (always visible) -->
+            <div class="p-4 rounded-lg">
+              <div class="mb-2 text-sm font-medium text-neutral-400">Front</div>
               <div class="whitespace-pre-wrap">{{ currentCard.front_content }}</div>
-              <div class="mt-4 text-sm text-neutral-500">Click to flip</div>
             </div>
-            <div v-else 
-                 class="text-center">
-              <div class="whitespace-pre-wrap">{{ currentCard.back_content }}</div>
-            </div>
+            
+            <!-- Back content (visible after flip) -->
+            <template v-if="isFlipped">
+              <div class="h-px bg-neutral-800"></div>
+              <div class="p-4 rounded-lg">
+                <div class="mb-2 text-sm font-medium text-neutral-400">Back</div>
+                <div class="whitespace-pre-wrap">{{ currentCard.back_content }}</div>
+              </div>
+            </template>
           </div>
 
-          <!-- Answer buttons -->
-          <div v-if="isFlipped" 
-               class="flex justify-center gap-2 mt-6">
-            <button @click="handleAnswer(Rating.Again)"
-                    class="px-4 py-2 bg-red-600 rounded hover:bg-red-700"
-                    title="Shortcut: 1">
-              Again
+          <!-- Buttons below card -->
+          <div class="flex justify-center mt-6">
+            <!-- Show answer button when not flipped -->
+            <button v-if="!isFlipped"
+                    @click="flipCard"
+                    class="px-4 py-2 rounded panel-clickable"
+                    title="Space">
+              Show Answer
             </button>
-            <button @click="handleAnswer(Rating.Hard)"
-                    class="px-4 py-2 bg-yellow-600 rounded hover:bg-yellow-700"
-                    title="Shortcut: 2">
-              Hard
-            </button>
-            <button @click="handleAnswer(Rating.Good)"
-                    class="px-4 py-2 bg-green-600 rounded hover:bg-green-700"
-                    title="Shortcut: 3">
-              Good
-            </button>
-            <button @click="handleAnswer(Rating.Easy)"
-                    class="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700"
-                    title="Shortcut: 4">
-              Easy
-            </button>
-          </div>
-          <div v-else 
-               class="mt-4 text-sm text-center text-neutral-500">
-            Press spacebar to flip
+
+            <!-- Rating buttons when flipped -->
+            <div v-else 
+                 class="flex gap-2">
+              <button @click="handleAnswer(Rating.Again)"
+                      class="px-4 py-2 text-red-400 rounded panel-clickable hover:text-red-300"
+                      title="Shortcut: 1">
+                Again
+              </button>
+              <button @click="handleAnswer(Rating.Hard)"
+                      class="px-4 py-2 text-yellow-400 rounded panel-clickable hover:text-yellow-300"
+                      title="Shortcut: 2">
+                Hard
+              </button>
+              <button @click="handleAnswer(Rating.Good)"
+                      class="px-4 py-2 text-green-400 rounded panel-clickable hover:text-green-300"
+                      title="Shortcut: 3">
+                Good
+              </button>
+              <button @click="handleAnswer(Rating.Easy)"
+                      class="px-4 py-2 text-blue-400 rounded panel-clickable hover:text-blue-300"
+                      title="Shortcut: 4">
+                Easy
+              </button>
+            </div>
           </div>
         </template>
-        
+
         <!-- Session complete -->
-        <template v-else>
+        <template v-else-if="!isLoading && !currentCard">
           <div class="py-12 text-center">
             <h3 class="mb-2 text-xl font-semibold">Session Complete!</h3>
             <p class="mb-6 text-neutral-400">
               You've reviewed {{ stats?.completedCards }} cards
             </p>
             <button @click="endSession"
-                    class="px-4 py-2 rounded bg-neutral-700 hover:bg-neutral-600">
+                    class="px-4 py-2 panel-clickable">
               Close Session
             </button>
           </div>
         </template>
-      </div>
 
-      <!-- Loading state -->
-      <div v-else class="flex justify-center p-6">
-        <div class="w-8 h-8 border-t-2 rounded-full animate-spin border-neutral-200"></div>
+        <!-- Updated loading state -->
+        <div v-else class="flex items-center justify-center min-h-[300px] text-neutral-500">
+          <LoadingSpinner :size="32" />
+        </div>
       </div>
     </div>
   </div>

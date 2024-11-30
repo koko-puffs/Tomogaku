@@ -1,8 +1,18 @@
 import { Database } from "./supabase";
+import { Card as FSRSCard } from "ts-fsrs";
+
+type DBCard = Database["public"]["Tables"]["cards"]["Row"];
+type FSRSFields = Omit<FSRSCard, 'last_review' | 'due'>;
+type DBFields = Omit<DBCard, 'difficulty' | 'stability' | 'elapsed_days' | 'scheduled_days' | 'reps' | 'lapses' | 'state'>;
+
+// Extend both the database type and FSRS type, while overriding date fields
+export interface Card extends FSRSFields, DBFields {
+  last_review: string | null;
+  due: string;
+}
 
 // Base types from Supabase
 export type Deck = Database["public"]["Tables"]["decks"]["Row"];
-export type Card = Database["public"]["Tables"]["cards"]["Row"];
 export type ReviewLog = Database["public"]["Tables"]["review_logs"]["Row"];
 
 // Study session types
