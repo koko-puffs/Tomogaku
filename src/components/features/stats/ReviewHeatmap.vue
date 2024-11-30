@@ -22,17 +22,31 @@ const maxReviews = computed(() => {
   return max;
 });
 
+const minReviews = computed(() => {
+  let min = Infinity;
+  statsStore.yearlyReviewLogs.forEach(logs => {
+    if (logs.length > 0) {  // Exclude zero counts
+      min = Math.min(min, logs.length);
+    }
+  });
+  return min === Infinity ? 0 : min;
+});
+
 const getIntensityClass = (count: number) => {
   if (count === 0) return 'bg-neutral-800';
   
-  const percentage = (count / maxReviews.value) * 100;
+  // Calculate percentage based on the range between min and max
+  const range = maxReviews.value - minReviews.value;
+  const percentage = range === 0 
+    ? 100  // If min equals max, show full intensity
+    : ((count - minReviews.value) / range) * 100;
   
-  if (percentage <= 10) return 'bg-emerald-900';
-  if (percentage <= 25) return 'bg-emerald-800';
-  if (percentage <= 40) return 'bg-emerald-700';
-  if (percentage <= 55) return 'bg-emerald-600';
-  if (percentage <= 70) return 'bg-emerald-500';
-  if (percentage <= 85) return 'bg-emerald-400';
+  if (percentage <= 5) return 'bg-emerald-900';
+  if (percentage <= 20) return 'bg-emerald-800';
+  if (percentage <= 35) return 'bg-emerald-700';
+  if (percentage <= 50) return 'bg-emerald-600';
+  if (percentage <= 65) return 'bg-emerald-500';
+  if (percentage <= 80) return 'bg-emerald-400';
   if (percentage <= 95) return 'bg-emerald-300';
   return 'bg-emerald-200';
 };
