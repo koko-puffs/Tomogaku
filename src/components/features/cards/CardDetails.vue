@@ -4,6 +4,7 @@ import { Copy, ChevronLeft, ChevronRight, RotateCcw, Save, Trash2, X } from 'luc
 import { QuillEditor } from '@vueup/vue-quill';
 import '../../../styles/quill.css';
 import { Database } from '../../../types/supabase';
+import { useAuthStore } from '../../../stores/authStore';
 
 type Card = Database['public']['Tables']['cards']['Row'];
 
@@ -28,6 +29,9 @@ const tagError = ref('');
 const editPosition = ref<number | null>(props.card.position);
 const isShiftPressed = ref(false);
 const showDebug = ref(false);
+
+const authStore = useAuthStore();
+const userProfile = computed(() => authStore.userProfile);
 
 // Update watch to properly reset all fields
 watch(() => props.card.id, () => {
@@ -303,7 +307,7 @@ const formatDate = (date: string | null) => {
     </div>
 
     <!-- Debug Panel -->
-    <div class="mt-4">
+    <div v-if="userProfile?.account_type === 'admin'" class="mt-4">
       <button 
         @click="showDebug = !showDebug"
         class="w-full px-4 py-2 text-sm text-left rounded-md text-neutral-400 hover:bg-neutral-800"

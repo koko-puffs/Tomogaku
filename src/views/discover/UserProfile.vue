@@ -131,7 +131,9 @@
           </div>
 
           <div v-else-if="activeTab === 'stats'">
-            <p class="text-neutral-400">Stats coming soon...</p>
+            <div class="space-y-6">
+              <ReviewHeatmap :user-id="route.params.id as string" />
+            </div>
           </div>
         </template>
       </PageLayout>
@@ -149,6 +151,7 @@ import type { Database } from '../../types/supabase';
 import PageLayout from '../../components/common/PageLayout.vue';
 import PublicDeckList from '../../components/features/profile/PublicDeckList.vue';
 import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
+import ReviewHeatmap from '../../components/features/stats/ReviewHeatmap.vue';
 
 // Language mapping
 const LANGUAGES = {

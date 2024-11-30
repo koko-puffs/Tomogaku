@@ -23,8 +23,8 @@ const selectedTags = ref<string[]>([]);
 const selectedState = ref<State[]>([]);
 
 // Add helper function to convert string status to State enum
-const getStateFromString = (status: string): State => {
-    switch (status) {
+const getStateFromString = (state: string): State => {
+    switch (state) {
         case 'new': return State.New; // 0
         case 'learning': return State.Learning; // 1
         case 'review': return State.Review; // 2
@@ -201,9 +201,9 @@ defineExpose({
                     placeholder="Search cards...">
             </div>
 
-            <!-- Status Filter -->
+            <!-- State Filter -->
             <div class="space-y-2">
-                <label class="text-sm text-neutral-400">Status</label>
+                <label class="text-sm text-neutral-400">State</label>
                 <div class="space-y-1">
                     <label v-for="status in ['new', 'learning', 'review', 'relearning']" :key="status"
                         class="flex items-center gap-2">
@@ -232,9 +232,9 @@ defineExpose({
         <div v-if="showFilters" class="h-px bg-neutral-800"></div>
 
         <!-- Card List -->
-        <div class="space-y-1.5">
+        <div class="space-y-1">
             <div v-for="card in filteredCards" :key="card.id"
-                class="relative pl-4 pr-2 py-3 h-10 flex items-center justify-between group motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity"
+                class="relative px-3 py-2 flex items-center justify-between group motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity"
                 :class="[
                     selectedCard === card.id
                         ? 'panel-active'
@@ -246,13 +246,8 @@ defineExpose({
                 </div>
 
                 <span v-if="card.position" 
-                      class="px-2 py-1 text-xs rounded-md text-neutral-400 shrink-0" 
-                      :class="[
-                          selectedCard === card.id
-                              ? 'bg-neutral-700/70'
-                              : 'bg-neutral-800'
-                      ]">
-                    {{ card.position }}
+                      class="text-xs text-neutral-400">
+                    #{{ card.position }}
                 </span>
             </div>
         </div>

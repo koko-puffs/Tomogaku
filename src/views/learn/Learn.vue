@@ -11,6 +11,7 @@ import DeckDetails from '../../components/features/decks/DeckDetails.vue';
 import CommentSection from '../../components/features/decks/CommentSection.vue';
 import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
 import StudySession from '../../components/features/study/StudySession.vue';
+
 defineProps<{
   deckId?: string;
   cardId?: string;
@@ -169,8 +170,14 @@ const scrollToTop = () => {
               <LoadingSpinner :size="32" />
             </div>
             <div v-else-if="currentDeck" class="space-y-6">
-              <DeckDetails :deck="currentDeck" @update="handleEditDeck" @delete="handleDeleteDeck"
-                @study="handleStudyDeck" @cards="handleViewCards" />
+              <DeckDetails 
+                :deck="currentDeck" 
+                @update="handleEditDeck" 
+                @delete="handleDeleteDeck"
+                @study="handleStudyDeck" 
+                @cards="handleViewCards" 
+              />
+
               <template v-if="currentDeck.visibility !== 'private'">
                 <CommentSection :deck-id="currentDeck.id" />
               </template>
