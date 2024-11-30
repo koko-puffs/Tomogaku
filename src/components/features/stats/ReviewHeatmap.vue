@@ -64,7 +64,12 @@ const generateCalendarData = computed(() => {
   
   // Generate calendar data
   for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-    const dateStr = d.toISOString().split('T')[0];
+    // Format date manually to avoid timezone issues
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+    
     const count = statsStore.getReviewCountForDate(dateStr);
     
     if (currentWeek.length === 7) {
