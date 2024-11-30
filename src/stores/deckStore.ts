@@ -176,35 +176,20 @@ export const useDeckStore = defineStore("decks", {
     },
 
     async updateDeckStats(deckId: string) {
-      const deck = this.getDeckById(deckId);
-      if (!deck) return;
-
       this.loading.operations = true;
       try {
-        const { data: cards, error } = await supabase
-          .from("cards")
-          .select("*")
-          .eq("deck_id", deckId)
-          .is("deleted_at", null);
+        const { data, error } = await supabase
+          .rpc('get_deck_stats', {
+            p_deck_id: deckId,
+            p_today: new Date().toISOString()
+          });
 
         if (error) throw error;
 
-        // Calculate stats
-        const now = new Date();
-        const stats = {
-          new_cards_count: cards.filter(c => c.status === "new").length,
-          learning_cards_count: cards.filter(c => c.status === "learning").length,
-          review_cards_count: cards.filter(c => c.status === "review").length,
-          relearning_cards_count: cards.filter(c => c.status === "relearning").length,
-          due_cards_count: cards.filter(c => new Date(c.due_date) <= now).length,
-          next_due_date: cards
-            .map(c => new Date(c.due_date))
-            .filter(d => d > now)
-            .sort((a, b) => a.getTime() - b.getTime())[0]?.toISOString() || null,
-          card_count: cards.length,
-        };
-
-        await this.updateDeck(deckId, stats);
+        // Update the deckStats Map with the new stats
+        if (data) {
+          this.deckStats.set(deckId, data);
+        }
       } catch (error) {
         this.error = error instanceof Error ? error.message : "Error updating deck stats";
         throw error;

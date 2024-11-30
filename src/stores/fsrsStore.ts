@@ -96,38 +96,66 @@ export const useFSRSStore = defineStore("fsrs", {
       reviewLimit: number = 200
     ) {
       const now = new Date();
+      const startOfDay = new Date(now);
+      startOfDay.setHours(0, 0, 0, 0);
 
       try {
-        // Get cards that are due for review (due date <= now)
-        const { data: dueCards, error: dueError } = await supabase
+        // Get count of new cards already studied today
+        const { count: newCardsStudiedToday, error: countError } = await supabase
+          .from("review_logs")
+          .select("*", { count: 'exact', head: true })
+          .eq("deck_id", deckId)
+          .eq("state", State.New)
+          .gte("created_at", startOfDay.toISOString());
+
+        if (countError) throw countError;
+
+        // Calculate remaining new cards allowed for today
+        const remainingNewCards = Math.max(0, newCardLimit - (newCardsStudiedToday || 0));
+
+        // Get learning/relearning cards regardless of due date
+        const { data: learningCards, error: learningError } = await supabase
+          .from("cards")
+          .select("*")
+          .eq("deck_id", deckId)
+          .in("state", [State.Learning, State.Relearning])
+          .is("deleted_at", null)
+          .order("due");
+
+        if (learningError) throw learningError;
+
+        // Get regular review cards that are due
+        const { data: reviewCards, error: reviewError } = await supabase
           .from("cards")
           .select("*")
           .eq("deck_id", deckId)
           .lte("due", now.toISOString())
+          .eq("state", State.Review)
           .is("deleted_at", null)
           .order("due");
 
-        if (dueError) throw dueError;
+        if (reviewError) throw reviewError;
 
-        // Get new cards
+        // Get new cards, limited by remaining daily allowance
         const { data: newCards, error: newError } = await supabase
           .from("cards")
           .select("*")
           .eq("deck_id", deckId)
           .eq("state", State.New)
           .is("deleted_at", null)
-          .limit(newCardLimit);
+          .limit(remainingNewCards);
 
         if (newError) throw newError;
 
-        // Filter and sort cards
-        const reviewCards = dueCards
-          .filter((card) => card.state !== State.New)
-          .slice(0, reviewLimit);
+        // Combine learning cards with review cards, but limit total reviews
+        const allReviewCards = [
+          ...(learningCards || []),
+          ...(reviewCards || [])
+        ].slice(0, reviewLimit);
 
         return {
           newCards: newCards || [],
-          reviewCards: reviewCards || [],
+          reviewCards: allReviewCards || [],
         };
       } catch (error) {
         console.error("Error fetching due cards:", error);
@@ -225,14 +253,14 @@ export const useFSRSStore = defineStore("fsrs", {
         // Move to next card
         this.studySession.currentCardIndex++;
 
-        // If the card needs to be relearned (Again rating), add it back to queue
-        if (rating === Rating.Again) {
-          const relearningPosition = Math.min(
+        // If the card is in learning/relearning state, add it back to queue
+        if (result.card.state === State.Learning || result.card.state === State.Relearning) {
+          const nextPosition = Math.min(
             this.studySession.currentCardIndex + 3,
             this.studySession.remainingCards.length
           );
 
-          this.studySession.remainingCards.splice(relearningPosition, 0, {
+          this.studySession.remainingCards.splice(nextPosition, 0, {
             ...card,
             ...result.card,
             due: result.card.due.toISOString(),
@@ -285,7 +313,7 @@ export const useFSRSStore = defineStore("fsrs", {
         last_review: result.card.last_review?.toISOString() || null,
       } as Card;
 
-      // Create review log with explicit review_duration_ms
+      // Create review log
       const reviewLog: Partial<ReviewLog> = {
         card_id: card.id,
         deck_id: card.deck_id,
@@ -300,7 +328,7 @@ export const useFSRSStore = defineStore("fsrs", {
         difficulty: result.log.difficulty,
         created_at: new Date().toISOString(),
         due: result.card.due.toISOString(),
-        review_duration_ms: Math.round(reviewDuration), // Ensure it's a rounded integer
+        review_duration_ms: Math.round(reviewDuration),
       };
 
       try {

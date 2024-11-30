@@ -242,20 +242,17 @@ defineExpose({
                 ]" @click="emit('select-card', card.id)">
 
                 <div class="flex items-center flex-1 min-w-0 gap-2">
-                    <span v-if="card.position" class="text-sm text-neutral-400">#{{ card.position }}</span>
                     <div class="text-sm truncate">{{ stripHtml(card.front_content) }}</div>
                 </div>
 
-                <!-- Updated status tag -->
-                <span class="px-2 py-1 text-xs rounded-md text-neutral-400 shrink-0" :class="[
-                    selectedCard === card.id
-                        ? 'bg-neutral-700/70'
-                        : 'bg-neutral-800'
-                ]">
-                    {{ card.state === State.New ? 'new' :
-                       card.state === State.Learning ? 'learning' :
-                       card.state === State.Review ? 'review' :
-                       card.state === State.Relearning ? 'relearning' : 'new' }}
+                <span v-if="card.position" 
+                      class="px-2 py-1 text-xs rounded-md text-neutral-400 shrink-0" 
+                      :class="[
+                          selectedCard === card.id
+                              ? 'bg-neutral-700/70'
+                              : 'bg-neutral-800'
+                      ]">
+                    {{ card.position }}
                 </span>
             </div>
         </div>

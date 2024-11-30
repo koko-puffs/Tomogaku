@@ -6,6 +6,9 @@ import { useAuthStore } from '../../../stores/authStore';
 import { Rating } from 'ts-fsrs';
 import type { Card } from '../../../types/deck.types';
 import LoadingSpinner from '../../common/LoadingSpinner.vue';
+import StudyCard from './StudyCard.vue';
+import { useCardStats } from '../../../composables/useCardStats';
+import { State } from 'ts-fsrs';
 
 const props = defineProps<{
   deckId: string;
@@ -34,6 +37,18 @@ const cardFlipTime = ref<number>(0);
 const elapsedTime = ref(0);
 const timerInterval = ref<number | null>(null);
 
+const formattedTime = computed(() => {
+  const seconds = Math.floor(elapsedTime.value / 1000);
+  const milliseconds = Math.floor((elapsedTime.value % 1000) / 10);
+  return `${seconds}.${milliseconds.toString().padStart(2, '0')}s`;
+});
+
+const updateTimer = () => {
+  if (!isFlipped.value) {
+    elapsedTime.value = Date.now() - cardStartTime.value;
+  }
+};
+
 const startSession = async () => {
   try {
     isLoading.value = true;
@@ -43,6 +58,7 @@ const startSession = async () => {
     await fsrsStore.startStudySession(props.deckId, deck.daily_new_cards_limit, deck.daily_review_limit);
     currentCard.value = fsrsStore.getNextCard();
     stats.value = fsrsStore.getStudySessionStats();
+    
     cardStartTime.value = Date.now();
     elapsedTime.value = 0;
     timerInterval.value = window.setInterval(updateTimer, 10);
@@ -50,6 +66,13 @@ const startSession = async () => {
     console.error('Failed to start study session:', error);
   } finally {
     isLoading.value = false;
+  }
+};
+
+const handleCardFlip = () => {
+  cardFlipTime.value = Date.now();
+  if (timerInterval.value) {
+    clearInterval(timerInterval.value);
   }
 };
 
@@ -61,15 +84,17 @@ const handleAnswer = async (rating: Rating) => {
     const reviewDuration = cardFlipTime.value - cardStartTime.value;
     await fsrsStore.processReview(currentCard.value, rating, authStore.user.id, reviewDuration);
     
-    // Get next card
+    await deckStore.updateDeckStats(props.deckId);
+    
     currentCard.value = fsrsStore.getNextCard();
     if (currentCard.value) {
-      isFlipped.value = false;
+      cardFlipTime.value = 0;
       cardStartTime.value = Date.now();
       elapsedTime.value = 0;
+      if (timerInterval.value) clearInterval(timerInterval.value);
+      timerInterval.value = window.setInterval(updateTimer, 10);
     }
     
-    // Update stats
     stats.value = fsrsStore.getStudySessionStats();
   } catch (error) {
     console.error('Failed to process review:', error);
@@ -92,14 +117,6 @@ onMounted(() => {
   startSession();
 });
 
-const flipCard = () => {
-  isFlipped.value = true;
-  cardFlipTime.value = Date.now();
-  if (timerInterval.value) {
-    clearInterval(timerInterval.value);
-  }
-};
-
 const getKeyboardShortcuts = (e: KeyboardEvent) => {
   if (!currentCard.value) return;
   
@@ -119,12 +136,6 @@ const getKeyboardShortcuts = (e: KeyboardEvent) => {
   }
 };
 
-const updateTimer = () => {
-  if (!isFlipped.value) {
-    elapsedTime.value = Date.now() - cardStartTime.value;
-  }
-};
-
 onUnmounted(() => {
   document.body.classList.remove('overflow-hidden');
   if (timerInterval.value) {
@@ -132,14 +143,47 @@ onUnmounted(() => {
   }
 });
 
-const formattedTime = computed(() => {
-  const seconds = Math.floor(elapsedTime.value / 1000);
-  const milliseconds = Math.floor((elapsedTime.value % 1000) / 10);
-  return `${seconds}.${milliseconds.toString().padStart(2, '0')}s`;
-});
-
 // Add this to ensure focus when mounted
 const container = ref<HTMLElement | null>(null);
+
+// Add card stats
+const cardStats = useCardStats(props.deckId);
+
+// Add computed for current card type
+const currentCardType = computed(() => {
+  if (!currentCard.value) return null;
+  
+  if (currentCard.value.state === State.New) return 'new';
+  if (currentCard.value.state === State.Learning || currentCard.value.state === State.Relearning) return 'learning';
+  if (currentCard.value.state === State.Review) return 'review';
+  return null;
+});
+
+// Add computed for schedules
+const schedules = computed(() => {
+  if (!currentCard.value) return null;
+  return fsrsStore.getSchedule(currentCard.value);
+});
+
+const formatSchedule = (days: number, dueDate: Date) => {
+  // For intervals less than 1 day, use due date
+  if (days < 1) {
+    const minutesUntilDue = (dueDate.getTime() - Date.now()) / (1000 * 60);
+    return `<${Math.max(1, Math.round(minutesUntilDue))}m`;
+  }
+
+  // For longer intervals, use scheduled days
+  const months = days / 30;
+  const years = days / 365;
+
+  if (days < 30) {
+    return `${Math.round(days)}d`;
+  } else if (days < 365) {
+    return `${Math.round(months)}mo`;
+  } else {
+    return `${Math.round(years)}y`;
+  }
+};
 </script>
 
 <template>
@@ -158,10 +202,30 @@ const container = ref<HTMLElement | null>(null);
         </div>
         
         <div class="flex items-center justify-between p-4">
-          <div class="flex gap-4 text-sm text-neutral-400">
-            <span>New: {{ stats?.newCardsStudied || 0 }}</span>
-            <span>Review: {{ stats?.reviewsCompleted || 0 }}</span>
-            <span>Remaining: {{ stats?.remainingCards || 0 }}</span>
+          <div class="flex items-center gap-4 text-sm">
+            <div class="flex gap-4">
+              <span :class="{
+                'text-cyan-400': currentCardType === 'new',
+                'text-neutral-400': currentCardType !== 'new'
+              }">
+                New: {{ cardStats.availableNewCards }}
+              </span>
+              <span :class="{
+                'text-green-400': currentCardType === 'review',
+                'text-neutral-400': currentCardType !== 'review'
+              }">
+                Review: {{ cardStats.dueReviewCards }}
+              </span>
+              <span :class="{
+                'text-orange-400': currentCardType === 'learning',
+                'text-neutral-400': currentCardType !== 'learning'
+              }">
+                Learning: {{ cardStats.dueLearningCards }}
+              </span>
+            </div>
+            <div class="font-mono text-neutral-500">
+              {{ formattedTime }}
+            </div>
           </div>
           <button @click="endSession" 
                   class="text-neutral-400 hover:text-neutral-200">
@@ -172,83 +236,83 @@ const container = ref<HTMLElement | null>(null);
 
       <!-- Main content -->
       <div class="p-6">
-        <template v-if="!isLoading && currentCard">
-          <!-- Card content - now with fixed height -->
-          <div class="space-y-6 panel min-h-[300px]">
-            <div class="absolute font-mono text-sm top-2 right-2 text-neutral-500">
-              {{ formattedTime }}
-            </div>
-            
-            <!-- Front content (always visible) -->
-            <div class="p-4 rounded-lg">
-              <div class="mb-2 text-sm font-medium text-neutral-400">Front</div>
-              <div class="whitespace-pre-wrap">{{ currentCard.front_content }}</div>
-            </div>
-            
-            <!-- Back content (visible after flip) -->
-            <template v-if="isFlipped">
-              <div class="h-px bg-neutral-800"></div>
-              <div class="p-4 rounded-lg">
-                <div class="mb-2 text-sm font-medium text-neutral-400">Back</div>
-                <div class="whitespace-pre-wrap">{{ currentCard.back_content }}</div>
-              </div>
-            </template>
-          </div>
+        <!-- Card area with consistent height -->
+        <div class="min-h-[562px]">
+          <template v-if="!isLoading && currentCard">
+            <StudyCard 
+              :card="currentCard"
+              @flipped="handleCardFlip"
+            />
 
-          <!-- Buttons below card -->
-          <div class="flex justify-center mt-6">
-            <!-- Show answer button when not flipped -->
-            <button v-if="!isFlipped"
-                    @click="flipCard"
-                    class="px-4 py-2 rounded panel-clickable"
-                    title="Space">
-              Show Answer
-            </button>
-
-            <!-- Rating buttons when flipped -->
-            <div v-else 
-                 class="flex gap-2">
+            <!-- Rating buttons -->
+            <div v-if="cardFlipTime" 
+                 class="flex justify-center gap-2 mt-6">
               <button @click="handleAnswer(Rating.Again)"
                       class="px-4 py-2 text-red-400 rounded panel-clickable hover:text-red-300"
                       title="Shortcut: 1">
                 Again
+                <span class="text-xs opacity-75" v-if="schedules">
+                  {{ formatSchedule(
+                    schedules[Rating.Again].card.scheduled_days,
+                    new Date(schedules[Rating.Again].card.due)
+                  ) }}
+                </span>
               </button>
               <button @click="handleAnswer(Rating.Hard)"
                       class="px-4 py-2 text-yellow-400 rounded panel-clickable hover:text-yellow-300"
                       title="Shortcut: 2">
                 Hard
+                <span class="text-xs opacity-75" v-if="schedules">
+                  {{ formatSchedule(
+                    schedules[Rating.Hard].card.scheduled_days,
+                    new Date(schedules[Rating.Hard].card.due)
+                  ) }}
+                </span>
               </button>
               <button @click="handleAnswer(Rating.Good)"
                       class="px-4 py-2 text-green-400 rounded panel-clickable hover:text-green-300"
                       title="Shortcut: 3">
                 Good
+                <span class="text-xs opacity-75" v-if="schedules">
+                  {{ formatSchedule(
+                    schedules[Rating.Good].card.scheduled_days,
+                    new Date(schedules[Rating.Good].card.due)
+                  ) }}
+                </span>
               </button>
               <button @click="handleAnswer(Rating.Easy)"
                       class="px-4 py-2 text-blue-400 rounded panel-clickable hover:text-blue-300"
                       title="Shortcut: 4">
                 Easy
+                <span class="text-xs opacity-75" v-if="schedules">
+                  {{ formatSchedule(
+                    schedules[Rating.Easy].card.scheduled_days,
+                    new Date(schedules[Rating.Easy].card.due)
+                  ) }}
+                </span>
               </button>
             </div>
-          </div>
-        </template>
+          </template>
 
-        <!-- Session complete -->
-        <template v-else-if="!isLoading && !currentCard">
-          <div class="py-12 text-center">
-            <h3 class="mb-2 text-xl font-semibold">Session Complete!</h3>
-            <p class="mb-6 text-neutral-400">
-              You've reviewed {{ stats?.completedCards }} cards
-            </p>
-            <button @click="endSession"
-                    class="px-4 py-2 panel-clickable">
-              Close Session
-            </button>
+          <!-- Loading state with same height as card -->
+          <div v-else-if="isLoading" 
+               class="flex items-center justify-center h-[300px] text-neutral-500">
+            <LoadingSpinner :size="32" />
           </div>
-        </template>
 
-        <!-- Updated loading state -->
-        <div v-else class="flex items-center justify-center min-h-[300px] text-neutral-500">
-          <LoadingSpinner :size="32" />
+          <!-- Session complete -->
+          <template v-else-if="!currentCard">
+            <div class="flex flex-col items-center justify-center h-[300px]">
+              <h3 class="mb-2 text-xl font-semibold">Session Complete!</h3>
+              <p class="mb-6 text-neutral-400">
+                You've reviewed {{ stats?.completedCards }} cards
+              </p>
+              <button @click="endSession"
+                      class="px-4 py-2 panel-clickable">
+                Close Session
+              </button>
+            </div>
+          </template>
         </div>
       </div>
     </div>
