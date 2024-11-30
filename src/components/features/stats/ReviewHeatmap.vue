@@ -27,19 +27,23 @@ const getIntensityClass = (count: number) => {
   
   const percentage = (count / maxReviews.value) * 100;
   
-  if (percentage <= 25) return 'bg-emerald-900';
-  if (percentage <= 50) return 'bg-emerald-700';
-  if (percentage <= 75) return 'bg-emerald-500';
-  return 'bg-emerald-300';
+  if (percentage <= 10) return 'bg-emerald-900';
+  if (percentage <= 25) return 'bg-emerald-800';
+  if (percentage <= 40) return 'bg-emerald-700';
+  if (percentage <= 55) return 'bg-emerald-600';
+  if (percentage <= 70) return 'bg-emerald-500';
+  if (percentage <= 85) return 'bg-emerald-400';
+  if (percentage <= 95) return 'bg-emerald-300';
+  return 'bg-emerald-200';
 };
 
 const legendValues = computed(() => {
   const max = maxReviews.value;
   return [
     0,
-    Math.ceil(max * 0.25),
+    Math.ceil(max * 0.2),
     Math.ceil(max * 0.5),
-    Math.ceil(max * 0.75),
+    Math.ceil(max * 0.8),
     max
   ];
 });
