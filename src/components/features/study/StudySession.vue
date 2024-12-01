@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue';
 import { useFSRSStore } from '../../../stores/fsrsStore';
 import { useDeckStore } from '../../../stores/deckStore';
 import { useAuthStore } from '../../../stores/authStore';
@@ -158,12 +158,16 @@ const getKeyboardShortcuts = (e: KeyboardEvent) => {
 };
 
 onMounted(() => {
-  document.body.classList.add('overflow-hidden');
+  nextTick(() => {
+    document.documentElement.classList.add('overflow-hidden');
+    document.body.classList.add('overflow-hidden');
+  });
   window.addEventListener('keydown', getKeyboardShortcuts);
   startSession();
 });
 
 onUnmounted(() => {
+  document.documentElement.classList.remove('overflow-hidden');
   document.body.classList.remove('overflow-hidden');
   window.removeEventListener('keydown', getKeyboardShortcuts);
   if (timerInterval.value) {
@@ -345,7 +349,7 @@ const studyCardRef = ref<InstanceType<typeof StudyCard> | null>(null);
             <div class="flex flex-col items-center justify-center h-full">
               <h3 class="mb-2 text-xl font-semibold">Session Complete!</h3>
               <p class="mb-6 text-neutral-400">
-                You've reviewed {{ stats?.completedCards }} cards
+                You've reviewed {{ stats?.completedCards }} card(s)
               </p>
               <button @click="endSession"
                       class="px-4 button-lighter-visible">

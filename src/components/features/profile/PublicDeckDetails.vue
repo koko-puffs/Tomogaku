@@ -8,6 +8,7 @@ import { useRouter, useRoute } from 'vue-router';
 import DeckEditForm from '../decks/DeckEditForm.vue';
 import { useAuthStore } from '../../../stores/authStore';
 import { useSocialStore } from '../../../stores/socialStore';
+import LoadingSpinner from '../../common/LoadingSpinner.vue';
 type UserProfile = Database['public']['Tables']['user_profiles']['Row'];
 
 const props = defineProps<{
@@ -217,10 +218,11 @@ const handleDelete = () => {
                         </button>
                     </div>
                 </div>
-                <button class="flex items-center w-10 gap-2 md:px-4 button-emerald-visible md:w-auto"
+                <button class="flex items-center w-10 gap-2 md:w-28 button-emerald-visible"
                     @click="handleFork" :disabled="isForking">
-                    <GitFork :size="18" />
-                    <span class="hidden md:inline">{{ isForking ? 'Forking...' : 'Fork deck' }}</span>
+                    <LoadingSpinner v-if="isForking" class="w-5 h-5" />
+                    <GitFork v-else :size="18" />
+                    <span v-if="!isForking" class="hidden md:inline">Fork deck</span>
                 </button>
             </div>
         </div>

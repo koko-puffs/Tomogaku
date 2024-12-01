@@ -283,7 +283,8 @@ const handleForget = () => {
               <span>Forget card</span>
             </button>
             <button @click="handleDelete"
-              class="flex items-center w-full gap-2 px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
+              class="flex items-center w-full gap-2 px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800"
+              :class="{ 'text-red-400': isShiftPressed }">
               <Trash2 :size="18" />
               <span>Delete card</span>
             </button>

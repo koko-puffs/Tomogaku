@@ -67,6 +67,7 @@ onUnmounted(() => {
 const emit = defineEmits<{
     'edit': [];
     'delete': [];
+    'delete-with-modal': [];
     'study': [];
     'cards': [];
     'update': [{ title: string, description: string | null, tags: string[] | null, visibility: 'private' | 'public' }];
@@ -88,10 +89,38 @@ const startEdit = () => {
     closeDropdown();
 };
 
-const handleDelete = () => {
-    emit('delete');
-    closeDropdown();
+const isShiftPressed = ref(false);
+
+const handleShiftDown = (e: KeyboardEvent) => {
+  if (e.key === 'Shift') isShiftPressed.value = true;
 };
+
+const handleShiftUp = (e: KeyboardEvent) => {
+  if (e.key === 'Shift') isShiftPressed.value = false;
+};
+
+const handleDelete = (event: MouseEvent) => {
+  if (event.shiftKey) {
+    // If shift is pressed, delete immediately
+    emit('delete');
+  } else {
+    // Otherwise, show the confirmation modal
+    emit('delete-with-modal');
+  }
+  closeDropdown();
+};
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+  window.addEventListener('keydown', handleShiftDown);
+  window.addEventListener('keyup', handleShiftUp);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+  window.removeEventListener('keydown', handleShiftDown);
+  window.removeEventListener('keyup', handleShiftUp);
+});
 
 const cancelEdit = () => {
     isEditing.value = false;
@@ -176,9 +205,10 @@ const hasCardsToStudy = computed(() => {
                             Edit
                         </button>
                         <button @click="handleDelete"
-                            class="flex items-center w-full px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
+                            class="flex items-center w-full px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800"
+                            :class="{ 'text-red-400': isShiftPressed }">
                             <Trash2 :size="16" class="mr-2" />
-                            Delete
+                            <span>Delete</span>
                         </button>
                     </div>
 
@@ -187,7 +217,10 @@ const hasCardsToStudy = computed(() => {
                         <button class="w-10 button" @click="startEdit" title="Edit deck">
                             <Pencil :size="18" />
                         </button>
-                        <button @click="handleDelete" class="w-10 button" title="Delete deck">
+                        <button @click="handleDelete" 
+                            class="w-10 button" 
+                            :class="{ 'button-cancel-visible': isShiftPressed }" 
+                            title="Delete deck (Hold Shift to delete without confirmation)">
                             <Trash2 :size="18" />
                         </button>
                         <button class="flex items-center w-24 gap-2 ml-2 button-visible" @click="handleCardsClick">

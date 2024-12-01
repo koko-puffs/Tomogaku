@@ -93,6 +93,10 @@ const handleDeleteDeck = async () => {
   deleteModalRef.value?.openModal();
 };
 
+const handleDeleteWithModal = () => {
+  handleDeleteDeck();
+};
+
 const confirmDeleteDeck = async () => {
   if (!selectedDeck.value) return;
 
@@ -173,7 +177,8 @@ const scrollToTop = () => {
               <DeckDetails 
                 :deck="currentDeck" 
                 @update="handleEditDeck" 
-                @delete="handleDeleteDeck"
+                @delete="confirmDeleteDeck"
+                @delete-with-modal="handleDeleteWithModal"
                 @study="handleStudyDeck" 
                 @cards="handleViewCards" 
               />
