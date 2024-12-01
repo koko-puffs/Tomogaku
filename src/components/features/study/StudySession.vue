@@ -222,7 +222,7 @@ const studyCardRef = ref<InstanceType<typeof StudyCard> | null>(null);
 </script>
 
 <template>
-  <div class="fixed inset-0 flex items-start justify-center p-4 shadow-xl mt-14 md:mt-24" 
+  <div class="fixed inset-0 flex items-start justify-center p-4 mt-14 md:mt-24 focus:outline-none" 
        @keydown.prevent="getKeyboardShortcuts" 
        tabindex="0"
        ref="container">
