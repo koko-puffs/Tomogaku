@@ -32,7 +32,12 @@ const minReviews = computed(() => {
   return min === Infinity ? 0 : min;
 });
 
-const getIntensityClass = (count: number) => {
+const getIntensityClass = (count: number, date: string) => {
+  // Return neutral color for future dates
+  if (date && new Date(date) > new Date()) {
+    return 'bg-neutral-900';
+  }
+  
   if (count === 0) return 'bg-neutral-800';
   
   // Calculate percentage based on the range between min and max
@@ -143,8 +148,8 @@ onMounted(async () => {
         <span class="mt-[1px] text-sm font-medium">{{ currentYear }}</span>
         <button 
           @click="changeYear(1)"
-          class="p-1 rounded-md hover:bg-neutral-800"
-          :disabled="isLoading"
+          class="p-1 rounded-md disabled:opacity-50 disabled:hover:bg-transparent hover:bg-neutral-800"
+          :disabled="isLoading || currentYear >= new Date().getFullYear()"
         >
           <ChevronRight :size="16" />
         </button>
@@ -178,7 +183,7 @@ onMounted(async () => {
                    :key="`${weekIndex}-${dayIndex}`" 
                    :class="[
                      'w-[10px] h-[10px] rounded-sm transition-colors',
-                     day.date ? getIntensityClass(day.count) : 'bg-transparent',
+                     day.date ? getIntensityClass(day.count, day.date) : 'bg-transparent',
                    ]"
                    :title="day.date ? `${day.date}: ${day.count} reviews` : ''"
               ></div>
@@ -195,7 +200,7 @@ onMounted(async () => {
                :key="index"
                :class="[
                  'w-[10px] h-[10px] rounded-sm',
-                 getIntensityClass(value)
+                 getIntensityClass(value, '')
                ]"
                :title="`${value} reviews`"
           ></div>
