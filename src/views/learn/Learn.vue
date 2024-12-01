@@ -149,7 +149,7 @@ const scrollToTop = () => {
 </script>
 
 <template>
-  <div class="motion-preset-fade motion-duration-150">
+  <div class="">
     <template v-if="isStudying && selectedDeck">
       <StudySession 
         :deck-id="selectedDeck" 

@@ -202,7 +202,7 @@ watch(
 </script>
 
 <template>
-  <div class="motion-preset-fade motion-duration-150">
+  <div>
     <PageLayout>
       <template #sidebar>
         <RouterLink :to="`/learn/${deckId}`"

@@ -98,7 +98,7 @@ const handleEditDeck = async (updates: {
 </script>
 
 <template>
-    <div class="motion-preset-fade motion-duration-150">
+    <div>
         <!-- Gradient overlay -->
         <div class="absolute inset-0 z-[20] pointer-events-none bg-gradient-to-b from-emerald-950/5 to-transparent">
         </div>

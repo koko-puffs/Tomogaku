@@ -4,11 +4,13 @@ import { useRoute } from "vue-router";
 import LoadingSpinner from "../common/LoadingSpinner.vue";
 import SettingsModal from '../features/settings/SettingsModal.vue'
 import { ref, onMounted, onUnmounted } from 'vue'
-import { UserCircle2, Settings, LogOut, BookOpen, Compass, Activity } from 'lucide-vue-next'
+import { UserCircle2, Settings, LogOut, BookOpen, Compass, Activity, Menu } from 'lucide-vue-next'
+import { useSidebarStore } from '../../stores/sidebarStore'
 
 const authStore = useAuthStore()
 //const router = useRouter()
 const route = useRoute()
+const sidebarStore = useSidebarStore()
 
 const isDropdownOpen = ref(false)
 const dropdownRef = ref<HTMLElement | null>(null)
@@ -63,16 +65,24 @@ const scrollToTop = () => {
     behavior: 'smooth'
   });
 };
+
+const emit = defineEmits(['toggle-sidebar'])
+
+const toggleSidebar = () => {
+  sidebarStore.toggle()
+}
 </script>
 
 <template>
   <nav class="fixed top-0 left-0 right-0 z-50 border-b border-neutral-800 bg-neutral-950/75 backdrop-blur-md">
-    <div class="flex items-center justify-between flex-shrink-0 px-6 mx-auto space-x-4 h-14">
+    <div class="flex items-center justify-between flex-shrink-0 pl-2 pr-6 mx-auto space-x-4 md:px-6 h-14">
       <!-- Left section -->
       <div class="flex items-center justify-start flex-1">
+        <button @click="toggleSidebar" class="w-10 mr-2 md:hidden button-noborder">
+          <Menu :size="20" />
+        </button>
         <router-link to="/" class="relative flex items-center h-10 text-xl font-bold" style="top: -1px;"
           @click="scrollToTop">
-          <span class="mt-1 text-lg sm:hidden">共学</span>
           <span class="hidden sm:inline">tomogaku</span>
         </router-link>
       </div>
@@ -132,7 +142,7 @@ const scrollToTop = () => {
         </button>
 
         <div v-else class="relative" ref="dropdownRef">
-          <button @click.stop="toggleDropdown" class="flex items-center h-10 px-1.5 text-sm sm:px-2 -mr-2 sm:mr-0"
+          <button @click.stop="toggleDropdown" class="flex items-center h-10 px-1.5 text-sm w-10 sm:w-full sm:px-2 -mr-2 sm:mr-0"
             :class="isDropdownOpen ? 'button-active-noborder' : 'button-noborder'">
             <span class="hidden sm:pl-1 sm:pr-2 sm:inline">
               {{

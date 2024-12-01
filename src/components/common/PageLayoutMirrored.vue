@@ -1,27 +1,48 @@
 <template>
     <div class="min-h-screen">
-        <!-- Header Section (conditionally rendered) -->
-        <template v-if="$slots.header">
-            <div class="flex items-center w-full px-4 h-14">
-                <slot name="header" />
+        <!-- Mobile Overlay with Transition -->
+        <Transition
+            enter-active-class="transition-opacity duration-300"
+            leave-active-class="transition-opacity duration-300"
+            enter-from-class="opacity-0"
+            enter-to-class="opacity-100"
+            leave-from-class="opacity-100"
+            leave-to-class="opacity-0"
+        >
+            <div 
+                v-if="sidebarStore.isOpen"
+                class="fixed inset-0 z-30 bg-black/50 sm:hidden"
+                @click="sidebarStore.toggle()"
+            ></div>
+        </Transition>
+        
+        <!-- Main Grid Layout - responsive -->
+        <div class="grid md:grid-cols-[75fr_1px_25fr] grid-cols-[1fr] h-full w-full">
+            <!-- Content Area -->
+            <div class="min-h-screen px-4 py-4 md:px-0 md:pr-4">
+                <div class="max-w-[780px] min-w-[380px]">
+                    <slot name="content" />
+                </div>
             </div>
-            <div class="w-full h-px bg-neutral-800"></div>
-        </template>
 
-        <!-- Main Grid Layout -->
-        <div class="grid grid-cols-[75fr_1px_25fr] h-full">
-            <!-- Left Content Area -->
-            <div class="min-h-screen py-4 pr-4 max-w-[780px] min-w-[380px]">
-                <slot name="content" />
-            </div>
+            <!-- Divider - hidden on mobile -->
+            <div class="hidden w-px min-h-screen bg-neutral-800 sm:block"></div>
 
-            <!-- Divider -->
-            <div class="w-px min-h-screen bg-neutral-800"></div>
-
-            <!-- Right Sidebar -->
-            <div class="h-[calc(100vh-56px)] sticky top-14 overflow-y-auto py-4 pl-4 w-[260px]">
+            <!-- Sidebar - mobile from left, desktop on right -->
+            <div 
+                class="absolute md:sticky md:block left-0 top-14 md:h-[calc(100vh-56px)] h-full md:z-0 z-40 md:bg-transparent bg-neutral-950/75 backdrop-blur-md
+                       bg-background overflow-y-auto py-4 pr-4 pl-4 md:pl-0 w-[275px] md:w-[260px] transition-transform duration-300
+                       md:translate-x-0 border-r border-neutral-800 md:border-none"
+                :class="[sidebarStore.isOpen ? 'translate-x-0' : '-translate-x-[275px]']"
+            >
                 <slot name="sidebar" />
             </div>
         </div>
     </div>
 </template>
+
+<script setup>
+import { useSidebarStore } from '../../stores/sidebarStore'
+
+const sidebarStore = useSidebarStore()
+</script>
