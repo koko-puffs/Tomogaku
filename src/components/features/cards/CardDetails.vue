@@ -266,7 +266,7 @@ const handleForget = () => {
 
           <!-- Dropdown menu -->
           <div v-if="isDropdownOpen"
-            class="absolute right-0 w-48 py-2 mt-1 border rounded-lg shadow-xl bg-neutral-900 border-neutral-800 motion-translate-x-in-[0%] motion-translate-y-in-[-4%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity z-[5]">
+            class="absolute left-0 w-48 py-2 mt-1 border rounded-lg shadow-xl bg-neutral-900 border-neutral-800 motion-translate-x-in-[0%] motion-translate-y-in-[-4%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity z-[5]">
             <button @click="handlePreview"
               class="flex items-center w-full gap-2 px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
               <Eye :size="18" />

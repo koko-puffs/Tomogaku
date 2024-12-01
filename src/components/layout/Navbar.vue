@@ -4,7 +4,7 @@ import { useRoute } from "vue-router";
 import LoadingSpinner from "../common/LoadingSpinner.vue";
 import SettingsModal from '../features/settings/SettingsModal.vue'
 import { ref, onMounted, onUnmounted } from 'vue'
-import { UserCircle2, Settings, LogOut, BookOpen, Compass, Activity, Menu } from 'lucide-vue-next'
+import { UserCircle2, Settings, LogOut, BookOpen, Compass, Activity, Menu, X } from 'lucide-vue-next'
 import { useSidebarStore } from '../../stores/sidebarStore'
 
 const authStore = useAuthStore()
@@ -78,12 +78,13 @@ const toggleSidebar = () => {
     <div class="flex items-center justify-between flex-shrink-0 pl-2 pr-6 mx-auto space-x-4 md:px-6 h-14">
       <!-- Left section -->
       <div class="flex items-center justify-start flex-1">
-        <button @click="toggleSidebar" class="w-10 mr-2 md:hidden button-noborder">
-          <Menu :size="20" />
+        <button v-if="authStore.user" @click="toggleSidebar" class="w-10 mr-2 md:hidden button-noborder">
+          <X v-if="sidebarStore.isOpen" :size="20" />
+          <Menu v-else :size="20" />
         </button>
         <router-link to="/" class="relative flex items-center h-10 text-xl font-bold" style="top: -1px;"
           @click="scrollToTop">
-          <span class="hidden sm:inline">tomogaku</span>
+          <span :class="{ 'hidden sm:inline': authStore.user, 'sm:inline ml-4 md:ml-0': !authStore.user }">tomogaku</span>
         </router-link>
       </div>
 

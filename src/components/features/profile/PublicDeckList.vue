@@ -46,7 +46,7 @@ onMounted(async () => {
     <div v-else>
       <div v-if="deckStore.decks.length > 0" class="grid grid-cols-1 gap-2 h-28 md:grid-cols-2">
         <div v-for="deck in deckStore.decks" :key="deck.id"
-          class="relative panel-clickable p-3 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity flex flex-col h-[7.55rem] cursor-pointer hover:bg-neutral-800/50"
+          class="relative panel-clickable p-3 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity flex flex-col h-[7.55rem] hover:bg-neutral-800/50"
           @click="navigateToDeck(deck.id, $event)">
           <!-- Top content wrapper -->
           <div class="flex flex-col flex-grow">
