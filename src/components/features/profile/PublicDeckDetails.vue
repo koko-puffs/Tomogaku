@@ -199,12 +199,12 @@ const handleDelete = () => {
                         <button @click="startEdit"
                             class="flex items-center w-full px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
                             <Edit2 :size="16" class="mr-2" />
-                            Edit
+                            Edit deck
                         </button>
                         <button @click="handleDelete"
                             class="flex items-center w-full px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
                             <Trash2 :size="16" class="mr-2" />
-                            Delete
+                            Delete deck
                         </button>
                     </div>
 

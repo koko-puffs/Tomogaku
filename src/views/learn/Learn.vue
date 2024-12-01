@@ -154,7 +154,26 @@ const scrollToTop = () => {
       <StudySession 
         :deck-id="selectedDeck" 
         @close="isStudying = false"
+        class="z-10"
       />
+
+      <!-- Animated Background -->
+    <div class="w-full h-full">
+      <!-- Gradient overlay -->
+      <div class="absolute inset-0 bg-gradient-to-b from-pink-950/5 to-transparent"></div>
+
+      <!-- Particles -->
+      <div class="absolute inset-0 motion-preset-fade motion-duration-1000">
+        <div v-for="i in 100" :key="`particle-${i}`" class="absolute rounded-full particle bg-pink-300/5" :style="{
+          '--size': `${Math.random() * 6 + 2}px`,
+          '--duration': `${Math.random() * 20 + 10}s`,
+          '--delay': `-${Math.random() * 20}s`,
+          left: `${Math.random() * 100}%`,
+          top: `${Math.random() * 100}%`,
+        }">
+        </div>
+      </div>
+    </div>
     </template>
     <template v-else>
       <!-- Gradient overlay -->

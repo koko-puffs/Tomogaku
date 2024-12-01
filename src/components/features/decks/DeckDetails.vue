@@ -92,34 +92,34 @@ const startEdit = () => {
 const isShiftPressed = ref(false);
 
 const handleShiftDown = (e: KeyboardEvent) => {
-  if (e.key === 'Shift') isShiftPressed.value = true;
+    if (e.key === 'Shift') isShiftPressed.value = true;
 };
 
 const handleShiftUp = (e: KeyboardEvent) => {
-  if (e.key === 'Shift') isShiftPressed.value = false;
+    if (e.key === 'Shift') isShiftPressed.value = false;
 };
 
 const handleDelete = (event: MouseEvent) => {
-  if (event.shiftKey) {
-    // If shift is pressed, delete immediately
-    emit('delete');
-  } else {
-    // Otherwise, show the confirmation modal
-    emit('delete-with-modal');
-  }
-  closeDropdown();
+    if (event.shiftKey) {
+        // If shift is pressed, delete immediately
+        emit('delete');
+    } else {
+        // Otherwise, show the confirmation modal
+        emit('delete-with-modal');
+    }
+    closeDropdown();
 };
 
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside);
-  window.addEventListener('keydown', handleShiftDown);
-  window.addEventListener('keyup', handleShiftUp);
+    document.addEventListener('click', handleClickOutside);
+    window.addEventListener('keydown', handleShiftDown);
+    window.addEventListener('keyup', handleShiftUp);
 });
 
 onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside);
-  window.removeEventListener('keydown', handleShiftDown);
-  window.removeEventListener('keyup', handleShiftUp);
+    document.removeEventListener('click', handleClickOutside);
+    window.removeEventListener('keydown', handleShiftDown);
+    window.removeEventListener('keyup', handleShiftUp);
 });
 
 const cancelEdit = () => {
@@ -146,9 +146,9 @@ const handleCardsClick = () => {
 // Add a computed property to check if there are any cards to study
 const hasCardsToStudy = computed(() => {
     const stats = useCardStats(props.deck.id);
-    return stats.availableNewCards.value > 0 || 
-           stats.dueReviewCards.value > 0 || 
-           stats.dueLearningCards.value > 0;
+    return stats.availableNewCards.value > 0 ||
+        stats.dueReviewCards.value > 0 ||
+        stats.dueLearningCards.value > 0;
 });
 </script>
 
@@ -166,8 +166,7 @@ const hasCardsToStudy = computed(() => {
 
             <!-- View Mode -->
             <template v-else>
-                <div
-                    class="motion-opacity-in-[0%] motion-duration-[0.1s]/opacity">
+                <div class="motion-opacity-in-[0%] motion-duration-[0.1s]/opacity">
                     <div class="space-y-1">
                         <h1
                             class="relative flex items-center gap-1.5 text-xl font-bold pl-1 max-w-[195px] md:max-w-[280px] lg:max-w-[350px]">
@@ -197,18 +196,18 @@ const hasCardsToStudy = computed(() => {
                         <button @click="handleCardsClick"
                             class="flex items-center w-full px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
                             <Layers3 :size="16" class="mr-2" />
-                            Cards
+                            View cards
                         </button>
                         <button @click="startEdit"
                             class="flex items-center w-full px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
                             <Pencil :size="16" class="mr-2" />
-                            Edit
+                            Edit deck
                         </button>
                         <button @click="handleDelete"
                             class="flex items-center w-full px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800"
                             :class="{ 'text-red-400': isShiftPressed }">
                             <Trash2 :size="16" class="mr-2" />
-                            <span>Delete</span>
+                            <span>Delete deck</span>
                         </button>
                     </div>
 
@@ -217,9 +216,8 @@ const hasCardsToStudy = computed(() => {
                         <button class="w-10 button" @click="startEdit" title="Edit deck">
                             <Pencil :size="18" />
                         </button>
-                        <button @click="handleDelete" 
-                            class="w-10 button" 
-                            :class="{ 'button-cancel-visible': isShiftPressed }" 
+                        <button @click="handleDelete" class="w-10 button"
+                            :class="{ 'button-cancel-visible': isShiftPressed }"
                             title="Delete deck (Hold Shift to delete without confirmation)">
                             <Trash2 :size="18" />
                         </button>
@@ -229,14 +227,13 @@ const hasCardsToStudy = computed(() => {
                         </button>
                     </div>
                 </div>
-                <button class="flex items-center w-24 gap-2" 
-                        @click="emit('study')"
-                        :disabled="!hasCardsToStudy"
-                        :class="{
-                          'button-pink-visible': hasCardsToStudy,
-                          'opacity-50 button-visible cursor-default pointer-events-none': !hasCardsToStudy
-                        }"
-                        :title="hasCardsToStudy ? 'Study deck' : 'No cards due for study'">
+                <button class="flex items-center w-24 gap-2" @click="emit('study')" 
+                    :disabled="!hasCardsToStudy" 
+                    :class="{
+                        'button-pink-visible sparkle': hasCardsToStudy,
+                        'opacity-50 button-visible cursor-default pointer-events-none': !hasCardsToStudy
+                    }" 
+                    :title="hasCardsToStudy ? 'Study deck' : 'No cards due for study'">
                     <BookOpen :size="18" />
                     <span>Study</span>
                 </button>
@@ -244,14 +241,14 @@ const hasCardsToStudy = computed(() => {
         </div>
 
         <!-- Stats and Description -->
-        <div
-            class="space-y-2 motion-opacity-in-[0%] motion-duration-[0.1s]/opacity">
+        <div class="space-y-2 motion-opacity-in-[0%] motion-duration-[0.1s]/opacity">
             <!-- Deck Stats -->
             <div class="px-4 py-3 space-y-2 panel">
                 <div class="space-y-2">
                     <div class="flex items-center justify-between">
                         <span class="text-neutral-400">New:</span>
-                        <span :class="useCardStats(deck.id).availableNewCards.value > 0 ? 'text-cyan-400' : 'text-neutral-400'">
+                        <span
+                            :class="useCardStats(deck.id).availableNewCards.value > 0 ? 'text-cyan-400' : 'text-neutral-400'">
                             {{ useCardStats(deck.id).availableNewCards.value }}
                         </span>
                     </div>
@@ -259,7 +256,8 @@ const hasCardsToStudy = computed(() => {
 
                     <div class="flex items-center justify-between py-0.5">
                         <span class="text-neutral-400">To-review:</span>
-                        <span :class="useCardStats(deck.id).dueReviewCards.value > 0 ? 'text-green-400' : 'text-neutral-400'">
+                        <span
+                            :class="useCardStats(deck.id).dueReviewCards.value > 0 ? 'text-green-400' : 'text-neutral-400'">
                             {{ useCardStats(deck.id).dueReviewCards.value }}
                         </span>
                     </div>
@@ -267,7 +265,8 @@ const hasCardsToStudy = computed(() => {
 
                     <div class="flex items-center justify-between">
                         <span class="text-neutral-400">Learning:</span>
-                        <span :class="useCardStats(deck.id).dueLearningCards.value > 0 ? 'text-orange-400' : 'text-neutral-400'">
+                        <span
+                            :class="useCardStats(deck.id).dueLearningCards.value > 0 ? 'text-orange-400' : 'text-neutral-400'">
                             {{ useCardStats(deck.id).dueLearningCards.value }}
                         </span>
                     </div>

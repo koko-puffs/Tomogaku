@@ -319,11 +319,17 @@ export const useFSRSStore = defineStore("fsrs", {
 
       // Update card in database
       const updatedCard = {
-        ...card,
-        ...result.card,
+        id: card.id,
         due: result.card.due.toISOString(),
         last_review: result.card.last_review?.toISOString() || null,
-      } as Card;
+        stability: result.card.stability,
+        difficulty: result.card.difficulty,
+        elapsed_days: result.card.elapsed_days,
+        scheduled_days: result.card.scheduled_days,
+        reps: result.card.reps,
+        lapses: result.card.lapses,
+        state: result.card.state
+      } as Partial<Card>;
 
       // Create review log
       const reviewLog: Partial<ReviewLog> = {
@@ -391,11 +397,17 @@ export const useFSRSStore = defineStore("fsrs", {
     async forgetCard(card: Card) {
       const result = this.scheduler.forget(this.toFSRSCard(card), new Date());
       const updatedCard = {
-        ...card,
-        ...result.card,
+        id: card.id,
         due: result.card.due.toISOString(),
         last_review: result.card.last_review?.toISOString() || null,
-      } as Card;
+        stability: result.card.stability,
+        difficulty: result.card.difficulty,
+        elapsed_days: result.card.elapsed_days,
+        scheduled_days: result.card.scheduled_days,
+        reps: result.card.reps,
+        lapses: result.card.lapses,
+        state: result.card.state
+      } as Partial<Card>;
       await this.updateCard(updatedCard);
       return updatedCard;
     },

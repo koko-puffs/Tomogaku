@@ -383,7 +383,7 @@ const handleForget = () => {
     </div>
 
     <!-- Debug Panel -->
-    <div v-if="userProfile?.account_type === 'admin'" class="mt-4">
+    <div v-if="userProfile?.account_type === 'admin'" class="mt-2">
       <button @click="showDebug = !showDebug"
         class="w-full px-4 py-2 text-sm text-left rounded-md text-neutral-400 hover:bg-neutral-800">
         Debug Info {{ showDebug ? '▼' : '▶' }}

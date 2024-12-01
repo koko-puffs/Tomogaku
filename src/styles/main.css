@@ -41,6 +41,72 @@
   @apply my-4 text-lg text-neutral-300;
 }
 
+.floating-card {
+  animation: float var(--duration) infinite linear;
+  animation-delay: var(--delay);
+  will-change: transform;
+  pointer-events: none;
+}
+
+@keyframes float {
+  0% {
+    transform: translate(0, 0) rotate(var(--initial-rotation));
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.15;
+  }
+
+  90% {
+    opacity: 0.15;
+  }
+
+  100% {
+    transform: translate(0, -1000px) rotate(var(--final-rotation));
+    opacity: 0;
+  }
+}
+
+/* Subtle glow effect */
+.floating-card::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.03), transparent);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.particle {
+  width: var(--size);
+  height: var(--size);
+  animation: particleFloat var(--duration) infinite linear;
+  animation-delay: var(--delay);
+  will-change: transform;
+  filter: blur(1px);
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.8;
+  }
+
+  90% {
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translate(100px, -1000px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
 /* For Webkit browsers (Chrome, Safari, etc.) */
 ::-webkit-scrollbar {
   width: 10px;

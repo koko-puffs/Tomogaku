@@ -4,15 +4,15 @@ import { useAuthStore } from "./stores/authStore";
 // Add a title mapping object (you can place this before router creation)
 const titleMap: Record<string, string> = {
   landing: "tomogaku",
-  learn: "tomogaku / Learn",
-  cards: "tomogaku / Learn",
-  discover: "tomogaku / Discover",
-  userProfile: "tomogaku / Profile",
-  deck: "tomogaku / Deck",
-  feed: "tomogaku / Feed",
-  terms: "tomogaku / Terms",
-  privacy: "tomogaku / Privacy",
-  notFound: "tomogaku / 404",
+  learn: "Learn / tomogaku",
+  cards: "Learn / tomogaku",
+  discover: "Discover / tomogaku",
+  userProfile: "Profile / tomogaku",
+  deck: "Deck / tomogaku",
+  feed: "Feed / tomogaku",
+  terms: "Terms / tomogaku",
+  privacy: "Privacy / tomogaku",
+  notFound: "404 / tomogaku",
 };
 
 const router = createRouter({

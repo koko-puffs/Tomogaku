@@ -99,11 +99,13 @@
   }
 
   .button-pink-visible {
-    @apply border bg-pink-900 border-pink-700 select-none rounded-lg text-sm h-10
-      hover:bg-pink-800 hover:border-pink-600
+    @apply border border-pink-700 select-none rounded-lg text-sm h-10
+      bg-gradient-to-r from-pink-900 to-pink-800
+      hover:from-pink-800 hover:to-pink-700 hover:border-pink-600
       cursor-pointer
       flex items-center justify-center text-nowrap overflow-hidden;
   }
+
   .button-emerald-visible {
     @apply border bg-emerald-900 border-emerald-700 select-none rounded-lg text-sm h-10
       hover:bg-emerald-800 hover:border-emerald-600
@@ -116,5 +118,36 @@
       hover:bg-amber-800 hover:border-amber-600
       cursor-pointer
       flex items-center justify-center text-nowrap overflow-hidden;
+  }
+
+  .sparkle {
+    position: relative;
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.06) 50%,
+        transparent 30%
+      );
+      animation: sparkle 10s ease-in-out infinite;
+      pointer-events: none;
+    }
+  }
+
+  @keyframes sparkle {
+    0%, 85% {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    90%, 95% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(200%);
+      opacity: 0;
+    }
   }
 }
