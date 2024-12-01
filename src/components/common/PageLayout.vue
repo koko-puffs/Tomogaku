@@ -4,7 +4,7 @@
         <Transition enter-active-class="transition-opacity duration-300"
             leave-active-class="transition-opacity duration-300" enter-from-class="opacity-0"
             enter-to-class="opacity-100" leave-from-class="opacity-100" leave-to-class="opacity-0">
-            <div v-if="sidebarStore.isOpen" class="fixed inset-0 z-30 bg-black/50 sm:hidden"
+            <div v-if="sidebarStore.isOpen" class="fixed inset-0 z-30 bg-black/50 md:hidden"
                 @click="sidebarStore.toggle()"></div>
         </Transition>
 
@@ -22,7 +22,7 @@
             <div class="hidden w-px min-h-screen bg-neutral-800 md:block"></div>
 
             <!-- Right Content Area -->
-            <div class="min-h-screen px-3 py-4 md:px-0 md:pl-4 max-w-[780px] min-w-[380px]">
+            <div class="min-h-screen px-3 py-4 md:px-0 md:pl-4 max-w-[780px] sm:min-w-[480px] min-w-[380px]">
                 <slot name="content" />
             </div>
         </div>
