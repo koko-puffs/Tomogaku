@@ -245,7 +245,7 @@ const handleForget = () => {
 
 <template>
   <div
-    class="panel motion-translate-x-in-[0%] motion-translate-y-in-[-0.8%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity">
+    class="panel motion-translate-x-in-[0%] motion-translate-y-in-[-0.6%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity">
     <!-- Action Buttons -->
     <div class="flex items-center justify-between py-4 pl-3 pr-4">
       <div class="flex">
