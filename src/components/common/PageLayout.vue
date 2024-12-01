@@ -22,7 +22,7 @@
             <div class="hidden w-px min-h-screen bg-neutral-800 md:block"></div>
 
             <!-- Right Content Area -->
-            <div class="min-h-screen px-4 py-4 md:px-0 md:pl-4 max-w-[780px] min-w-[350px]">
+            <div class="min-h-screen px-3 py-4 md:px-0 md:pl-4 max-w-[780px] min-w-[380px]">
                 <slot name="content" />
             </div>
         </div>

@@ -11,7 +11,7 @@
         <!-- Main Grid Layout - responsive -->
         <div class="grid md:grid-cols-[75fr_1px_25fr] grid-cols-[1fr] h-full w-full">
             <!-- Content Area -->
-            <div class="min-h-screen px-4 py-4 md:px-0 md:pr-4 max-w-[780px] min-w-[350px]">
+            <div class="min-h-screen px-3 py-4 md:px-0 md:pr-4 max-w-[780px] min-w-[380px]">
                 <slot name="content" />
             </div>
 
