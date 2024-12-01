@@ -222,7 +222,7 @@ const studyCardRef = ref<InstanceType<typeof StudyCard> | null>(null);
        @keydown.prevent="getKeyboardShortcuts" 
        tabindex="0"
        ref="container">
-    <div class="w-full max-w-3xl min-h-[500px] h-full max-h-[800px] mx-auto overflow-hidden panel shadow-xl bg-neutral-900 motion-translate-y-in-[-1%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+    <div class="w-full max-w-3xl min-h-[500px] h-full max-h-[800px] mx-auto overflow-hidden panel shadow-xl bg-neutral-900 motion-translate-y-in-[-1%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity">
       <!-- Header with stats and progress -->
       <div class="border-b border-neutral-800">
         <!-- Progress bar -->

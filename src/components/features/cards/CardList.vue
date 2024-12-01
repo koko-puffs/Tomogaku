@@ -151,7 +151,7 @@ defineExpose({
 <template>
     <div class="space-y-4">
         <!-- Card List Header -->
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between motion-opacity-in-[0%] motion-duration-[0.1s]/opacity">
             <h2 class="pl-1 text-xl font-bold">Cards ({{ filteredCards.length }})</h2>
             <div class="flex">
                 <!-- Filter Button -->
@@ -171,7 +171,7 @@ defineExpose({
 
         <!-- Filter Section -->
         <div v-if="showFilters"
-            class="w-full p-4 space-y-4 panel motion-translate-y-in-[-1.5%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+            class="w-full p-4 space-y-4 panel motion-translate-y-in-[-1.7%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity">
             <!-- Sort Options -->
             <div class="space-y-2">
                 <label class="text-sm text-neutral-400">Sort by</label>
@@ -234,7 +234,7 @@ defineExpose({
         <!-- Card List -->
         <div class="space-y-1">
             <div v-for="card in filteredCards" :key="card.id"
-                class="relative px-3 py-2 flex items-center justify-between group motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity"
+                class="relative px-3 py-2 flex items-center justify-between group motion-opacity-in-[0%] motion-duration-[0.2s]/opacity"
                 :class="[
                     selectedCard === card.id
                         ? 'panel-active'

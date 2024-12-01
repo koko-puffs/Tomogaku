@@ -157,7 +157,7 @@ const confirmDeleteComment = async () => {
     <div class="space-y-2">
         <!-- Sort Controls -->
         <div
-            class="flex items-center justify-between motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+            class="flex items-center justify-between motion-opacity-in-[0%] motion-duration-[0.1s]/opacity">
             <!-- Comment Count -->
             <span class="pl-2 text-sm text-neutral-400">
                 {{ usersStore.getCommentsPagination(props.deckId).totalCount || 0 }} Comments
@@ -180,7 +180,7 @@ const confirmDeleteComment = async () => {
 
         <!-- Add Comment -->
         <div
-            class="flex motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+            class="flex motion-opacity-in-[0%] motion-duration-[0.1s]/opacity">
             <textarea v-model="newComment" placeholder="Add a comment..." @keydown="handleNewCommentKeydown" rows="1"
                 @input="(e) => {
                     const target = e.target as HTMLTextAreaElement;
@@ -215,7 +215,7 @@ const confirmDeleteComment = async () => {
         <!-- Comments List -->
         <div v-else class="space-y-2">
             <div v-for="comment in usersStore.getThreadedComments(props.deckId)" :key="comment.id"
-                class="p-3 space-y-3 panel motion-translate-y-in-[-4%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+                class="p-3 space-y-3 panel motion-translate-y-in-[-4%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity">
                 <!-- Comment Header -->
                 <div class="flex items-start justify-between">
                     <div class="flex items-center gap-3">
@@ -271,7 +271,7 @@ const confirmDeleteComment = async () => {
                 <!-- Comment Content -->
                 <div class="flex items-end gap-4">
                     <div v-if="editingComment === comment.id"
-                        class="flex-1 min-w-0 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+                        class="flex-1 min-w-0 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity">
                         <textarea v-model="editCommentContent" @keydown="handleEditKeydown"
                             class="w-full h-32 resize-none input-lighter-filled" rows="3" />
                         <div class="flex justify-end gap-2 mt-1">
@@ -298,7 +298,7 @@ const confirmDeleteComment = async () => {
 
                 <!-- Add Reply Input when replying -->
                 <div v-if="replyingTo === comment.id"
-                    class="mt-2 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+                    class="mt-2 motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity">
                     <textarea v-model="replyContent" @keydown="handleReplyKeydown" placeholder="Write a reply..."
                         class="w-full resize-none input-lighter-filled flex-1 min-h-[40px] overflow-hidden" rows="1"
                         @input="(e) => {
@@ -320,7 +320,7 @@ const confirmDeleteComment = async () => {
                 <!-- Replies -->
                 <div v-if="usersStore.getCommentReplies(comment.id, props.deckId).length > 0" class="space-y-2">
                     <div v-for="reply in usersStore.getCommentReplies(comment.id, props.deckId)" :key="reply.id"
-                        class="p-3 rounded-lg bg-neutral-800/70 motion-translate-y-in-[-5%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+                        class="p-3 rounded-lg bg-neutral-800/70 motion-translate-y-in-[-5%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity">
                         <!-- Reply Header -->
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center gap-2">
@@ -376,7 +376,7 @@ const confirmDeleteComment = async () => {
 
                         <!-- Reply Content -->
                         <div v-if="editingComment === reply.id"
-                            class="motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+                            class="motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity">
                             <textarea v-model="editCommentContent" @keydown="handleEditKeydown"
                                 class="w-full h-32 resize-none input-lighter-filled" rows="3" />
                             <div class="flex justify-end gap-2 mt-1">

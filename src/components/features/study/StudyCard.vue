@@ -42,7 +42,7 @@ defineExpose({
 <template>
     <div class="h-full space-y-6">
         <!-- Card content -->
-        <div class="h-full overflow-auto panel" :class="preview ? 'bg-neutral-900' : 'bg-neutral-950/50'"> 
+        <div class="h-full overflow-auto panel motion-opacity-in-[0%] motion-duration-[0.075s]/opacity" :class="preview ? 'bg-neutral-900' : 'bg-neutral-950/50'"> 
             <!-- Front content (always visible) -->
             <div class="px-3 py-3 rounded-lg">
                 <div class="ql-snow">
@@ -66,12 +66,12 @@ defineExpose({
         </div>
 
         <!-- Action buttons -->
-        <div class="flex justify-center" v-if="!isFlipped">
+        <div class="flex justify-center motion-opacity-in-[0%] motion-duration-[0.075s]/opacity" v-if="!isFlipped">
             <button @click="flipCard" class="px-4" :class="preview ? 'button-visible' : 'button-lighter-visible'">
                 Show Answer
             </button>
         </div>
-        <div class="flex justify-center" v-else-if="preview">
+        <div class="flex justify-center motion-opacity-in-[0%] motion-duration-[0.075s]/opacity" v-else-if="preview">
             <button @click="resetCard" class="px-4 button-visible">
                 Reset
             </button>

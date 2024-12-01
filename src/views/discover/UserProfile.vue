@@ -12,7 +12,7 @@
           <div class="space-y-4">
             <!-- Profile Header -->
             <div
-              class="p-4 pt-6 space-y-3 panel motion-translate-y-in-[-1%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+              class="p-4 pt-6 space-y-3 panel motion-translate-y-in-[-1%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity">
               <!-- Avatar and Name -->
               <div class="text-center">
                 <div class="flex justify-center mb-3">
@@ -68,7 +68,7 @@
 
             <!-- Stats -->
             <div
-              class="p-3 panel motion-translate-y-in-[-1.6%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+              class="p-3 panel motion-translate-y-in-[-1.6%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity">
               <h2 class="mx-1 mb-2 font-bold text-md text-neutral-200">Stats</h2>
               <div class="grid grid-cols-2 gap-2">
                 <div class="p-4 rounded-lg bg-neutral-800/70">

@@ -2,7 +2,7 @@
   <div v-if="isOpen" class="fixed inset-0 z-50 flex justify-center bg-black/50" @click="closeModal">
     <!-- Modal container -->
     <div
-      class="relative w-[1000px] max-h-fit my-20 bg-neutral-900 rounded-lg shadow-xl border border-neutral-800 motion-translate-y-in-[-1%] motion-opacity-in-[0%] motion-duration-[0.2s]"
+      class="relative w-[1000px] max-h-fit my-20 bg-neutral-900 rounded-lg shadow-xl border border-neutral-800 motion-translate-y-in-[-0.6%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity"
       @click.stop>
       <!-- Header -->
       <div class="flex items-center justify-between px-3 py-3 border-b border-neutral-800">

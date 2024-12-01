@@ -129,7 +129,7 @@ const hasCardsToStudy = computed(() => {
         <div class="flex items-center justify-between w-full relative z-[5]">
             <!-- Edit Mode -->
             <div v-if="isEditing"
-                class="flex-1 w-full motion-translate-y-in-[-1.4%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+                class="flex-1 w-full motion-translate-y-in-[-1.4%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity">
                 <DeckEditForm :title="props.deck.title" :description="props.deck.description" :tags="props.deck.tags"
                     :visibility="props.deck.visibility" @update="handleUpdate" @cancel="cancelEdit" />
                 <div class="h-px mt-6 mb-2 bg-neutral-800"></div>
@@ -138,7 +138,7 @@ const hasCardsToStudy = computed(() => {
             <!-- View Mode -->
             <template v-else>
                 <div
-                    class="motion-translate-y-in-[-12%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+                    class="motion-translate-y-in-[-12%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity">
                     <div class="space-y-1">
                         <h1
                             class="relative flex items-center gap-1.5 text-xl font-bold pl-1 max-w-[195px] md:max-w-[280px] lg:max-w-[350px]">
@@ -155,7 +155,7 @@ const hasCardsToStudy = computed(() => {
 
             <!-- Buttons -->
             <div v-if="!isEditing"
-                class="flex gap-2 motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity relative z-[5]">
+                class="flex gap-2 motion-translate-y-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity relative z-[5]">
                 <div v-if="isOwner" class="relative z-[5]" ref="dropdownRef">
                     <!-- Show dropdown button on small screens -->
                     <button @click.stop="toggleDropdown" class="w-10 button lg:hidden" title="More options">
@@ -212,7 +212,7 @@ const hasCardsToStudy = computed(() => {
 
         <!-- Stats and Description -->
         <div
-            class="space-y-2 motion-translate-y-in-[-2%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity relative z-[1]">
+            class="space-y-2 motion-opacity-in-[0%] motion-duration-[0.1s]/opacity">
             <!-- Deck Stats -->
             <div class="px-4 py-3 space-y-2 panel">
                 <div class="space-y-2">
