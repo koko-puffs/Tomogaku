@@ -9,6 +9,7 @@ import LoadingSpinner from '../../common/LoadingSpinner.vue';
 import StudyCard from './StudyCard.vue';
 import { useCardStats } from '../../../composables/useCardStats';
 import { State } from 'ts-fsrs';
+import { X } from 'lucide-vue-next';
 
 const props = defineProps<{
   deckId: string;
@@ -191,53 +192,60 @@ const formatSchedule = (days: number, dueDate: Date) => {
        @keydown.prevent="getKeyboardShortcuts" 
        tabindex="0"
        ref="container">
-    <div class="w-full max-w-3xl mx-auto overflow-hidden rounded-lg shadow-xl bg-neutral-900">
+    <div class="w-full max-w-3xl mx-auto overflow-hidden panel rounded-lg shadow-xl bg-neutral-900 motion-translate-y-in-[-1%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
       <!-- Header with stats and progress -->
       <div class="border-b border-neutral-800">
         <!-- Progress bar -->
         <div class="h-1 bg-neutral-800">
-          <div class="h-full transition-all duration-300 bg-pink-600"
+          <div class="h-full transition-all duration-300 bg-pink-500/80"
                :style="{ width: `${stats ? (stats.completedCards / (stats.completedCards + stats.remainingCards) * 100) : 0}%` }">
           </div>
         </div>
         
         <div class="flex items-center justify-between p-4">
-          <div class="flex items-center gap-4 text-sm">
-            <div class="flex gap-4">
-              <span :class="{
-                'text-cyan-400': currentCardType === 'new',
-                'text-neutral-400': currentCardType !== 'new'
-              }">
-                New: {{ cardStats.availableNewCards }}
-              </span>
-              <span :class="{
-                'text-green-400': currentCardType === 'review',
-                'text-neutral-400': currentCardType !== 'review'
-              }">
-                Review: {{ cardStats.dueReviewCards }}
-              </span>
-              <span :class="{
-                'text-orange-400': currentCardType === 'learning',
-                'text-neutral-400': currentCardType !== 'learning'
-              }">
-                Learning: {{ cardStats.dueLearningCards }}
-              </span>
-            </div>
-            <div class="font-mono text-neutral-500">
-              {{ formattedTime }}
-            </div>
+          <div class="w-20 font-mono text-neutral-500">
+            {{ formattedTime }}
           </div>
-          <button @click="endSession" 
-                  class="text-neutral-400 hover:text-neutral-200">
-            Close
-          </button>
+          
+          <div class="absolute flex items-center gap-1 text-sm -translate-x-1/2 left-1/2 text-neutral-400">
+            <span :class="{ 
+              'text-cyan-400': cardStats.availableNewCards.value > 0,
+              'text-neutral-400': cardStats.availableNewCards.value === 0,
+              'underline underline-offset-4': currentCardType === 'new'
+            }">
+              {{ cardStats.availableNewCards }}
+            </span>
+            <span>+</span>
+            <span :class="{ 
+              'text-green-400': cardStats.dueReviewCards.value > 0,
+              'text-neutral-400': cardStats.dueReviewCards.value === 0,
+              'underline underline-offset-4': currentCardType === 'review'
+            }">
+              {{ cardStats.dueReviewCards }}
+            </span>
+            <span>+</span>
+            <span :class="{ 
+              'text-orange-400': cardStats.dueLearningCards.value > 0,
+              'text-neutral-400': cardStats.dueLearningCards.value === 0,
+              'underline underline-offset-4': currentCardType === 'learning'
+            }">
+              {{ cardStats.dueLearningCards }}
+            </span>
+          </div>
+          
+          <div class="flex justify-end w-20">
+            <button @click="endSession" 
+                    class="p-2 rounded-lg hover:bg-neutral-800">
+              <X :size="20" />
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- Main content -->
       <div class="p-6">
         <!-- Card area with consistent height -->
-        <div class="min-h-[562px]">
+        <div class="min-h-[556px]">
           <template v-if="!isLoading && currentCard">
             <StudyCard 
               :card="currentCard"
@@ -248,10 +256,10 @@ const formatSchedule = (days: number, dueDate: Date) => {
             <div v-if="cardFlipTime" 
                  class="flex justify-center gap-2 mt-6">
               <button @click="handleAnswer(Rating.Again)"
-                      class="px-4 py-2 text-red-400 rounded panel-clickable hover:text-red-300"
+                      class="gap-1.5 w-24 button-lighter-visible"
                       title="Shortcut: 1">
                 Again
-                <span class="text-xs opacity-75" v-if="schedules">
+                <span class="text-xs opacity-60" v-if="schedules">
                   {{ formatSchedule(
                     schedules[Rating.Again].card.scheduled_days,
                     new Date(schedules[Rating.Again].card.due)
@@ -259,10 +267,10 @@ const formatSchedule = (days: number, dueDate: Date) => {
                 </span>
               </button>
               <button @click="handleAnswer(Rating.Hard)"
-                      class="px-4 py-2 text-yellow-400 rounded panel-clickable hover:text-yellow-300"
+                      class="gap-1.5 w-24 button-lighter-visible"
                       title="Shortcut: 2">
                 Hard
-                <span class="text-xs opacity-75" v-if="schedules">
+                <span class="text-xs opacity-60" v-if="schedules">
                   {{ formatSchedule(
                     schedules[Rating.Hard].card.scheduled_days,
                     new Date(schedules[Rating.Hard].card.due)
@@ -270,10 +278,10 @@ const formatSchedule = (days: number, dueDate: Date) => {
                 </span>
               </button>
               <button @click="handleAnswer(Rating.Good)"
-                      class="px-4 py-2 text-green-400 rounded panel-clickable hover:text-green-300"
+                      class="gap-1.5 w-24 button-lighter-visible"
                       title="Shortcut: 3">
                 Good
-                <span class="text-xs opacity-75" v-if="schedules">
+                <span class="text-xs opacity-60" v-if="schedules">
                   {{ formatSchedule(
                     schedules[Rating.Good].card.scheduled_days,
                     new Date(schedules[Rating.Good].card.due)
@@ -281,10 +289,10 @@ const formatSchedule = (days: number, dueDate: Date) => {
                 </span>
               </button>
               <button @click="handleAnswer(Rating.Easy)"
-                      class="px-4 py-2 text-blue-400 rounded panel-clickable hover:text-blue-300"
+                      class="gap-1.5 w-24 button-lighter-visible"
                       title="Shortcut: 4">
                 Easy
-                <span class="text-xs opacity-75" v-if="schedules">
+                <span class="text-xs opacity-60" v-if="schedules">
                   {{ formatSchedule(
                     schedules[Rating.Easy].card.scheduled_days,
                     new Date(schedules[Rating.Easy].card.due)
@@ -296,19 +304,19 @@ const formatSchedule = (days: number, dueDate: Date) => {
 
           <!-- Loading state with same height as card -->
           <div v-else-if="isLoading" 
-               class="flex items-center justify-center h-[300px] text-neutral-500">
+               class="flex items-center justify-center h-[490px] text-neutral-500">
             <LoadingSpinner :size="32" />
           </div>
 
           <!-- Session complete -->
           <template v-else-if="!currentCard">
-            <div class="flex flex-col items-center justify-center h-[300px]">
+            <div class="flex flex-col items-center justify-center h-[490px]">
               <h3 class="mb-2 text-xl font-semibold">Session Complete!</h3>
               <p class="mb-6 text-neutral-400">
                 You've reviewed {{ stats?.completedCards }} cards
               </p>
               <button @click="endSession"
-                      class="px-4 py-2 panel-clickable">
+                      class="px-4 button-lighter-visible">
                 Close Session
               </button>
             </div>

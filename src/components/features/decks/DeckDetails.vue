@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Pencil, Trash2, Globe2, BookOpen, Layers3, MoreVertical } from 'lucide-vue-next';
+import { Pencil, Trash2, Globe2, BookOpen, Layers3, MoreHorizontal } from 'lucide-vue-next';
 import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import DeckEditForm from './DeckEditForm.vue';
@@ -159,7 +159,7 @@ const hasCardsToStudy = computed(() => {
                 <div v-if="isOwner" class="relative z-[5]" ref="dropdownRef">
                     <!-- Show dropdown button on small screens -->
                     <button @click.stop="toggleDropdown" class="w-10 button lg:hidden" title="More options">
-                        <MoreVertical :size="18" />
+                        <MoreHorizontal :size="18" />
                     </button>
 
                     <!-- Dropdown menu -->

@@ -276,20 +276,25 @@ export const useFSRSStore = defineStore("fsrs", {
     getStudySessionStats() {
       if (!this.studySession) return null;
 
+      // Use a Set to track unique card IDs
+      const uniqueCompletedCardIds = new Set(
+        this.studySession.completedCards.map(card => card.id)
+      );
+
       return {
         totalCards:
           this.studySession.remainingCards.length +
-          this.studySession.completedCards.length,
-        completedCards: this.studySession.completedCards.length,
+          uniqueCompletedCardIds.size,
+        completedCards: uniqueCompletedCardIds.size,  // Now tracks unique cards
         remainingCards:
           this.studySession.remainingCards.length -
           this.studySession.currentCardIndex,
-        newCardsStudied: this.studySession.completedCards.filter(
-          (c) => c.reps === 1 || c.reps === null
-        ).length,
-        reviewsCompleted: this.studySession.completedCards.filter(
-          (c) => c.reps !== null && c.reps > 1
-        ).length,
+        newCardsStudied: new Set(
+          this.studySession.completedCards
+            .filter(c => c.reps === 1 || c.reps === null)
+            .map(card => card.id)
+        ).size,  // Count unique new cards
+        reviewsCompleted: this.studySession.completedCards.length,  // Total reviews
       };
     },
 

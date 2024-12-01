@@ -10,6 +10,7 @@ import DeleteModal from '../../components/common/DeleteModal.vue';
 import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
 import { ChevronLeft } from 'lucide-vue-next';
 import { RouterLink } from 'vue-router';
+import { useFSRSStore } from '../../stores/fsrsStore';
 
 defineProps<{
   deckId: string;
@@ -20,6 +21,7 @@ const router = useRouter();
 const route = useRoute();
 const deckStore = useDeckStore();
 const cardStore = useCardStore();
+const fsrsStore = useFSRSStore();
 const selectedCard = ref<string | null>(null);
 const isLoading = ref(true);
 
@@ -171,6 +173,23 @@ const handleNextCard = () => {
   }
 };
 
+const handleForgetCard = async () => {
+  if (!selectedCard.value || !route.params.deckId) return;
+
+  try {
+    const card = cardStore.getCardsByDeckId(route.params.deckId as string)
+      .find(c => c.id === selectedCard.value);
+    
+    if (!card) return;
+
+    await fsrsStore.forgetCard(card);
+    // Refresh the cards after forgetting
+    await cardStore.fetchCards(route.params.deckId as string);
+  } catch (error) {
+    console.error('Failed to forget card:', error);
+  }
+};
+
 // Watch for route changes to update selected card
 watch(
   () => route.params.cardId,
@@ -210,7 +229,8 @@ watch(
             @delete-with-modal="handleDeleteCard" 
             @duplicate="handleDuplicateCard"
             @previous="handlePreviousCard" 
-            @next="handleNextCard" />
+            @next="handleNextCard"
+            @forget="handleForgetCard" />
         </div>
         <div v-else class="flex items-center justify-center mt-16 text-neutral-500">
           Select a card to view details

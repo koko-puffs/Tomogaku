@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { GitFork, Heart, Clock, RefreshCw, Layers3, Edit2, Trash2, MoreVertical } from 'lucide-vue-next';
+import { GitFork, Heart, Clock, RefreshCw, Layers3, Edit2, Trash2, MoreHorizontal } from 'lucide-vue-next';
 import { ref, onMounted, computed, watch, onUnmounted } from 'vue';
 import { useUsersStore } from '../../../stores/usersStore';
 import { formatDistanceToNow } from 'date-fns';
@@ -189,7 +189,7 @@ const handleDelete = () => {
                 <div v-if="isOwner" class="relative z-[15]" ref="dropdownRef">
                     <!-- Show dropdown button on small screens -->
                     <button @click.stop="toggleDropdown" class="w-10 button lg:hidden" title="More options">
-                        <MoreVertical :size="18" />
+                        <MoreHorizontal :size="18" />
                     </button>
 
                     <!-- Dropdown menu -->

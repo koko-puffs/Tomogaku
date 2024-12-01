@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { ref, watch, computed, nextTick, onMounted, onUnmounted } from 'vue';
-import { Copy, ChevronLeft, ChevronRight, RotateCcw, Save, Trash2, X } from 'lucide-vue-next';
+import { Copy, ChevronLeft, ChevronRight, RotateCcw, Save, Trash2, X, MoreHorizontal, Eye, History } from 'lucide-vue-next';
 import { QuillEditor } from '@vueup/vue-quill';
 import '../../../styles/quill.css';
-import { Database } from '../../../types/supabase';
+import { Card } from '../../../types/deck.types.ts';
 import { useAuthStore } from '../../../stores/authStore';
-
-type Card = Database['public']['Tables']['cards']['Row'];
+import StudyCard from '../study/StudyCard.vue';
 
 const props = defineProps<{
   card: Card;
@@ -19,6 +18,7 @@ const emit = defineEmits<{
   'duplicate': [];
   'previous': [];
   'next': [];
+  'forget': [];
 }>();
 
 const editFrontContent = ref(props.card.front_content);
@@ -29,6 +29,10 @@ const tagError = ref('');
 const editPosition = ref<number | null>(props.card.position);
 const isShiftPressed = ref(false);
 const showDebug = ref(false);
+const isDropdownOpen = ref(false);
+const dropdownRef = ref<HTMLElement | null>(null);
+const showPreviewModal = ref(false);
+const previewCard = ref<Card | null>(null);
 
 const authStore = useAuthStore();
 const userProfile = computed(() => authStore.userProfile);
@@ -143,9 +147,9 @@ const handleDelete = (event: MouseEvent) => {
 
 const handleKeyDown = (event: KeyboardEvent) => {
   // Only handle keyboard events if not typing in an input or editor
-  if (event.target instanceof HTMLElement && 
-      (event.target.tagName === 'INPUT' || 
-       event.target.className.includes('ql-editor'))) {
+  if (event.target instanceof HTMLElement &&
+    (event.target.tagName === 'INPUT' ||
+      event.target.className.includes('ql-editor'))) {
     return;
   }
 
@@ -161,6 +165,7 @@ onMounted(() => {
   window.addEventListener('keydown', handleKeyDown);
   window.addEventListener('keydown', handleShiftDown);
   window.addEventListener('keyup', handleShiftUp);
+  document.addEventListener('click', handleClickOutside);
 });
 
 const handleShiftDown = (e: KeyboardEvent) => {
@@ -176,6 +181,7 @@ onUnmounted(() => {
   window.removeEventListener('keydown', handleKeyDown);
   window.removeEventListener('keydown', handleShiftDown);
   window.removeEventListener('keyup', handleShiftUp);
+  document.removeEventListener('click', handleClickOutside);
 });
 
 const handlePositionInput = (event: Event) => {
@@ -203,54 +209,123 @@ const formatDate = (date: string | null) => {
   if (!date) return 'Never';
   return new Date(date).toLocaleString();
 };
+
+const closeDropdown = () => {
+  isDropdownOpen.value = false;
+};
+
+const toggleDropdown = () => {
+  isDropdownOpen.value = !isDropdownOpen.value;
+};
+
+const handleClickOutside = (event: MouseEvent) => {
+  if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
+    closeDropdown();
+  }
+};
+
+const handlePreview = () => {
+  previewCard.value = {
+    ...props.card,
+    front_content: editFrontContent.value,
+    back_content: editBackContent.value,
+    tags: editTags.value,
+    position: editPosition.value
+  };
+
+  showPreviewModal.value = true;
+  closeDropdown();
+};
+
+const handleForget = () => {
+  emit('forget');
+  closeDropdown();
+};
 </script>
 
 <template>
   <div
     class="panel motion-translate-x-in-[0%] motion-translate-y-in-[-1%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
     <!-- Action Buttons -->
-    <div class="flex items-center justify-between p-4">
-      <div class="flex gap-2">
-        <button @click="handlePrevious" class="flex items-center w-10 gap-1 button-lighter-visible"
-          title="Previous card">
-          <ChevronLeft :size="18" />
+    <div class="flex items-center justify-between py-4 pl-3 pr-4">
+      <div class="flex">
+        <button @click="handlePrevious" class="flex items-center w-10 gap-1 button-lighter" title="Previous card">
+          <ChevronLeft :size="22" />
         </button>
-        <button @click="handleNext" class="flex items-center w-10 gap-1 mr-2 button-lighter-visible" title="Next card">
-          <ChevronRight :size="18" />
+        <button @click="handleNext" class="flex items-center w-10 gap-1 button-lighter" title="Next card">
+          <ChevronRight :size="22" />
         </button>
       </div>
 
       <div class="flex gap-2">
-        <button @click="emit('duplicate')" class="flex items-center w-10 gap-1 button-lighter-visible"
-          title="Duplicate card">
-          <Copy :size="18" />
-        </button>
-        <button @click="handleDelete" 
-          :class="[
+        <!-- Dropdown for small screens -->
+        <div class="relative lg:hidden" ref="dropdownRef">
+          <button @click.stop="toggleDropdown" class="flex items-center w-10 gap-1 button-lighter" title="More options">
+            <MoreHorizontal :size="18" />
+          </button>
+
+          <!-- Dropdown menu -->
+          <div v-if="isDropdownOpen"
+            class="absolute right-0 w-48 py-2 mt-1 border rounded-lg shadow-xl bg-neutral-900 border-neutral-800 motion-translate-x-in-[0%] motion-translate-y-in-[-4%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity z-[5]">
+            <button @click="handlePreview"
+              class="flex items-center w-full gap-2 px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
+              <Eye :size="18" />
+              <span>Preview card</span>
+            </button>
+            <button @click="emit('duplicate')"
+              class="flex items-center w-full gap-2 px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
+              <Copy :size="18" />
+              <span>Duplicate card</span>
+            </button>
+            <button @click="handleForget"
+              class="flex items-center w-full gap-2 px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
+              <History :size="18" />
+              <span>Forget card</span>
+            </button>
+            <button @click="handleDelete"
+              class="flex items-center w-full gap-2 px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
+              <Trash2 :size="18" />
+              <span>Delete card</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- All buttons for large screens -->
+        <div class="hidden lg:flex">
+          <button @click="handlePreview" class="flex items-center w-10 gap-1 button-lighter" title="Preview card">
+            <Eye :size="18" />
+          </button>
+          <button @click="emit('duplicate')" class="flex items-center w-10 gap-1 button-lighter" title="Duplicate card">
+            <Copy :size="18" />
+          </button>
+          <button @click="handleForget" class="flex items-center w-10 gap-1 button-lighter" title="Forget card">
+            <History :size="18" />
+          </button>
+          <button @click="handleDelete" :class="[
             'flex items-center w-10 gap-1',
-            isShiftPressed ? 'button-cancel-visible' : 'button-lighter-visible'
-          ]"
-          title="Delete card (Hold Shift to delete without confirmation)">
-          <Trash2 :size="18" />
-        </button>
-        <div class="w-px bg-neutral-800"></div>
+            isShiftPressed ? 'button-cancel-visible' : 'button-lighter'
+          ]" title="Delete card (Hold Shift to delete without confirmation)">
+            <Trash2 :size="18" />
+          </button>
+        </div>
+
         <button @click="resetForm" :disabled="!hasChanges" :class="[
-          'button-lighter-visible flex items-center gap-2 w-10 md:w-24',
+          'button-lighter-visible flex items-center gap-2 w-24',
           { 'text-neutral-600 pointer-events-none': !hasChanges }
         ]">
           <RotateCcw :size="18" />
-          <span class="hidden md:inline">Reset</span>
+          <span>Reset</span>
         </button>
         <button @click="handleUpdate"
           :disabled="!editFrontContent.trim() || editFrontContent.trim() === '<p></p>' || editFrontContent.trim() === '<p><br></p>' || !hasChanges"
           :class="[
             editFrontContent.trim() && editFrontContent.trim() !== '<p></p>' && editFrontContent.trim() !== '<p><br></p>' && hasChanges
-              ? 'button-accept-visible flex items-center gap-2 w-10 md:w-24'
-              : 'button-lighter-visible flex items-center gap-2 w-10 md:w-24',
+              ? 'button-accept-visible flex items-center gap-2 w-24'
+              : 'button-lighter-visible flex items-center gap-2 w-24',
             { 'text-neutral-600 pointer-events-none': !editFrontContent.trim() || editFrontContent.trim() === '<p></p>' || editFrontContent.trim() === '<p><br></p>' || !hasChanges }
           ]">
           <Save :size="18" />
-          <span class="hidden md:inline">Save</span>
+          <span>Save</span>
         </button>
       </div>
     </div>
@@ -308,13 +383,11 @@ const formatDate = (date: string | null) => {
 
     <!-- Debug Panel -->
     <div v-if="userProfile?.account_type === 'admin'" class="mt-4">
-      <button 
-        @click="showDebug = !showDebug"
-        class="w-full px-4 py-2 text-sm text-left rounded-md text-neutral-400 hover:bg-neutral-800"
-      >
+      <button @click="showDebug = !showDebug"
+        class="w-full px-4 py-2 text-sm text-left rounded-md text-neutral-400 hover:bg-neutral-800">
         Debug Info {{ showDebug ? '▼' : '▶' }}
       </button>
-      
+
       <div v-if="showDebug" class="p-4 mt-2 space-y-4 text-sm border rounded-md border-neutral-700">
         <div class="grid grid-cols-2 gap-4">
           <!-- Status Info -->
@@ -349,4 +422,23 @@ const formatDate = (date: string | null) => {
       </div>
     </div>
   </div>
+
+  <!-- Preview Modal -->
+  <Teleport to="body">
+    <div v-if="showPreviewModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+      @click="showPreviewModal = false">
+      <div class="w-full max-w-3xl" @click.stop>
+        <div class="relative">
+          <!-- Close button -->
+          <button @click="showPreviewModal = false"
+            class="absolute z-10 p-2 rounded-lg right-4 top-4 hover:bg-neutral-800">
+            <X :size="20" />
+          </button>
+
+          <!-- Study Card -->
+          <StudyCard :card="showPreviewModal && previewCard ? previewCard : card" :preview="true" />
+        </div>
+      </div>
+    </div>
+  </Teleport>
 </template>
