@@ -38,7 +38,7 @@ const getIntensityClass = (count: number, date: string) => {
     return 'bg-neutral-900';
   }
   
-  if (count === 0) return 'bg-neutral-800';
+  if (count === 0) return 'bg-neutral-800/75';
   
   // Calculate percentage based on the range between min and max
   const range = maxReviews.value - minReviews.value;
