@@ -70,10 +70,13 @@ const startSession = async () => {
   }
 };
 
-const handleCardFlip = () => {
-  cardFlipTime.value = Date.now();
-  if (timerInterval.value) {
-    clearInterval(timerInterval.value);
+const handleCardFlip = (flipped: boolean) => {
+  isFlipped.value = flipped;
+  if (flipped) {
+    cardFlipTime.value = Date.now();
+    if (timerInterval.value) {
+      clearInterval(timerInterval.value);
+    }
   }
 };
 
@@ -95,6 +98,7 @@ const handleAnswer = async (rating: Rating) => {
       if (timerInterval.value) clearInterval(timerInterval.value);
       timerInterval.value = window.setInterval(updateTimer, 10);
     }
+    isFlipped.value = false;
     
     stats.value = fsrsStore.getStudySessionStats();
   } catch (error) {
@@ -113,32 +117,55 @@ const endSession = async () => {
   }
 };
 
-onMounted(() => {
-  document.body.classList.add('overflow-hidden');
-  startSession();
-});
-
 const getKeyboardShortcuts = (e: KeyboardEvent) => {
   if (!currentCard.value) return;
   
+  // Only handle if not typing in an input/textarea
+  if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+  
   switch(e.key) {
+    case ' ': // Space key
+      if (!isFlipped.value) {
+        e.preventDefault();
+        studyCardRef.value?.flipCard();
+      }
+      break;
     case '1':
-      if (isFlipped.value) handleAnswer(Rating.Again);
+      if (isFlipped.value) {
+        e.preventDefault();
+        handleAnswer(Rating.Again);
+      }
       break;
     case '2':
-      if (isFlipped.value) handleAnswer(Rating.Hard);
+      if (isFlipped.value) {
+        e.preventDefault();
+        handleAnswer(Rating.Hard);
+      }
       break;
     case '3':
-      if (isFlipped.value) handleAnswer(Rating.Good);
+      if (isFlipped.value) {
+        e.preventDefault();
+        handleAnswer(Rating.Good);
+      }
       break;
     case '4':
-      if (isFlipped.value) handleAnswer(Rating.Easy);
+      if (isFlipped.value) {
+        e.preventDefault();
+        handleAnswer(Rating.Easy);
+      }
       break;
   }
 };
 
+onMounted(() => {
+  document.body.classList.add('overflow-hidden');
+  window.addEventListener('keydown', getKeyboardShortcuts);
+  startSession();
+});
+
 onUnmounted(() => {
   document.body.classList.remove('overflow-hidden');
+  window.removeEventListener('keydown', getKeyboardShortcuts);
   if (timerInterval.value) {
     clearInterval(timerInterval.value);
   }
@@ -185,26 +212,29 @@ const formatSchedule = (days: number, dueDate: Date) => {
     return `${Math.round(years)}y`;
   }
 };
+
+// Add ref for StudyCard component
+const studyCardRef = ref<InstanceType<typeof StudyCard> | null>(null);
 </script>
 
 <template>
-  <div class="fixed inset-0 flex items-center justify-center p-4 bg-neutral-950/90" 
+  <div class="fixed inset-0 flex items-start justify-center p-4 mt-14 md:mt-24 bg-neutral-950/90" 
        @keydown.prevent="getKeyboardShortcuts" 
        tabindex="0"
        ref="container">
-    <div class="w-full max-w-3xl mx-auto overflow-hidden panel rounded-lg shadow-xl bg-neutral-900 motion-translate-y-in-[-1%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
+    <div class="w-full max-w-3xl min-h-[500px] h-full max-h-[800px] mx-auto overflow-hidden panel shadow-xl bg-neutral-900 motion-translate-y-in-[-1%] motion-opacity-in-[0%] motion-duration-[0.3s] motion-duration-[0.2s]/opacity">
       <!-- Header with stats and progress -->
       <div class="border-b border-neutral-800">
         <!-- Progress bar -->
         <div class="h-1 bg-neutral-800">
-          <div class="h-full transition-all duration-300 bg-pink-500/80"
+          <div class="h-full transition-all duration-300 bg-pink-400/70"
                :style="{ width: `${stats ? (stats.completedCards / (stats.completedCards + stats.remainingCards) * 100) : 0}%` }">
           </div>
         </div>
         
-        <div class="flex items-center justify-between p-4">
-          <div class="w-20 font-mono text-neutral-500">
-            {{ formattedTime }}
+        <div class="flex items-center justify-between p-3">
+          <div class="w-20 pl-1 font-mono text-neutral-500">
+            {{ isFlipped ? formattedTime : '' }}
           </div>
           
           <div class="absolute flex items-center gap-1 text-sm -translate-x-1/2 left-1/2 text-neutral-400">
@@ -243,13 +273,15 @@ const formatSchedule = (days: number, dueDate: Date) => {
       </div>
 
       <!-- Main content -->
-      <div class="p-6">
+      <div class="p-6 flex-1 h-[calc(100%-128px)]">
         <!-- Card area with consistent height -->
-        <div class="min-h-[556px]">
+        <div class="h-full">
           <template v-if="!isLoading && currentCard">
             <StudyCard 
+              ref="studyCardRef"
               :card="currentCard"
               @flipped="handleCardFlip"
+              class="h-full"
             />
 
             <!-- Rating buttons -->
@@ -302,15 +334,15 @@ const formatSchedule = (days: number, dueDate: Date) => {
             </div>
           </template>
 
-          <!-- Loading state with same height as card -->
+          <!-- Loading state-->
           <div v-else-if="isLoading" 
-               class="flex items-center justify-center h-[490px] text-neutral-500">
+               class="flex items-center justify-center h-full text-neutral-500">
             <LoadingSpinner :size="32" />
           </div>
 
           <!-- Session complete -->
           <template v-else-if="!currentCard">
-            <div class="flex flex-col items-center justify-center h-[490px]">
+            <div class="flex flex-col items-center justify-center h-full">
               <h3 class="mb-2 text-xl font-semibold">Session Complete!</h3>
               <p class="mb-6 text-neutral-400">
                 You've reviewed {{ stats?.completedCards }} cards

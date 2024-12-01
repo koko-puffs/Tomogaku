@@ -136,13 +136,14 @@ export const useFSRSStore = defineStore("fsrs", {
 
         if (reviewError) throw reviewError;
 
-        // Get new cards, limited by remaining daily allowance
+        // Get new cards, limited by remaining daily allowance, ordered by position
         const { data: newCards, error: newError } = await supabase
           .from("cards")
           .select("*")
           .eq("deck_id", deckId)
           .eq("state", State.New)
           .is("deleted_at", null)
+          .order('position')
           .limit(remainingNewCards);
 
         if (newError) throw newError;
@@ -190,29 +191,32 @@ export const useFSRSStore = defineStore("fsrs", {
     // Mix new cards with review cards using spaced insertion
     mixNewAndReviewCards(newCards: Card[], reviewCards: Card[]): Card[] {
       const mixed: Card[] = [];
-      const newCardInterval = Math.max(
-        Math.ceil(reviewCards.length / newCards.length),
-        1
-      );
+      
+      // Calculate spacing based on total session size
+      const totalCards = reviewCards.length + newCards.length;
+      const newCardInterval = Math.ceil(totalCards / (newCards.length + 1));
 
       let newCardIndex = 0;
       let reviewCardIndex = 0;
 
-      while (
-        reviewCardIndex < reviewCards.length ||
-        newCardIndex < newCards.length
-      ) {
-        // Add review cards
-        if (reviewCardIndex < reviewCards.length) {
+      // Pre-calculate positions for new cards
+      const newCardPositions = new Set<number>();
+      for (let i = 0; i < newCards.length; i++) {
+        newCardPositions.add(i * newCardInterval);
+      }
+
+      // Mix cards
+      for (let position = 0; position < totalCards; position++) {
+        if (newCardPositions.has(position) && newCardIndex < newCards.length) {
+          // Insert new card at pre-calculated position
+          mixed.push(newCards[newCardIndex]);
+          newCardIndex++;
+        } else if (reviewCardIndex < reviewCards.length) {
+          // Fill other positions with review cards
           mixed.push(reviewCards[reviewCardIndex]);
           reviewCardIndex++;
-        }
-
-        // Insert new card every newCardInterval positions
-        if (
-          newCardIndex < newCards.length &&
-          mixed.length % newCardInterval === 0
-        ) {
+        } else if (newCardIndex < newCards.length) {
+          // If we run out of review cards, append remaining new cards
           mixed.push(newCards[newCardIndex]);
           newCardIndex++;
         }
@@ -239,26 +243,29 @@ export const useFSRSStore = defineStore("fsrs", {
 
     // Process a review and update the study session
     async processReview(card: Card, rating: Rating, userId: string, reviewDuration: number) {
-      const result = await this.recordReview(
-        card,
-        rating,
-        userId,
-        reviewDuration
-      );
+      const result = await this.recordReview(card, rating, userId, reviewDuration);
 
       if (this.studySession) {
-        // Move current card to completed cards
         this.studySession.completedCards.push(card);
-
-        // Move to next card
         this.studySession.currentCardIndex++;
 
-        // If the card is in learning/relearning state, add it back to queue
+        // If the card is in learning/relearning state, add it back to queue with randomized spacing
         if (result.card.state === State.Learning || result.card.state === State.Relearning) {
-          const nextPosition = Math.min(
-            this.studySession.currentCardIndex + 3,
-            this.studySession.remainingCards.length
-          );
+          const scheduledMinutes = result.card.scheduled_days * 24 * 60;
+          
+          // Determine minimum percentage of remaining cards to skip
+          let minPercentage = 0.2; // Default 20%
+          if (scheduledMinutes <= 1) minPercentage = 0.15;      // 15% for very short intervals
+          else if (scheduledMinutes <= 10) minPercentage = 0.25; // 25% for medium intervals
+          else minPercentage = 0.3;                              // 30% for longer intervals
+
+          // Calculate minimum and maximum positions
+          const remainingCards = this.studySession.remainingCards.length - this.studySession.currentCardIndex;
+          const minPosition = this.studySession.currentCardIndex + Math.max(4, Math.floor(remainingCards * minPercentage));
+          const maxPosition = this.studySession.remainingCards.length;
+
+          // Random position between min and max
+          const nextPosition = Math.floor(Math.random() * (maxPosition - minPosition + 1)) + minPosition;
 
           this.studySession.remainingCards.splice(nextPosition, 0, {
             ...card,

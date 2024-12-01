@@ -10,30 +10,39 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: 'flipped'): void;
+    (e: 'flipped', isFlipped: boolean): void;
 }>();
 
 const isFlipped = ref(false);
 
 const flipCard = () => {
-    isFlipped.value = true;
-    emit('flipped');
+    if (!isFlipped.value) {
+        isFlipped.value = true;
+        emit('flipped', true);
+    }
 };
 
 const resetCard = () => {
     isFlipped.value = false;
+    emit('flipped', false);
 };
 
 // Reset flip state when card changes
 watch(() => props.card, () => {
     isFlipped.value = false;
+    emit('flipped', false);
 }, { immediate: true });
+
+defineExpose({
+    flipCard,
+    resetCard
+});
 </script>
 
 <template>
-    <div class="space-y-6">
+    <div class="h-full space-y-6">
         <!-- Card content -->
-        <div class="panel min-h-[490px]" :class="preview ? 'bg-neutral-900' : 'bg-neutral-950/50'"> 
+        <div class="h-full overflow-auto panel" :class="preview ? 'bg-neutral-900' : 'bg-neutral-950/50'"> 
             <!-- Front content (always visible) -->
             <div class="px-3 py-3 rounded-lg">
                 <div class="ql-snow">
