@@ -5,7 +5,7 @@
       <div class="flex flex-col justify-between gap-8 md:flex-row">
         <!-- Left side -->
         <div class="space-y-3">
-          <h3 class="text-xl font-bold">共学 / tomogaku</h3>
+          <h3 class="text-xl font-bold">tomogaku / 共学</h3>
           <p class="text-sm text-neutral-400">
             &copy; {{ new Date().getFullYear() }} Tomogaku. All rights reserved.
           </p>

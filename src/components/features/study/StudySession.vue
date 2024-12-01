@@ -231,7 +231,7 @@ const studyCardRef = ref<InstanceType<typeof StudyCard> | null>(null);
       <div class="border-b border-neutral-800">
         <!-- Progress bar -->
         <div class="h-1 bg-neutral-800">
-          <div class="h-full transition-all duration-300 bg-pink-400/70"
+          <div class="h-full transition-all duration-300 bg-gradient-to-r from-pink-400/70 to-rose-400/70"
                :style="{ width: `${stats ? (stats.completedCards / (stats.completedCards + stats.remainingCards) * 100) : 0}%` }">
           </div>
         </div>

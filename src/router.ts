@@ -1,6 +1,20 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useAuthStore } from "./stores/authStore";
 
+// Add a title mapping object (you can place this before router creation)
+const titleMap: Record<string, string> = {
+  landing: "tomogaku",
+  learn: "tomogaku / Learn",
+  cards: "tomogaku / Learn",
+  discover: "tomogaku / Discover",
+  userProfile: "tomogaku / Profile",
+  deck: "tomogaku / Deck",
+  feed: "tomogaku / Feed",
+  terms: "tomogaku / Terms",
+  privacy: "tomogaku / Privacy",
+  notFound: "tomogaku / 404",
+};
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -76,6 +90,9 @@ const router = createRouter({
 router.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore();
   const publicPaths = ['/', '/terms', '/privacy', '/contact'];
+
+  // Set the document title
+  document.title = titleMap[to.name as string] || "tomogaku";
 
   // Wait for auth check to complete
   if (!authStore.initialized) {
