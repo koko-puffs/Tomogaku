@@ -272,7 +272,7 @@ const handleForget = () => {
       <div class="flex gap-2">
         <!-- Dropdown for small screens -->
         <div class="relative lg:hidden" ref="dropdownRef">
-          <button @click.stop="toggleDropdown" class="flex items-center w-10 gap-1 button-lighter" title="More options">
+          <button @click.stop="toggleDropdown" class="flex items-center w-10 gap-1 button-lighter-visible" title="More options">
             <MoreHorizontal :size="18" />
           </button>
 
@@ -324,7 +324,7 @@ const handleForget = () => {
 
         <button @click="resetForm" :disabled="!hasChanges" :class="[
           'button-lighter-visible flex items-center gap-2 w-24',
-          { 'text-neutral-600 pointer-events-none': !hasChanges }
+          { 'text-neutral-600 opacity-50 pointer-events-none': !hasChanges }
         ]">
           <RotateCcw :size="18" />
           <span>Reset</span>
@@ -335,7 +335,7 @@ const handleForget = () => {
             editFrontContent.trim() && editFrontContent.trim() !== '<p></p>' && editFrontContent.trim() !== '<p><br></p>' && hasChanges
               ? 'button-accept-visible flex items-center gap-2 w-24'
               : 'button-lighter-visible flex items-center gap-2 w-24',
-            { 'text-neutral-600 pointer-events-none': !editFrontContent.trim() || editFrontContent.trim() === '<p></p>' || editFrontContent.trim() === '<p><br></p>' || !hasChanges }
+            { 'text-neutral-600 opacity-50 pointer-events-none': !editFrontContent.trim() || editFrontContent.trim() === '<p></p>' || editFrontContent.trim() === '<p><br></p>' || !hasChanges }
           ]">
           <Save :size="18" />
           <span>Save</span>

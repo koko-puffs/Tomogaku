@@ -189,7 +189,7 @@ const handleDelete = () => {
                 class="flex gap-2 motion-opacity-in-[0%] motion-duration-[0.1s]/opacity relative z-[15]">
                 <div v-if="isOwner" class="relative z-[15]" ref="dropdownRef">
                     <!-- Show dropdown button on small screens -->
-                    <button @click.stop="toggleDropdown" class="w-10 button lg:hidden" title="More options">
+                    <button @click.stop="toggleDropdown" class="w-10 button-visible lg:hidden" title="More options">
                         <MoreHorizontal :size="18" />
                     </button>
 

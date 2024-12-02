@@ -187,7 +187,7 @@ const hasCardsToStudy = computed(() => {
                 class="flex gap-2 motion-opacity-in-[0%] motion-duration-[0.1s]/opacity relative z-[5]">
                 <div v-if="isOwner" class="relative z-[5]" ref="dropdownRef">
                     <!-- Show dropdown button on small screens -->
-                    <button @click.stop="toggleDropdown" class="w-10 button lg:hidden" title="More options">
+                    <button @click.stop="toggleDropdown" class="w-10 button-visible lg:hidden" title="More options">
                         <MoreHorizontal :size="18" />
                     </button>
 
@@ -232,7 +232,7 @@ const hasCardsToStudy = computed(() => {
                     :disabled="!hasCardsToStudy" 
                     :class="{
                         'button-pink-visible sparkle': hasCardsToStudy,
-                        'opacity-50 button-visible cursor-default pointer-events-none': !hasCardsToStudy
+                        'opacity-50 button-visible text-neutral-600 pointer-events-none': !hasCardsToStudy
                     }" 
                     :title="hasCardsToStudy ? 'Study deck' : 'No cards due for study'">
                     <BookOpen :size="18" />
