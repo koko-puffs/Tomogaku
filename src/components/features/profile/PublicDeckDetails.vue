@@ -169,7 +169,7 @@ const handleDelete = () => {
             <template v-else>
                 <div
                     class="motion-opacity-in-[0%] motion-duration-[0.1s]/opacity">
-                    <div class="space-y-1">
+                    <div class="space-y-0.5">
                         <h1
                             class="relative flex items-center gap-1.5 text-xl font-bold pl-1 max-w-[265px] lg:max-w-[460px]">
                             <span class="leading-none truncate">{{ props.deck.title }}</span>
