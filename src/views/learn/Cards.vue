@@ -173,7 +173,14 @@ const handleNextCard = () => {
   }
 };
 
+const forgetModalRef = ref();
+
 const handleForgetCard = async () => {
+  if (!selectedCard.value || !route.params.deckId) return;
+  forgetModalRef.value?.openModal();
+};
+
+const confirmForgetCard = async () => {
   if (!selectedCard.value || !route.params.deckId) return;
 
   try {
@@ -257,4 +264,7 @@ const hasNextCard = computed(() => {
 
   <DeleteModal ref="deleteModalRef" @confirm="confirmDeleteCard" title="Delete Card?"
     mainMessage="Are you sure you want to delete this card?" subMessage="This action cannot be undone." />
+
+  <DeleteModal ref="forgetModalRef" @confirm="confirmForgetCard" title="Forget Card?" buttonText="Forget"
+    mainMessage="Are you sure you want to forget this card?" subMessage="This action cannot be undone." />
 </template>

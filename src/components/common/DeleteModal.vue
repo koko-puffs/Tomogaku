@@ -23,7 +23,7 @@
                     class="w-24 button-cancel-visible relative overflow-hidden active:scale-[0.97] transition-transform"
                     :disabled="loading">
                     <LoadingSpinner v-if="loading" class="w-5 h-5" />
-                    <span v-else class="relative z-10">{{ isHolding ? 'Hold...' : 'Delete' }}</span>
+                    <span v-else class="relative z-10">{{ isHolding ? 'Hold...' : buttonText }}</span>
                     <div class="absolute inset-0 bg-white opacity-30" :class="[
                         isHolding ? 'transition-[width] duration-[600ms] ease-in' : 'transition-[width] duration-150',
                     ]" :style="{ width: `${holdProgress}%` }" />
@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted, onMounted } from 'vue';
+import { ref, onUnmounted, onMounted, defineProps } from 'vue';
 import Modal from './Modal.vue';
 import LoadingSpinner from './LoadingSpinner.vue';
 import { AlertTriangle } from 'lucide-vue-next';
@@ -117,9 +117,13 @@ onUnmounted(() => {
 
 defineExpose({ openModal, closeModal });
 
-defineProps<{
-    title: string;
-    mainMessage: string;
-    subMessage: string;
-}>();
+defineProps({
+    title: String,
+    buttonText: {
+        type: String,
+        default: 'Delete'
+    },
+    mainMessage: String,
+    subMessage: String
+});
 </script>
