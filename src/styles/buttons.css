@@ -122,6 +122,7 @@
 
   .sparkle {
     position: relative;
+    overflow: hidden;
     &::after {
       content: '';
       position: absolute;
@@ -134,6 +135,7 @@
       );
       animation: sparkle 10s ease-in-out infinite;
       pointer-events: none;
+      will-change: transform, opacity;
     }
   }
 
