@@ -16,7 +16,7 @@
                        md:translate-x-0 border-r border-neutral-800 md:border-none overflow-y-auto"
                 :class="[sidebarStore.isOpen ? 'translate-x-0' : '-translate-x-[275px]']"
                 style="scrollbar-gutter: stable;">
-                <div class="-mr-[10px]">
+                <div class="md:-mr-[10px]">
                     <slot name="sidebar" />
                 </div>
             </div>
