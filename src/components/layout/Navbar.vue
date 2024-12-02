@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAuthStore } from '../../stores/authStore.ts'
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import LoadingSpinner from "../common/LoadingSpinner.vue";
 import SettingsModal from '../features/settings/SettingsModal.vue'
 import { ref, onMounted, onUnmounted } from 'vue'
@@ -11,6 +11,7 @@ const authStore = useAuthStore()
 //const router = useRouter()
 const route = useRoute()
 const sidebarStore = useSidebarStore()
+const router = useRouter()
 
 const isDropdownOpen = ref(false)
 const dropdownRef = ref<HTMLElement | null>(null)
@@ -80,8 +81,9 @@ const handleClick = () => {
   }
 }
 
-const handleLogoClick = (e: Event) => {
+const handleLogoClick = async (e: Event) => {
   e.preventDefault()
+  await router.push('/')
   window.location.reload()
 }
 </script>
