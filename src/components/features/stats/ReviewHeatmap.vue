@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue';
 import { useStatsStore } from '../../../stores/statsStore';
-import { ChevronLeft, ChevronRight } from 'lucide-vue-next';
+import { ChevronLeft, ChevronRight, User, Layers3 } from 'lucide-vue-next';
 import LoadingSpinner from '../../common/LoadingSpinner.vue';
 import ToggleSlider from '../../common/ToggleSlider.vue';
 
@@ -159,15 +159,21 @@ const isToday = (dateStr: string): boolean => {
     'motion-translate-y-in-[-3%] motion-duration-[0.2s]': !props.deckId
   }">
     <div class="flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <div v-if="props.deckId">
-          <ToggleSlider
-            v-model="showAllActivity"
-          />
-        </div>
+      <div class="flex items-center gap-3">
         <h3 class="text-sm font-medium text-neutral-400">
-          {{ props.deckId && !showAllActivity ? 'Deck Review Activity' : 'All Review Activity' }}
+          {{ props.deckId ? 'Review Activity:' : 'All Review Activity' }}
         </h3>
+        <div v-if="props.deckId">
+          <div class="flex items-center gap-3">
+            <ToggleSlider v-model="showAllActivity" />
+            <div class="flex items-center gap-1.5">
+              <component :is="showAllActivity ? User : Layers3" :size="16" class="text-neutral-200" />
+              <span class="-mb-0.5 text-sm font-medium text-neutral-200">
+                {{ showAllActivity ? 'All' : 'Deck' }}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="flex items-center gap-2">

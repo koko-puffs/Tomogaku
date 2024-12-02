@@ -159,16 +159,14 @@ const getKeyboardShortcuts = (e: KeyboardEvent) => {
 
 onMounted(() => {
   nextTick(() => {
-    document.documentElement.classList.add('overflow-hidden');
-    document.body.classList.add('overflow-hidden');
+    document.body.style.overflow = 'hidden';
   });
   window.addEventListener('keydown', getKeyboardShortcuts);
   startSession();
 });
 
 onUnmounted(() => {
-  document.documentElement.classList.remove('overflow-hidden');
-  document.body.classList.remove('overflow-hidden');
+  document.body.style.overflow = 'auto';
   window.removeEventListener('keydown', getKeyboardShortcuts);
   if (timerInterval.value) {
     clearInterval(timerInterval.value);
@@ -226,7 +224,7 @@ const studyCardRef = ref<InstanceType<typeof StudyCard> | null>(null);
        @keydown.prevent="getKeyboardShortcuts" 
        tabindex="0"
        ref="container">
-    <div class="w-full max-w-3xl min-h-[500px] h-full max-h-[800px] mx-auto overflow-hidden panel shadow-xl bg-neutral-900 motion-translate-y-in-[-1%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity">
+    <div class="w-full max-w-3xl min-h-[400px] max-h-[550px] sm:min-h-[500px] h-full sm:max-h-[800px] mx-auto overflow-hidden panel shadow-xl bg-neutral-900 motion-translate-y-in-[-1%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity">
       <!-- Header with stats and progress -->
       <div class="border-b border-neutral-800">
         <!-- Progress bar -->
@@ -277,7 +275,7 @@ const studyCardRef = ref<InstanceType<typeof StudyCard> | null>(null);
       </div>
 
       <!-- Main content -->
-      <div class="p-6 flex-1 h-[calc(100%-128px)]">
+      <div class="sm:p-6 p-3 flex-1 h-[calc(100%-117px)] sm:h-[calc(100%-128px)]">
         <!-- Card area with consistent height -->
         <div class="h-full">
           <template v-if="!isLoading && currentCard">
@@ -290,9 +288,9 @@ const studyCardRef = ref<InstanceType<typeof StudyCard> | null>(null);
 
             <!-- Rating buttons -->
             <div v-if="cardFlipTime" 
-                 class="flex justify-center gap-2 mt-6">
+                 class="flex justify-center gap-2 mt-3 sm:mt-6">
               <button @click="handleAnswer(Rating.Again)"
-                      class="gap-1.5 w-24 button-lighter-visible"
+                      class="gap-1 sm:gap-1.5 w-full sm:w-24 button-lighter-visible"
                       title="Shortcut: 1">
                 Again
                 <span class="text-xs opacity-60" v-if="schedules">
@@ -303,7 +301,7 @@ const studyCardRef = ref<InstanceType<typeof StudyCard> | null>(null);
                 </span>
               </button>
               <button @click="handleAnswer(Rating.Hard)"
-                      class="gap-1.5 w-24 button-lighter-visible"
+                      class="gap-1 sm:gap-1.5 w-full sm:w-24 button-lighter-visible"
                       title="Shortcut: 2">
                 Hard
                 <span class="text-xs opacity-60" v-if="schedules">
@@ -314,7 +312,7 @@ const studyCardRef = ref<InstanceType<typeof StudyCard> | null>(null);
                 </span>
               </button>
               <button @click="handleAnswer(Rating.Good)"
-                      class="gap-1.5 w-24 button-lighter-visible"
+                      class="gap-1 sm:gap-1.5 w-full sm:w-24 button-lighter-visible"
                       title="Shortcut: 3">
                 Good
                 <span class="text-xs opacity-60" v-if="schedules">
@@ -325,7 +323,7 @@ const studyCardRef = ref<InstanceType<typeof StudyCard> | null>(null);
                 </span>
               </button>
               <button @click="handleAnswer(Rating.Easy)"
-                      class="gap-1.5 w-24 button-lighter-visible"
+                      class="gap-1 sm:gap-1.5 w-full sm:w-24 button-lighter-visible"
                       title="Shortcut: 4">
                 Easy
                 <span class="text-xs opacity-60" v-if="schedules">

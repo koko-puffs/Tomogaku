@@ -123,9 +123,9 @@ const removeTag = (tagToRemove: string) => {
                         <ToggleSlider v-model="isPublic" />
                         <div class="flex items-center gap-1.5">
                             <component :is="editVisibility === 'public' ? Globe2 : Lock" :size="16"
-                                class="text-neutral-400" />
+                                class="text-neutral-200" />
                             <span class="-mb-0.5 text-sm font-medium"
-                                :class="editVisibility === 'public' ? 'text-green-400' : 'text-neutral-400'">
+                                :class="editVisibility === 'public' ? 'text-green-400' : 'text-neutral-200'">
                                 {{ editVisibility === 'public' ? 'Public' : 'Private' }}
                             </span>
                         </div>

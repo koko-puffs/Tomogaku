@@ -40,7 +40,7 @@ defineExpose({
 </script>
 
 <template>
-    <div class="h-full space-y-6">
+    <div class="h-full space-y-3 sm:space-y-6">
         <!-- Card content -->
         <div class="h-full overflow-auto panel motion-opacity-in-[0%] motion-duration-[0.075s]/opacity" :class="preview ? 'bg-neutral-900' : 'bg-neutral-950/50'"> 
             <!-- Front content (always visible) -->
