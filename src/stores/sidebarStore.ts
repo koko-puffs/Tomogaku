@@ -8,14 +8,30 @@ export const useSidebarStore = defineStore('sidebar', {
   actions: {
     toggle() {
       this.isOpen = !this.isOpen
-      if (this.isOpen) {
+      this.updateScrollLock()
+    },
+    setShowBackButton(show: boolean) {
+      this.showBackButton = show
+    },
+    close() {
+      this.isOpen = false
+      this.updateScrollLock()
+    },
+    updateScrollLock() {
+      // Only lock scroll if sidebar is open AND we're on mobile
+      if (this.isOpen && window.innerWidth < 768) { // 768px is Tailwind's md breakpoint
         document.body.style.overflow = 'hidden'
       } else {
         document.body.style.overflow = 'auto'
       }
-    },
-    setShowBackButton(show: boolean) {
-      this.showBackButton = show
     }
   }
 })
+
+// Add resize listener
+if (typeof window !== 'undefined') {
+  window.addEventListener('resize', () => {
+    const store = useSidebarStore()
+    store.updateScrollLock()
+  })
+}
