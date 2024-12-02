@@ -73,15 +73,15 @@ const toggleSidebar = () => {
   sidebarStore.toggle()
 }
 
-const handleClick = () => {
+const handleClick = async (e: Event) => {
   if (sidebarStore.showBackButton) {
-    window.location.reload()
+    await handleHomeClick(e)
   } else {
     toggleSidebar()
   }
 }
 
-const handleLogoClick = async (e: Event) => {
+const handleHomeClick = async (e: Event) => {
   e.preventDefault()
   await router.push('/')
   window.location.reload()
@@ -93,9 +93,7 @@ const handleLogoClick = async (e: Event) => {
     <div class="flex items-center justify-between flex-shrink-0 pl-2 pr-6 mx-auto space-x-4 md:px-6 h-14">
       <!-- Left section -->
       <div class="flex items-center justify-start flex-1">
-        <button v-if="authStore.user" 
-                @click="handleClick" 
-                class="w-10 mr-2 md:hidden button-noborder">
+        <button v-if="authStore.user" @click="handleClick" class="w-10 mr-2 md:hidden button-noborder">
           <ArrowLeft v-if="sidebarStore.showBackButton" :size="20" />
           <template v-else>
             <X v-if="sidebarStore.isOpen" :size="20" />
@@ -103,8 +101,9 @@ const handleLogoClick = async (e: Event) => {
           </template>
         </button>
         <a href="#" class="relative flex items-center h-10 text-xl font-bold" style="top: -1px;"
-           @click="handleLogoClick">
-          <span :class="{ 'hidden sm:inline': authStore.user, 'sm:inline ml-4 md:ml-0': !authStore.user }">tomogaku</span>
+          @click="handleHomeClick">
+          <span
+            :class="{ 'hidden sm:inline': authStore.user, 'sm:inline ml-4 md:ml-0': !authStore.user }">tomogaku</span>
         </a>
       </div>
 
@@ -119,7 +118,8 @@ const handleLogoClick = async (e: Event) => {
             <span class="hidden md:inline">Learn</span>
           </span>
           <div v-if="route.path.startsWith('/learn')"
-            class="absolute bottom-0 left-0 w-full h-0.5 bg-white rounded-full"></div>
+            class="absolute bottom-0 left-0 w-full h-0.5 bg-white rounded-full">
+          </div>
           <div v-else
             class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-white rounded-full transition-all duration-150 group-hover:w-full -translate-x-1/2">
           </div>
@@ -133,7 +133,8 @@ const handleLogoClick = async (e: Event) => {
             <span class="hidden md:inline">Discover</span>
           </span>
           <div v-if="route.path.startsWith('/discover')"
-            class="absolute bottom-0 left-0 w-full h-0.5 bg-white rounded-full"></div>
+            class="absolute bottom-0 left-0 w-full h-0.5 bg-white rounded-full">
+          </div>
           <div v-else
             class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-white rounded-full transition-all duration-150 group-hover:w-full -translate-x-1/2">
           </div>
@@ -147,7 +148,8 @@ const handleLogoClick = async (e: Event) => {
             <span class="hidden md:inline">Feed</span>
           </span>
           <div v-if="route.path.startsWith('/feed')"
-            class="absolute bottom-0 left-0 w-full h-0.5 bg-white rounded-full"></div>
+            class="absolute bottom-0 left-0 w-full h-0.5 bg-white rounded-full">
+          </div>
           <div v-else
             class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-white rounded-full transition-all duration-150 group-hover:w-full -translate-x-1/2">
           </div>
@@ -163,7 +165,8 @@ const handleLogoClick = async (e: Event) => {
         </button>
 
         <div v-else class="relative" ref="dropdownRef">
-          <button @click.stop="toggleDropdown" class="flex items-center h-10 px-1.5 text-sm w-10 sm:w-full sm:px-2 -mr-2 sm:mr-0"
+          <button @click.stop="toggleDropdown"
+            class="flex items-center h-10 px-1.5 text-sm w-10 sm:w-full sm:px-2 -mr-2 sm:mr-0"
             :class="isDropdownOpen ? 'button-active-noborder' : 'button-noborder'">
             <span class="hidden sm:pl-1 sm:pr-2 sm:inline">
               {{

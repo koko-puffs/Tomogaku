@@ -24,6 +24,11 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, onUnmounted } from 'vue';
+import { useSidebarStore } from '../stores/sidebarStore';
+
+const sidebarStore = useSidebarStore();
+
 const messages: string[] = [
     'Uh-oh!',
     'Nope!',
@@ -83,4 +88,12 @@ const messages: string[] = [
 ];
 
 const randomMessage: string = messages[Math.floor(Math.random() * messages.length)];
+
+onMounted(() => {
+    sidebarStore.setShowBackButton(true);
+});
+
+onUnmounted(() => {
+    sidebarStore.setShowBackButton(false);
+});
 </script>

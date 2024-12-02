@@ -5,11 +5,23 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, onUnmounted } from 'vue';
+import { useSidebarStore } from '../stores/sidebarStore';
 import privacyText from '../assets/privacy.txt?raw'
 import { marked } from 'marked'
 import { computed } from 'vue'
 
+const sidebarStore = useSidebarStore();
+
 const formattedPrivacy = computed(() => {
     return marked(privacyText)
 })
+
+onMounted(() => {
+    sidebarStore.setShowBackButton(true);
+});
+
+onUnmounted(() => {
+    sidebarStore.setShowBackButton(false);
+});
 </script>

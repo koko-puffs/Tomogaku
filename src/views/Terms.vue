@@ -5,11 +5,23 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, onUnmounted } from 'vue';
+import { useSidebarStore } from '../stores/sidebarStore';
 import termsText from '../assets/terms.txt?raw'
 import { marked } from 'marked'
 import { computed } from 'vue'
 
+const sidebarStore = useSidebarStore();
+
 const formattedTerms = computed(() => {
     return marked(termsText)
 })
+
+onMounted(() => {
+    sidebarStore.setShowBackButton(true);
+});
+
+onUnmounted(() => {
+    sidebarStore.setShowBackButton(false);
+});
 </script>
