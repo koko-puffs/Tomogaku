@@ -159,14 +159,22 @@ const getKeyboardShortcuts = (e: KeyboardEvent) => {
 
 onMounted(() => {
   nextTick(() => {
+    // Apply multiple scroll prevention techniques
     document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+    document.body.style.height = '100%';
   });
   window.addEventListener('keydown', getKeyboardShortcuts);
   startSession();
 });
 
 onUnmounted(() => {
+  // Reset all scroll prevention styles
   document.body.style.overflow = 'auto';
+  document.body.style.position = '';
+  document.body.style.width = '';
+  document.body.style.height = '';
   window.removeEventListener('keydown', getKeyboardShortcuts);
   if (timerInterval.value) {
     clearInterval(timerInterval.value);
@@ -224,7 +232,7 @@ const studyCardRef = ref<InstanceType<typeof StudyCard> | null>(null);
        @keydown.prevent="getKeyboardShortcuts" 
        tabindex="0"
        ref="container">
-    <div class="w-full max-w-3xl min-h-[400px] max-h-[550px] sm:min-h-[500px] h-full sm:max-h-[800px] mx-auto overflow-hidden panel shadow-xl bg-neutral-900 motion-translate-y-in-[-1%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity">
+    <div class="w-full max-w-3xl min-h-[500px] h-full max-h-[800px] mx-auto overflow-hidden panel shadow-xl bg-neutral-900 motion-translate-y-in-[-1%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity">
       <!-- Header with stats and progress -->
       <div class="border-b border-neutral-800">
         <!-- Progress bar -->
