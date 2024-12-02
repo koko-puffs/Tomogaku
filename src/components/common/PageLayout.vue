@@ -12,10 +12,13 @@
         <div class="grid md:grid-cols-[25fr_1px_75fr] grid-cols-[1fr] h-full w-full">
             <!-- Left Sidebar - mobile responsive -->
             <div class="relative max-md:fixed max-md:w-[275px] md:sticky left-0 top-14 h-[calc(100vh-56px)] md:z-0 z-40 md:bg-transparent bg-neutral-950/75 backdrop-blur-md
-                       bg-background overflow-y-auto py-4 pr-4 pl-4 md:pl-0 md:w-[260px] transition-transform duration-200
-                       md:translate-x-0 border-r border-neutral-800 md:border-none"
-                :class="[sidebarStore.isOpen ? 'translate-x-0' : '-translate-x-[275px]']">
-                <slot name="sidebar" />
+                       bg-background py-4 pr-4 pl-4 md:pl-0 md:w-[260px] transition-transform duration-200
+                       md:translate-x-0 border-r border-neutral-800 md:border-none overflow-y-auto"
+                :class="[sidebarStore.isOpen ? 'translate-x-0' : '-translate-x-[275px]']"
+                style="scrollbar-gutter: stable;">
+                <div class="-mr-[10px]">
+                    <slot name="sidebar" />
+                </div>
             </div>
 
             <!-- Divider - hidden on mobile -->

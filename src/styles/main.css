@@ -109,29 +109,32 @@
 
 /* For Webkit browsers (Chrome, Safari, etc.) */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
+  background-color: transparent;
 }
 
 ::-webkit-scrollbar-track {
-  background: #161616; /* Neutral-900 equivalent */
+  background: transparent;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #383838; /* Neutral-700 equivalent */
+  background: rgba(56, 56, 56, 0.7); /* Semi-transparent Neutral-700 */
   border-radius: 4px;
-  border: 2px solid #161616; /* Border color matching track */
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #525252; /* Neutral-600 equivalent */
+  background: rgba(82, 82, 82, 0.7); /* Semi-transparent Neutral-600 */
+  background-clip: padding-box;
 }
 
 /* For Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #383838 #161616; /* thumb track */
+  scrollbar-color: rgba(56, 56, 56, 0.7) transparent; /* Semi-transparent thumb, transparent track */
 }
 
 /* Style the select element itself */
