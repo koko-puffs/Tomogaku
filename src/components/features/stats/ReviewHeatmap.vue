@@ -130,6 +130,16 @@ watch(currentYear, async (newYear) => {
 onMounted(async () => {
   await loadYear(currentYear.value);
 });
+
+const isToday = (dateStr: string): boolean => {
+  if (!dateStr) return false;
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const todayStr = `${year}-${month}-${day}`;
+  return dateStr === todayStr;
+};
 </script>
 
 <template>
@@ -184,6 +194,7 @@ onMounted(async () => {
                    :class="[
                      'w-[10px] h-[10px] rounded-sm transition-colors',
                      day.date ? getIntensityClass(day.count, day.date) : 'bg-transparent',
+                     isToday(day.date) ? 'border border-white/40' : ''
                    ]"
                    :title="day.date ? `${day.date}: ${day.count} reviews` : ''"
               ></div>
