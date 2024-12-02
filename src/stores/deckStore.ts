@@ -244,13 +244,10 @@ export const useDeckStore = defineStore("decks", {
     async fetchDecksByUserId(userId: string) {
       this.loading.decks = true;
       try {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
         const { data, error } = await supabase
           .rpc('get_decks_with_stats', {
             p_user_id: userId,
-            p_today: today.toISOString(),
+            p_today: new Date().toISOString(),  // Use current time, just like updateDeckStats
           });
 
         if (error) throw error;

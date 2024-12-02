@@ -90,73 +90,42 @@ export const useFSRSStore = defineStore("fsrs", {
     },
 
     // Get due cards for a deck
-    async getDueCards(
-      deckId: string,
-      newCardLimit: number = 20,
-      reviewLimit: number = 200
-    ) {
+    async getDueCards(deckId: string) {
       const now = new Date();
-      const startOfDay = new Date(now);
-      startOfDay.setHours(0, 0, 0, 0);
 
       try {
-        // Get count of new cards already studied today
-        const { count: newCardsStudiedToday, error: countError } = await supabase
-          .from("review_logs")
-          .select("*", { count: 'exact', head: true })
-          .eq("deck_id", deckId)
-          .eq("state", State.New)
-          .gte("created_at", startOfDay.toISOString());
+        // Call the SQL function with the correct name
+        const { data, error } = await supabase.rpc("get_deck_cards", {
+          p_deck_id: deckId,
+          p_today: now.toISOString(),
+        });
 
-        if (countError) throw countError;
+        if (error) throw error;
 
-        // Calculate remaining new cards allowed for today
-        const remainingNewCards = Math.max(0, newCardLimit - (newCardsStudiedToday || 0));
+        // Parse the JSON result
+        const result = data as {
+          new_cards: Card[];
+          new_studied_today: any[];
+          due_review_cards: Card[];
+          review_studied_today: any[];
+          due_learning_cards: Card[];
+          limits: {
+            daily_new_limit: number;
+            new_cards_studied_today: number;
+            remaining_new_cards: number;
+          };
+        };
 
-        // Get learning/relearning cards regardless of due date
-        const { data: learningCards, error: learningError } = await supabase
-          .from("cards")
-          .select("*")
-          .eq("deck_id", deckId)
-          .in("state", [State.Learning, State.Relearning])
-          .is("deleted_at", null)
-          .order("due");
-
-        if (learningError) throw learningError;
-
-        // Get regular review cards that are due
-        const { data: reviewCards, error: reviewError } = await supabase
-          .from("cards")
-          .select("*")
-          .eq("deck_id", deckId)
-          .lte("due", now.toISOString())
-          .eq("state", State.Review)
-          .is("deleted_at", null)
-          .order("due");
-
-        if (reviewError) throw reviewError;
-
-        // Get new cards, limited by remaining daily allowance, ordered by position
-        const { data: newCards, error: newError } = await supabase
-          .from("cards")
-          .select("*")
-          .eq("deck_id", deckId)
-          .eq("state", State.New)
-          .is("deleted_at", null)
-          .order('position')
-          .limit(remainingNewCards);
-
-        if (newError) throw newError;
-
-        // Combine learning cards with review cards, but limit total reviews
+        // Combine learning cards with review cards
         const allReviewCards = [
-          ...(learningCards || []),
-          ...(reviewCards || [])
-        ].slice(0, reviewLimit);
+          ...(result.due_learning_cards || []),
+          ...(result.due_review_cards || []),
+        ];
 
         return {
-          newCards: newCards || [],
+          newCards: result.new_cards || [],
           reviewCards: allReviewCards || [],
+          limits: result.limits,
         };
       } catch (error) {
         console.error("Error fetching due cards:", error);
@@ -165,19 +134,14 @@ export const useFSRSStore = defineStore("fsrs", {
     },
 
     // Start a study session
-    async startStudySession(
-      deckId: string,
-      newCardLimit: number = 20,
-      reviewLimit: number = 200
-    ) {
-      const { newCards, reviewCards } = await this.getDueCards(
-        deckId,
-        newCardLimit,
-        reviewLimit
-      );
+    async startStudySession(deckId: string) {
+      const { newCards, reviewCards, limits } = await this.getDueCards(deckId);
+
+      // If we've reached the daily new cards limit, don't include any new cards
+      const availableNewCards = limits.remaining_new_cards > 0 ? newCards : [];
 
       // Mix new cards with review cards using spaced insertion
-      const mixed = this.mixNewAndReviewCards(newCards, reviewCards);
+      const mixed = this.mixNewAndReviewCards(availableNewCards, reviewCards);
 
       this.studySession = {
         currentCardIndex: 0,

@@ -56,7 +56,7 @@ const startSession = async () => {
     const deck = await deckStore.getDeckById(props.deckId);
     if (!deck) throw new Error('Deck not found');
 
-    await fsrsStore.startStudySession(props.deckId, deck.daily_new_cards_limit, deck.daily_review_limit);
+    await fsrsStore.startStudySession(props.deckId);
     currentCard.value = fsrsStore.getNextCard();
     stats.value = fsrsStore.getStudySessionStats();
     

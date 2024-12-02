@@ -6,18 +6,23 @@ export function useCardStats(deckId: string) {
 
   const availableNewCards = computed(() => {
     const stats = deckStore.deckStats.get(deckId);
+    const deck = deckStore.getDeckById(deckId);
+    
     if (!stats) return 0;
 
-    const dailyNewCardsLimit = deckStore.getDeckById(deckId)?.daily_new_cards_limit || 20;
+    const dailyNewCardsLimit = deck?.daily_new_cards_limit || 20;
     const remainingNewCardsLimit = Math.max(0, dailyNewCardsLimit - stats.new_studied_today);
     return Math.min(stats.new_count, remainingNewCardsLimit);
   });
 
   const dueReviewCards = computed(() => {
     const stats = deckStore.deckStats.get(deckId);
+    const deck = deckStore.getDeckById(deckId);
+    
+
     if (!stats) return 0;
 
-    const dailyReviewLimit = deckStore.getDeckById(deckId)?.daily_review_limit || 100;
+    const dailyReviewLimit = deck?.daily_review_limit || 200;
     if (stats.review_studied_today >= dailyReviewLimit) return 0;
     
     return Math.min(
@@ -28,6 +33,7 @@ export function useCardStats(deckId: string) {
 
   const dueLearningCards = computed(() => {
     const stats = deckStore.deckStats.get(deckId);
+    
     return stats?.due_learning_count || 0;
   });
 
