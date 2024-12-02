@@ -35,11 +35,6 @@ const minReviews = computed(() => {
 });
 
 const getIntensityClass = (count: number, date: string) => {
-  // Return neutral color for future dates
-  if (date && new Date(date) > new Date()) {
-    return 'bg-neutral-900';
-  }
-  
   if (count === 0) return 'bg-neutral-800/75';
   
   // Calculate percentage based on the range between min and max
@@ -223,7 +218,7 @@ const isToday = (dateStr: string): boolean => {
                    :class="[
                      'w-[10px] h-[10px] rounded-sm transition-colors',
                      day.date ? getIntensityClass(day.count, day.date) : 'bg-transparent',
-                     isToday(day.date) ? 'border border-white/40' : ''
+                     isToday(day.date) ? 'border border-white/60' : ''
                    ]"
                    :title="day.date ? `${day.date}: ${day.count} reviews` : ''"
               ></div>

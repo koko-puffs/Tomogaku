@@ -36,7 +36,7 @@ const colorClasses = computed(() => {
 <template>
   <div class="flex items-center">
     <button type="button" role="switch" :aria-checked="modelValue" :disabled="disabled" @click="toggle"
-      class="relative inline-flex items-center h-6 rounded-full w-11 bg-neutral-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 before:absolute before:inset-0 before:rounded-full before:transition-opacity before:duration-150"
+      class="relative inline-flex items-center h-6 rounded-full w-11 bg-neutral-700/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 before:absolute before:inset-0 before:rounded-full before:transition-opacity before:duration-150"
       :class="[
         colorClasses,
         modelValue ? 'before:opacity-100' : 'before:opacity-0',
