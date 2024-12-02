@@ -52,7 +52,7 @@
       </button>
       <button @click="handleCreate" :disabled="!title.trim() || loading" :class="[
         title.trim() ? 'button-accept-visible' : 'button-lighter-visible',
-        { 'text-neutral-600 pointer-events-none': !title.trim() }
+        { 'text-neutral-600 opacity-50 pointer-events-none': !title.trim() }
       ]" class="w-24">
         <LoadingSpinner v-if="loading" class="w-5 h-5" />
         <span v-else>Create</span>

@@ -281,7 +281,7 @@ const confirmDeleteComment = async () => {
                             <button @click="updateComment"
                                 :disabled="!editCommentContent.trim() || editCommentContent.trim() === comment.content.trim()"
                                 class="w-24 button-lighter-visible"
-                                :class="{ 'text-neutral-600 pointer-events-none': !editCommentContent.trim() || editCommentContent.trim() === comment.content.trim() }">
+                                :class="{ 'text-neutral-600 opacity-50 pointer-events-none': !editCommentContent.trim() || editCommentContent.trim() === comment.content.trim() }">
                                 Save
                             </button>
                         </div>
@@ -311,7 +311,7 @@ const confirmDeleteComment = async () => {
                             Cancel
                         </button>
                         <button @click="addReply" :disabled="!replyContent.trim()" class="w-24 button-lighter-visible"
-                            :class="{ 'text-neutral-600 pointer-events-none': !replyContent.trim() }">
+                            :class="{ 'text-neutral-600 opacity-50 pointer-events-none': !replyContent.trim() }">
                             Reply
                         </button>
                     </div>
@@ -386,7 +386,7 @@ const confirmDeleteComment = async () => {
                                 <button @click="updateComment"
                                     :disabled="!editCommentContent.trim() || editCommentContent.trim() === reply.content.trim()"
                                     class="w-24 button-lighter-visible"
-                                    :class="{ 'text-neutral-600 pointer-events-none': !editCommentContent.trim() || editCommentContent.trim() === reply.content.trim() }">
+                                    :class="{ 'text-neutral-600 opacity-50 pointer-events-none': !editCommentContent.trim() || editCommentContent.trim() === reply.content.trim() }">
                                     Save
                                 </button>
                             </div>

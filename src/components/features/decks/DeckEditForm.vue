@@ -135,7 +135,7 @@ const removeTag = (tagToRemove: string) => {
                     <button @click="emit('cancel')" class="w-24 button-lighter">Cancel</button>
                     <button @click="handleUpdate" :disabled="!editTitle.trim() || !hasChanges" :class="[
                         editTitle.trim() && hasChanges ? 'button-accept-visible' : 'button-lighter-visible',
-                        { 'text-neutral-600 pointer-events-none': !editTitle.trim() || !hasChanges }
+                        { 'text-neutral-600 opacity-50 pointer-events-none': !editTitle.trim() || !hasChanges }
                     ]" class="w-24">
                         Save
                     </button>
