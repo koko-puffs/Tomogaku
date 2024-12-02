@@ -171,7 +171,7 @@ const handleDelete = () => {
                     class="motion-opacity-in-[0%] motion-duration-[0.1s]/opacity">
                     <div class="space-y-0.5">
                         <h1
-                            class="relative flex items-center gap-1.5 text-xl font-bold pl-1 max-w-[265px] lg:max-w-[460px]">
+                            class="relative flex items-center gap-1.5 text-xl font-bold pl-1 max-w-[200px] sm:max-w-[400px] md:max-w-[290px] lg:max-w-[460px]">
                             <span class="leading-none truncate">{{ props.deck.title }}</span>
                         </h1>
                         <RouterLink v-if="props.deck.is_forked && props.deck.original_deck_id"
@@ -218,11 +218,12 @@ const handleDelete = () => {
                         </button>
                     </div>
                 </div>
-                <button class="flex items-center w-10 gap-2 md:w-28 button-emerald-visible"
+                <button class="flex items-center w-24 gap-2 md:w-28 button-emerald-visible"
                     @click="handleFork" :disabled="isForking">
                     <LoadingSpinner v-if="isForking" class="w-5 h-5" />
                     <GitFork v-else :size="18" />
                     <span v-if="!isForking" class="hidden md:inline">Fork deck</span>
+                    <span v-if="!isForking" class="md:hidden">Fork</span>
                 </button>
             </div>
         </div>

@@ -170,7 +170,7 @@ const hasCardsToStudy = computed(() => {
                 <div class="motion-opacity-in-[0%] motion-duration-[0.1s]/opacity">
                     <div class="space-y-0.5">
                         <h1
-                            class="relative flex items-center gap-1.5 text-xl font-bold pl-1 max-w-[195px] md:max-w-[280px] lg:max-w-[350px]">
+                            class="relative flex items-center gap-1.5 text-xl font-bold pl-1 max-w-[200px] sm:max-w-[400px] md:max-w-[290px] lg:max-w-[400px]">
                             <span class="leading-none truncate">{{ props.deck.title }}</span>
                         </h1>
                         <RouterLink v-if="props.deck.visibility === 'public'" :to="`/discover/deck/${props.deck.id}`"
