@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { useDeckStore } from '../../stores/deckStore';
 import { useCardStore } from '../../stores/cardStore';
 import PageLayout from '../../components/common/PageLayout.vue';
@@ -199,6 +199,20 @@ watch(
     }
   }
 );
+
+const hasPreviousCard = computed(() => {
+  if (!selectedCard.value || !cardListRef.value) return false;
+  const cards = cardListRef.value.filteredCards;
+  const currentIndex = cards.findIndex(card => card.id === selectedCard.value);
+  return currentIndex > 0;
+});
+
+const hasNextCard = computed(() => {
+  if (!selectedCard.value || !cardListRef.value) return false;
+  const cards = cardListRef.value.filteredCards;
+  const currentIndex = cards.findIndex(card => card.id === selectedCard.value);
+  return currentIndex < cards.length - 1;
+});
 </script>
 
 <template>
@@ -224,6 +238,8 @@ watch(
         <div v-else-if="selectedCard && cardStore.getCardsByDeckId(deckId).find(card => card.id === selectedCard)"
           class="space-y-6">
           <CardDetails :card="cardStore.getCardsByDeckId(deckId).find(card => card.id === selectedCard)!"
+            :has-previous="hasPreviousCard"
+            :has-next="hasNextCard"
             @update="handleUpdateCard" 
             @delete="confirmDeleteCard" 
             @delete-with-modal="handleDeleteCard" 

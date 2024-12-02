@@ -6,6 +6,7 @@ import DeckEditForm from './DeckEditForm.vue';
 import { useAuthStore } from '../../../stores/authStore';
 import { useCardStore } from '../../../stores/cardStore';
 import { useCardStats } from '../../../composables/useCardStats';
+import ReviewHeatmap from '../stats/ReviewHeatmap.vue';
 
 const props = defineProps<{
     deck: any;
@@ -272,6 +273,12 @@ const hasCardsToStudy = computed(() => {
                     </div>
                 </div>
             </div>
+
+            <!-- Review Heatmap -->
+            <ReviewHeatmap 
+                :user-id="props.deck.user_id" 
+                :deck-id="props.deck.id" 
+            />
 
             <!-- Description and Tags Panel -->
             <div v-if="props.deck.description || props.deck.tags?.length" class="p-2.5 space-y-2.5 panel">

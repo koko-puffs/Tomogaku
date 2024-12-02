@@ -3,9 +3,11 @@ import { ref, onMounted, computed, watch } from 'vue';
 import { useStatsStore } from '../../../stores/statsStore';
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next';
 import LoadingSpinner from '../../common/LoadingSpinner.vue';
+import ToggleSlider from '../../common/ToggleSlider.vue';
 
 const props = defineProps<{
   userId: string;
+  deckId?: string;
 }>();
 
 const statsStore = useStatsStore();
@@ -108,10 +110,16 @@ const generateCalendarData = computed(() => {
   return calendar;
 });
 
+const showAllActivity = ref(false);
+
 const loadYear = async (year: number) => {
   isLoading.value = true;
   try {
-    await statsStore.fetchYearlyReviewLogs(props.userId, year);
+    await statsStore.fetchYearlyReviewLogs(
+      props.userId, 
+      year, 
+      showAllActivity.value ? undefined : props.deckId
+    );
   } catch (error) {
     console.error('Failed to load review data:', error);
   } finally {
@@ -122,6 +130,10 @@ const loadYear = async (year: number) => {
 const changeYear = async (delta: number) => {
   currentYear.value += delta;
 };
+
+watch(showAllActivity, async () => {
+  await loadYear(currentYear.value);
+});
 
 watch(currentYear, async (newYear) => {
   await loadYear(newYear);
@@ -143,10 +155,21 @@ const isToday = (dateStr: string): boolean => {
 </script>
 
 <template>
-  <div class="space-y-4 p-4 panel motion-translate-y-in-[-3%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity">
-    <!-- Year selector -->
+  <div class="space-y-4 p-4 panel motion-opacity-in-[0%] motion-duration-[0.1s]/opacity" :class="{
+    'motion-translate-y-in-[-3%] motion-duration-[0.2s]': !props.deckId
+  }">
     <div class="flex items-center justify-between">
-      <h3 class="text-sm font-medium text-neutral-400">Review Activity</h3>
+      <div class="flex items-center gap-4">
+        <div v-if="props.deckId">
+          <ToggleSlider
+            v-model="showAllActivity"
+          />
+        </div>
+        <h3 class="text-sm font-medium text-neutral-400">
+          {{ props.deckId && !showAllActivity ? 'Deck Review Activity' : 'All Review Activity' }}
+        </h3>
+      </div>
+
       <div class="flex items-center gap-2">
         <button 
           @click="changeYear(-1)"

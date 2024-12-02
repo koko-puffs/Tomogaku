@@ -9,6 +9,8 @@ import StudyCard from '../study/StudyCard.vue';
 
 const props = defineProps<{
   card: Card;
+  hasPrevious: boolean;
+  hasNext: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -249,10 +251,20 @@ const handleForget = () => {
     <!-- Action Buttons -->
     <div class="flex items-center justify-between py-4 pl-3 pr-4">
       <div class="flex">
-        <button @click="handlePrevious" class="flex items-center w-10 gap-1 button-lighter" title="Previous card">
+        <button 
+          @click="handlePrevious" 
+          class="flex items-center w-10 gap-1 button-lighter" 
+          :class="{ 'text-neutral-600 pointer-events-none': !props.hasPrevious }"
+          title="Previous card"
+        >
           <ChevronLeft :size="22" />
         </button>
-        <button @click="handleNext" class="flex items-center w-10 gap-1 button-lighter" title="Next card">
+        <button 
+          @click="handleNext" 
+          class="flex items-center w-10 gap-1 button-lighter" 
+          :class="{ 'text-neutral-600 pointer-events-none': !props.hasNext }"
+          title="Next card"
+        >
           <ChevronRight :size="22" />
         </button>
       </div>

@@ -1,13 +1,16 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 interface Props {
   modelValue: boolean;
   disabled?: boolean;
   label?: string;
+  color?: 'emerald' | 'pink' | 'grey';
 }
 
 const props = withDefaults(defineProps<Props>(), {
   disabled: false,
   label: '',
+  color: 'emerald',
 });
 
 const emit = defineEmits<{
@@ -19,13 +22,23 @@ const toggle = () => {
     emit('update:modelValue', !props.modelValue);
   }
 };
+
+const colorClasses = computed(() => {
+  const colors = {
+    emerald: 'before:bg-emerald-700',
+    pink: 'before:bg-pink-700',
+    grey: 'before:bg-neutral-700',
+  };
+  return colors[props.color];
+});
 </script>
 
 <template>
   <div class="flex items-center">
     <button type="button" role="switch" :aria-checked="modelValue" :disabled="disabled" @click="toggle"
-      class="relative inline-flex items-center h-6 rounded-full w-11 bg-neutral-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 before:absolute before:inset-0 before:rounded-full before:bg-green-700 before:transition-opacity before:duration-150"
+      class="relative inline-flex items-center h-6 rounded-full w-11 bg-neutral-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 before:absolute before:inset-0 before:rounded-full before:transition-opacity before:duration-150"
       :class="[
+        colorClasses,
         modelValue ? 'before:opacity-100' : 'before:opacity-0',
         disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
       ]">

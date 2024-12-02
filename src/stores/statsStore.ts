@@ -16,22 +16,29 @@ export const useStatsStore = defineStore("stats", {
   }),
 
   actions: {
-    async fetchYearlyReviewLogs(userId: string, year: number = new Date().getFullYear()) {
+    async fetchYearlyReviewLogs(userId: string, year: number = new Date().getFullYear(), deckId?: string) {
       this.loading = true;
       this.error = null;
       
       try {
         // Set date range for the entire calendar year
-        const startDate = new Date(year, 0, 1); // January 1st of the specified year
-        const endDate = new Date(year, 11, 31, 23, 59, 59, 999); // December 31st of the specified year
+        const startDate = new Date(year, 0, 1);
+        const endDate = new Date(year, 11, 31, 23, 59, 59, 999);
 
-        const { data, error } = await supabase
+        // Start building the query
+        let query = supabase
           .from("review_logs")
           .select("*")
           .eq("user_id", userId)
           .gte("created_at", startDate.toISOString())
-          .lte("created_at", endDate.toISOString())
-          .order("created_at", { ascending: true });
+          .lte("created_at", endDate.toISOString());
+
+        // Add deck_id filter if provided
+        if (deckId) {
+          query = query.eq("deck_id", deckId);
+        }
+
+        const { data, error } = await query.order("created_at", { ascending: true });
 
         if (error) throw error;
 
@@ -40,7 +47,7 @@ export const useStatsStore = defineStore("stats", {
         
         data?.forEach((log) => {
           const date = new Date(log.created_at);
-          const dateKey = date.toISOString().split('T')[0]; // YYYY-MM-DD format
+          const dateKey = date.toISOString().split('T')[0];
           
           if (!groupedLogs.has(dateKey)) {
             groupedLogs.set(dateKey, []);
