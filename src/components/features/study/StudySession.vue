@@ -10,6 +10,7 @@ import StudyCard from './StudyCard.vue';
 import { useCardStats } from '../../../composables/useCardStats';
 import { State } from 'ts-fsrs';
 import { X } from 'lucide-vue-next';
+import { useSidebarStore } from '../../../stores/sidebarStore';
 
 const props = defineProps<{
   deckId: string;
@@ -22,6 +23,7 @@ const emit = defineEmits<{
 const fsrsStore = useFSRSStore();
 const deckStore = useDeckStore();
 const authStore = useAuthStore();
+const sidebarStore = useSidebarStore();
 
 const currentCard = ref<Card | null>(null);
 const isFlipped = ref(false);
@@ -159,22 +161,22 @@ const getKeyboardShortcuts = (e: KeyboardEvent) => {
 
 onMounted(() => {
   nextTick(() => {
-    // Apply multiple scroll prevention techniques
     document.body.style.overflow = 'hidden';
     document.body.style.position = 'fixed';
     document.body.style.width = '100%';
     document.body.style.height = '100%';
+    sidebarStore.setShowBackButton(true);
   });
   window.addEventListener('keydown', getKeyboardShortcuts);
   startSession();
 });
 
 onUnmounted(() => {
-  // Reset all scroll prevention styles
   document.body.style.overflow = 'auto';
   document.body.style.position = '';
   document.body.style.width = '';
   document.body.style.height = '';
+  sidebarStore.setShowBackButton(false);
   window.removeEventListener('keydown', getKeyboardShortcuts);
   if (timerInterval.value) {
     clearInterval(timerInterval.value);
