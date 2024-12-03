@@ -407,7 +407,7 @@ const getStateLabel = (state: number): string => {
 
       <div v-if="showDebug"
         class="p-4 space-y-4 text-sm border-t rounded-md border-neutral-700/50 bg-neutral-800/50 motion-translate-y-in-[-1.5%] motion-opacity-in-[0%] motion-duration-[0.1s] motion-duration-[0.1s]/opacity">
-        <div class="grid grid-cols-3 gap-6">
+        <div class="grid grid-cols-3 gap-4">
           <!-- Card Info -->
           <div>
             <h4 class="mb-1 font-medium underline text-neutral-200">Card Info</h4>
