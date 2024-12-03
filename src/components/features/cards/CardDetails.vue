@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed, nextTick, onMounted, onUnmounted } from 'vue';
+import { ref, watch, computed, nextTick, onMounted, onUnmounted, Teleport } from 'vue';
 import { Copy, ChevronLeft, ChevronRight, RotateCcw, Save, Trash2, X, MoreHorizontal, Eye, History, ChevronDown, Sparkle } from 'lucide-vue-next';
 import { QuillEditor } from '@vueup/vue-quill';
 import '../../../styles/quill.css';
@@ -500,6 +500,8 @@ const canUseAI = computed(() => {
     </div>
   </Teleport>
 
-  <GenerateContentModal v-if="isGenerateModalOpen" @close="isGenerateModalOpen = false"
-    @generated="handleGeneratedContent" />
+  <Teleport to="body">
+    <GenerateContentModal v-if="isGenerateModalOpen" @close="isGenerateModalOpen = false"
+      @generated="handleGeneratedContent" />
+  </Teleport>
 </template>

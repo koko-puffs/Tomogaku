@@ -51,12 +51,9 @@
     if (!prompt.value.trim()) return;
   
     const prePrompt = `You are helping to create a flashcard. Format your response using HTML with <p> tags. Do not include any other text than the HTML tags and what you are asked to do.
-For the front of the card: Make it clear and concise, and ensure not to reveal or even hint at the answer on the front of the card. If the prompt is a question, make sure it is not too long. If it is language related for vocab, try to include just the word or phrase as a header.
-For the back of the card: Provide a comprehensive but focused answer. Must include an image too.
-Keep the content educational and accurate. Format the answer using HTML with <p> tags. Use bold, italics, underline and text centering where appropriate, meaning <b>, <i>, <u>, <center>, as well as <h1> and <h2>. And do not include \`\`\`html or \`\`\` at the beginning or end of your response.
-
-An example for the structure when asked for the front of the card: <h1>Word</h1>
-An example for the structure when asked for the back of the card: <p>Definition</p><p>Example sentence (in the same language as the word, with a translation if needed)</p>`;
+For the front of the card: Make it clear and concise, and ensure not to reveal or even hint at the answer on the front of the card. If the prompt is a question, make sure it is not too long. If it is language related for vocab, try to include just the word or phrase as a header. Example: <h1>Word</h1>
+For the back of the card: Provide a comprehensive but focused answer. Example: <p>Definition</p><p>Example sentence (in the same language as the word, with a translation if needed)</p>
+Keep the content educational and accurate. Format the answer using HTML with <p> tags. Use bold, italics and underline where appropriate, meaning <b>, <i>, <u>, as well as <h1> and <h2>. And do not include \`\`\`html or \`\`\` at the beginning or end of your response.`;
   
     try {
       isLoading.value = true;
