@@ -10,7 +10,6 @@ import StudyCard from '../study/StudyCard.vue';
 import GenerateContentModal from './GenerateContentModal.vue';
 import { geminiService } from '../../../utils/geminiService';
 
-
 const props = defineProps<{
   card: Card;
   hasPrevious: boolean;
@@ -286,7 +285,6 @@ Create comprehensive but focused content for the back of the card that explains 
     isGeneratingBack.value = true;
     const backContent = await geminiService.generateContent(prePrompt);
     editBackContent.value = backContent;
-    console.log('Generated back content:', backContent);
   } catch (error) {
     console.error('Failed to generate back content:', error);
   } finally {

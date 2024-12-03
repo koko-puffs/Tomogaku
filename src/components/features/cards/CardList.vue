@@ -242,7 +242,9 @@ defineExpose({
                 ]" @click="emit('select-card', card.id)">
 
                 <div class="flex items-center flex-1 min-w-0 gap-2">
-                    <div class="text-sm truncate">
+                    <div class="text-sm truncate" :class="{
+                        'text-neutral-500': !stripHtml(card.front_content)
+                    }">
                         {{ stripHtml(card.front_content) || 'Empty card' }}
                     </div>
                 </div>
