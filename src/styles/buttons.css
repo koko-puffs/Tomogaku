@@ -70,6 +70,15 @@
     @apply flex items-center justify-center h-10 overflow-hidden text-sm border rounded-lg cursor-pointer select-none bg-amber-900 border-amber-700 hover:bg-amber-800 hover:border-amber-600 text-nowrap;
   }
 
+  .button-yellow-visible {
+    @apply flex items-center justify-center h-10 overflow-hidden text-sm bg-yellow-900 border border-yellow-700 rounded-lg cursor-pointer select-none hover:bg-yellow-800 hover:border-yellow-600 text-nowrap;
+  }
+
+
+  .button-yellow-lighter {
+    @apply flex items-center justify-center h-10 overflow-hidden text-sm text-yellow-300 border border-transparent rounded-lg cursor-pointer select-none hover:bg-yellow-800/70 hover:border-yellow-700/70 hover:text-white text-nowrap;
+  }
+
   .sparkle {
     position: relative;
     overflow: hidden;

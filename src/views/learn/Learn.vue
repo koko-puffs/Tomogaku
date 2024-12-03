@@ -11,6 +11,7 @@ import DeckDetails from '../../components/features/decks/DeckDetails.vue';
 import CommentSection from '../../components/features/decks/CommentSection.vue';
 import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
 import StudySession from '../../components/features/study/StudySession.vue';
+import AIHelper from '../../components/features/AIHelper.vue';
 
 defineProps<{
   deckId?: string;
@@ -202,6 +203,8 @@ const scrollToTop = () => {
                 @cards="handleViewCards" 
               />
 
+              <AIHelper />
+
               <template v-if="currentDeck.visibility !== 'private'">
                 <CommentSection :deck-id="currentDeck.id" />
               </template>
@@ -217,5 +220,6 @@ const scrollToTop = () => {
 
   <CreateDeckModal ref="createDeckModalRef" @created="selectDeck" />
   <DeleteModal ref="deleteModalRef" @confirm="confirmDeleteDeck" title="Delete Deck?"
-    mainMessage="Deleting this deck will also delete all the cards in it." subMessage="This action cannot be undone." />
+    :mainMessage="'Are you sure you want to delete this deck?' + '\n' + 'Deleting this deck will also delete all the cards in it.'"
+    subMessage="This action cannot be undone." />
 </template>

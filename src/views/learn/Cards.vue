@@ -266,5 +266,6 @@ const hasNextCard = computed(() => {
     mainMessage="Are you sure you want to delete this card?" subMessage="This action cannot be undone." />
 
   <DeleteModal ref="forgetModalRef" @confirm="confirmForgetCard" title="Forget Card?" buttonText="Forget"
-    mainMessage="Are you sure you want to forget this card?" subMessage="This action cannot be undone." />
+    :mainMessage="'Are you sure you want to forget this card?' + '\n' + 'Forgetting this card means any FSRS related data will be lost, and the card will be reset to the default new state.'" 
+    subMessage="This action cannot be undone." />
 </template>

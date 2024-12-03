@@ -1,19 +1,25 @@
 @layer components {
   .panel-clickable {
-    @apply border bg-neutral-900 border-neutral-800 select-none rounded-lg text-sm
-        hover:bg-neutral-800 hover:border-neutral-700
-         cursor-pointer;
+    @apply text-sm border rounded-lg cursor-pointer select-none bg-neutral-900 border-neutral-800 hover:bg-neutral-800 hover:border-neutral-700;
   }
+
+  .panel-clickable-transparent {
+    @apply text-sm rounded-lg cursor-pointer select-none hover:bg-neutral-800;
+  }
+
+  .panel-active-transparent {
+    @apply text-sm rounded-lg cursor-pointer select-none bg-neutral-800 hover:bg-neutral-800;
+  }
+
   .panel {
-    @apply border bg-neutral-900 border-neutral-800 select-none rounded-lg text-sm;
+    @apply text-sm border rounded-lg select-none bg-neutral-900 border-neutral-800;
   }
+
   .panel-active {
-    @apply border bg-neutral-800 border-neutral-700 select-none rounded-lg text-sm
-    hover:bg-neutral-800 hover:border-neutral-700
-     cursor-pointer;
+    @apply text-sm border rounded-lg cursor-pointer select-none bg-neutral-800 border-neutral-700 hover:bg-neutral-800 hover:border-neutral-700;
   }
+
   .panel-active-border {
-    @apply border bg-neutral-900 border-neutral-200 select-none rounded-lg text-sm
-     cursor-pointer;
+    @apply text-sm border rounded-lg cursor-pointer select-none bg-neutral-900 border-neutral-200;
   }
 }

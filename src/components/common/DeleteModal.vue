@@ -7,7 +7,7 @@
         <template #content>
             <div class="flex items-center gap-4">
                 <AlertTriangle class="flex-shrink-0 w-8 h-8 text-yellow-500" />
-                <p class="text-sm text-neutral-400">
+                <p class="text-sm whitespace-pre-line text-neutral-400">
                     <span class="block">{{ mainMessage }}</span>
                     <span class="block">{{ subMessage }}</span>
                 </p>

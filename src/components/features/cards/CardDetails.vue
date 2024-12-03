@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref, watch, computed, nextTick, onMounted, onUnmounted } from 'vue';
-import { Copy, ChevronLeft, ChevronRight, RotateCcw, Save, Trash2, X, MoreHorizontal, Eye, History, ChevronDown } from 'lucide-vue-next';
+import { Copy, ChevronLeft, ChevronRight, RotateCcw, Save, Trash2, X, MoreHorizontal, Eye, History, ChevronDown, Sparkle } from 'lucide-vue-next';
 import { QuillEditor } from '@vueup/vue-quill';
 import '../../../styles/quill.css';
 import { Card } from '../../../types/deck.types.ts';
 import { useAuthStore } from '../../../stores/authStore';
 import StudyCard from '../study/StudyCard.vue';
+import GenerateContentModal from './GenerateContentModal.vue';
 
 const props = defineProps<{
   card: Card;
@@ -35,6 +36,7 @@ const isDropdownOpen = ref(false);
 const dropdownRef = ref<HTMLElement | null>(null);
 const showPreviewModal = ref(false);
 const previewCard = ref<Card | null>(null);
+const isGenerateModalOpen = ref(false);
 
 const authStore = useAuthStore();
 const userProfile = computed(() => authStore.userProfile);
@@ -253,6 +255,21 @@ const getStateLabel = (state: number): string => {
   };
   return states[state as keyof typeof states] || 'Unknown';
 };
+
+const openGenerateModal = () => {
+  isGenerateModalOpen.value = true;
+};
+
+const handleGeneratedContent = (frontContent: string, backContent: string) => {
+  editFrontContent.value = frontContent;
+  editBackContent.value = backContent;
+};
+
+// Computed property to check if the user has access
+const canUseAI = computed(() => {
+  const accountType = authStore.userProfile?.account_type;
+  return accountType === 'premium' || accountType === 'admin';
+});
 </script>
 
 <template>
@@ -303,6 +320,11 @@ const getStateLabel = (state: number): string => {
               <Trash2 :size="18" />
               <span>Delete card</span>
             </button>
+            <button v-if="canUseAI" @click="openGenerateModal"
+              class="flex items-center w-full gap-2 px-4 py-2 text-sm text-yellow-300 cursor-pointer hover:bg-neutral-800">
+              <Sparkle :size="18" />
+              <span>Generate content</span>
+            </button>
           </div>
         </div>
 
@@ -322,6 +344,10 @@ const getStateLabel = (state: number): string => {
             isShiftPressed ? 'button-cancel-visible' : 'button-lighter'
           ]" title="Delete card (Hold Shift to delete without confirmation)">
             <Trash2 :size="18" />
+          </button>
+          <button v-if="canUseAI" @click="openGenerateModal" class="flex items-center w-10 gap-1 button-yellow-lighter"
+            title="Generate content using AI">
+            <Sparkle :size="18" />
           </button>
         </div>
 
@@ -400,7 +426,7 @@ const getStateLabel = (state: number): string => {
     <!-- Debug Panel -->
     <div v-if="userProfile?.account_type === 'admin'">
       <button @click="showDebug = !showDebug"
-        class="flex items-center w-full gap-2 px-3 py-2 text-sm text-left rounded-md text-neutral-400 hover:text-neutral-200">
+        class="flex items-center w-full gap-2 px-3 py-3 text-sm text-left rounded-md text-neutral-400 hover:text-neutral-200">
         <component :is="showDebug ? ChevronDown : ChevronRight" :size="16" />
         Debug Info
       </button>
@@ -473,4 +499,7 @@ const getStateLabel = (state: number): string => {
       </div>
     </div>
   </Teleport>
+
+  <GenerateContentModal v-if="isGenerateModalOpen" @close="isGenerateModalOpen = false"
+    @generated="handleGeneratedContent" />
 </template>
