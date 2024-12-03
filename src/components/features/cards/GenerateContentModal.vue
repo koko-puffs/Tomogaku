@@ -19,7 +19,7 @@
         <button @click="closeModal" class="w-24 button-lighter" :disabled="isLoading">
           Cancel
         </button>
-        <button @click="generateContent" class="w-24 button-yellow-visible" :disabled="isLoading">
+        <button @click="generateContent" class="w-24 button-accept-visible" :disabled="isLoading">
           <LoadingSpinner v-if="isLoading" class="w-5 h-5" />
           <span v-else>Generate</span>
         </button>

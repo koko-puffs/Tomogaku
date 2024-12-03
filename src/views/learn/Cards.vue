@@ -99,7 +99,7 @@ const handleCreateCard = async () => {
   try {
     const newCard = await cardStore.createCard({
       deck_id: deckId,
-      front_content: '<p>New Card</p>',
+      front_content: '<p></p>',
       back_content: '<p></p>',
     });
 

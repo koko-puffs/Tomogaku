@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { ref, watch, computed, nextTick, onMounted, onUnmounted, Teleport } from 'vue';
-import { Copy, ChevronLeft, ChevronRight, RotateCcw, Save, Trash2, X, MoreHorizontal, Eye, History, ChevronDown, Sparkle } from 'lucide-vue-next';
+import { Copy, ChevronLeft, ChevronRight, RotateCcw, Save, Trash2, X, MoreHorizontal, Eye, History, ChevronDown, Sparkle  } from 'lucide-vue-next';
 import { QuillEditor } from '@vueup/vue-quill';
+import LoadingSpinner from '../../common/LoadingSpinner.vue';
 import '../../../styles/quill.css';
 import { Card } from '../../../types/deck.types.ts';
 import { useAuthStore } from '../../../stores/authStore';
 import StudyCard from '../study/StudyCard.vue';
 import GenerateContentModal from './GenerateContentModal.vue';
+import { geminiService } from '../../../utils/geminiService';
 
 const props = defineProps<{
   card: Card;
@@ -37,6 +39,7 @@ const dropdownRef = ref<HTMLElement | null>(null);
 const showPreviewModal = ref(false);
 const previewCard = ref<Card | null>(null);
 const isGenerateModalOpen = ref(false);
+const isGeneratingBack = ref(false);
 
 const authStore = useAuthStore();
 const userProfile = computed(() => authStore.userProfile);
@@ -270,6 +273,25 @@ const canUseAI = computed(() => {
   const accountType = authStore.userProfile?.account_type;
   return accountType === 'premium' || accountType === 'admin';
 });
+
+const generateBackFromFront = async () => {
+  if (!editFrontContent.value || isGeneratingBack.value) return;
+  
+  const prePrompt = `You are helping to complete the back of a flashcard. Format your response using HTML with <p> tags. The front of the card contains this content: ${editFrontContent.value}
+
+Create comprehensive but focused content for the back of the card that explains or answers what's on the front. Format using HTML with appropriate tags (<p>, <b>, <i>, <u>, <h1>, <h2>). Do not include \`\`\`html or \`\`\` in your response. Do not use <ul>, <li>, etc.`;
+
+  try {
+    isGeneratingBack.value = true;
+    const backContent = await geminiService.generateContent(prePrompt);
+    editBackContent.value = backContent;
+    console.log('Generated back content:', backContent);
+  } catch (error) {
+    console.error('Failed to generate back content:', error);
+  } finally {
+    isGeneratingBack.value = false;
+  }
+};
 </script>
 
 <template>
@@ -299,6 +321,11 @@ const canUseAI = computed(() => {
           <!-- Dropdown menu -->
           <div v-if="isDropdownOpen"
             class="absolute left-0 w-48 py-2 mt-1 border rounded-lg shadow-xl bg-neutral-900 border-neutral-800 motion-translate-y-in-[-4%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity z-[5]">
+            <button v-if="canUseAI" @click="openGenerateModal"
+              class="flex items-center w-full gap-2 px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
+              <Sparkle :size="18" />
+              <span>Generate content</span>
+            </button>
             <button @click="handlePreview"
               class="flex items-center w-full gap-2 px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
               <Eye :size="18" />
@@ -320,16 +347,15 @@ const canUseAI = computed(() => {
               <Trash2 :size="18" />
               <span>Delete card</span>
             </button>
-            <button v-if="canUseAI" @click="openGenerateModal"
-              class="flex items-center w-full gap-2 px-4 py-2 text-sm text-yellow-300 cursor-pointer hover:bg-neutral-800">
-              <Sparkle :size="18" />
-              <span>Generate content</span>
-            </button>
           </div>
         </div>
 
         <!-- All buttons for large screens -->
         <div class="hidden lg:flex">
+          <button v-if="canUseAI" @click="openGenerateModal" class="flex items-center w-10 gap-1 button-lighter"
+            title="Generate content using AI">
+            <Sparkle :size="18" />
+          </button>
           <button @click="handlePreview" class="flex items-center w-10 gap-1 button-lighter" title="Preview card">
             <Eye :size="18" />
           </button>
@@ -344,10 +370,6 @@ const canUseAI = computed(() => {
             isShiftPressed ? 'button-cancel-visible' : 'button-lighter'
           ]" title="Delete card (Hold Shift to delete without confirmation)">
             <Trash2 :size="18" />
-          </button>
-          <button v-if="canUseAI" @click="openGenerateModal" class="flex items-center w-10 gap-1 button-yellow-lighter"
-            title="Generate content using AI">
-            <Sparkle :size="18" />
           </button>
         </div>
 
@@ -380,8 +402,19 @@ const canUseAI = computed(() => {
       <!-- Front Content -->
       <div class="space-y-2">
         <label class="block text-sm text-neutral-400">Front</label>
-        <QuillEditor :key="`front-${props.card.id}`" v-model:content="editFrontContent" contentType="html"
-          toolbar="essential" theme="snow" />
+        <div class="relative">
+          <QuillEditor :key="`front-${props.card.id}`" v-model:content="editFrontContent" contentType="html"
+            toolbar="essential" theme="snow" />
+          <button 
+            v-if="editFrontContent.trim() && editFrontContent.trim() !== '<p></p>' && editFrontContent.trim() !== '<p><br></p>' && canUseAI" 
+            @click="generateBackFromFront"
+            class="absolute flex items-center px-2 py-2 text-sm transition-opacity rounded-md text-neutral-400 bottom-3 right-3 bg-neutral-700/40 hover:bg-neutral-600/40"
+            :class="{ 'pointer-events-none': isGeneratingBack }"
+          >
+            <LoadingSpinner v-if="isGeneratingBack" :size="14" />
+            <Sparkle v-else :size="14" />
+          </button>
+        </div>
       </div>
 
       <!-- Back Content -->
