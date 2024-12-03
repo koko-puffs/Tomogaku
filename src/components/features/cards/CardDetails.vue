@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, computed, nextTick, onMounted, onUnmounted } from 'vue';
-import { Copy, ChevronLeft, ChevronRight, RotateCcw, Save, Trash2, X, MoreHorizontal, Eye, History } from 'lucide-vue-next';
+import { Copy, ChevronLeft, ChevronRight, RotateCcw, Save, Trash2, X, MoreHorizontal, Eye, History, ChevronDown } from 'lucide-vue-next';
 import { QuillEditor } from '@vueup/vue-quill';
 import '../../../styles/quill.css';
 import { Card } from '../../../types/deck.types.ts';
@@ -243,6 +243,16 @@ const handleForget = () => {
   emit('forget');
   closeDropdown();
 };
+
+const getStateLabel = (state: number): string => {
+  const states = {
+    0: 'New',
+    1: 'Learning',
+    2: 'Review',
+    3: 'Relearning'
+  };
+  return states[state as keyof typeof states] || 'Unknown';
+};
 </script>
 
 <template>
@@ -251,20 +261,12 @@ const handleForget = () => {
     <!-- Action Buttons -->
     <div class="flex items-center justify-between py-3 pl-2 pr-3">
       <div class="flex">
-        <button 
-          @click="handlePrevious" 
-          class="flex items-center w-10 gap-1 button-lighter" 
-          :class="{ 'text-neutral-600 pointer-events-none': !props.hasPrevious }"
-          title="Previous card"
-        >
+        <button @click="handlePrevious" class="flex items-center w-10 gap-1 button-lighter"
+          :class="{ 'text-neutral-600 pointer-events-none': !props.hasPrevious }" title="Previous card">
           <ChevronLeft :size="22" />
         </button>
-        <button 
-          @click="handleNext" 
-          class="flex items-center w-10 gap-1 button-lighter" 
-          :class="{ 'text-neutral-600 pointer-events-none': !props.hasNext }"
-          title="Next card"
-        >
+        <button @click="handleNext" class="flex items-center w-10 gap-1 button-lighter"
+          :class="{ 'text-neutral-600 pointer-events-none': !props.hasNext }" title="Next card">
           <ChevronRight :size="22" />
         </button>
       </div>
@@ -272,13 +274,14 @@ const handleForget = () => {
       <div class="flex gap-2">
         <!-- Dropdown for small screens -->
         <div class="relative lg:hidden" ref="dropdownRef">
-          <button @click.stop="toggleDropdown" class="flex items-center w-10 gap-1 button-lighter-visible" title="More options">
+          <button @click.stop="toggleDropdown" class="flex items-center w-10 gap-1 button-lighter-visible"
+            title="More options">
             <MoreHorizontal :size="18" />
           </button>
 
           <!-- Dropdown menu -->
           <div v-if="isDropdownOpen"
-            class="absolute left-0 w-48 py-2 mt-1 border rounded-lg shadow-xl bg-neutral-900 border-neutral-800 motion-translate-x-in-[0%] motion-translate-y-in-[-4%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity z-[5]">
+            class="absolute left-0 w-48 py-2 mt-1 border rounded-lg shadow-xl bg-neutral-900 border-neutral-800 motion-translate-y-in-[-4%] motion-opacity-in-[0%] motion-duration-[0.2s] motion-duration-[0.1s]/opacity z-[5]">
             <button @click="handlePreview"
               class="flex items-center w-full gap-2 px-4 py-2 text-sm cursor-pointer hover:bg-neutral-800">
               <Eye :size="18" />
@@ -395,26 +398,42 @@ const handleForget = () => {
     </div>
 
     <!-- Debug Panel -->
-    <div v-if="userProfile?.account_type === 'admin'" class="mt-2">
+    <div v-if="userProfile?.account_type === 'admin'">
       <button @click="showDebug = !showDebug"
-        class="w-full px-4 py-2 text-sm text-left rounded-md text-neutral-400 hover:bg-neutral-800">
-        Debug Info {{ showDebug ? '▼' : '▶' }}
+        class="flex items-center w-full gap-2 px-3 py-2 text-sm text-left rounded-md text-neutral-400 hover:text-neutral-200">
+        <component :is="showDebug ? ChevronDown : ChevronRight" :size="16" />
+        Debug Info
       </button>
 
-      <div v-if="showDebug" class="p-4 mt-2 space-y-4 text-sm border rounded-md border-neutral-700">
-        <div class="grid grid-cols-2 gap-4">
+      <div v-if="showDebug"
+        class="p-4 space-y-4 text-sm border-t rounded-md border-neutral-700/50 bg-neutral-800/50 motion-translate-y-in-[-1.5%] motion-opacity-in-[0%] motion-duration-[0.1s] motion-duration-[0.1s]/opacity">
+        <div class="grid grid-cols-3 gap-6">
+          <!-- Card Info -->
+          <div>
+            <h4 class="mb-1 font-medium underline text-neutral-200">Card Info</h4>
+            <div class="space-y-1 text-neutral-400">
+              <p>ID: <span class="text-neutral-300">{{ card.id }}</span></p>
+              <p>Created: <span class="text-neutral-300">{{ formatDate(card.created_at) }}</span></p>
+              <p>Updated: <span class="text-neutral-300">{{ formatDate(card.updated_at) }}</span></p>
+              <p>Position: <span class="text-neutral-300">{{ card.position || 'Not set' }}</span></p>
+            </div>
+          </div>
+
           <!-- Status Info -->
           <div>
-            <h4 class="mb-2 font-medium text-neutral-300">Status</h4>
+            <h4 class="mb-1 font-medium underline text-neutral-200">Status</h4>
             <div class="space-y-1 text-neutral-400">
-              <p>State: <span class="text-neutral-300">{{ card.state }}</span></p>
-              <p>Due Date: <span class="text-neutral-300">{{ formatDate(card.due) }}</span></p>
+              <p>State: <span class="text-neutral-300">{{ card.state }} ({{ getStateLabel(card.state) }})</span></p>
+              <p>Due: <span class="text-neutral-300">{{ formatDate(card.due) }}</span></p>
+              <p>Last Review: <span class="text-neutral-300">{{ formatDate(card.last_review) }}</span></p>
+              <p>Deleted: <span class="text-neutral-300">{{ card.deleted_at ? formatDate(card.deleted_at) : 'No'
+                  }}</span></p>
             </div>
           </div>
 
           <!-- Review Info -->
           <div>
-            <h4 class="mb-2 font-medium text-neutral-300">Review History</h4>
+            <h4 class="mb-1 font-medium underline text-neutral-200">Review History</h4>
             <div class="space-y-1 text-neutral-400">
               <p>Total Reviews: <span class="text-neutral-300">{{ card.reps }}</span></p>
               <p>Lapses: <span class="text-neutral-300">{{ card.lapses }}</span></p>
@@ -423,12 +442,23 @@ const handleForget = () => {
 
           <!-- FSRS Parameters -->
           <div>
-            <h4 class="mb-2 font-medium text-neutral-300">FSRS Parameters</h4>
+            <h4 class="mb-1 font-medium underline text-neutral-200">FSRS Parameters</h4>
             <div class="space-y-1 text-neutral-400">
-              <p>Stability: <span class="text-neutral-300">{{ card.stability?.toFixed(2) }}</span></p>
-              <p>Difficulty: <span class="text-neutral-300">{{ card.difficulty?.toFixed(2) }}</span></p>
+              <p>Stability: <span class="text-neutral-300">{{ card.stability?.toFixed(4) }}</span></p>
+              <p>Difficulty: <span class="text-neutral-300">{{ card.difficulty?.toFixed(4) }}</span></p>
               <p>Elapsed Days: <span class="text-neutral-300">{{ card.elapsed_days?.toFixed(2) }}</span></p>
               <p>Scheduled Days: <span class="text-neutral-300">{{ card.scheduled_days?.toFixed(2) }}</span></p>
+            </div>
+          </div>
+
+          <!-- Database Indices -->
+          <div class="col-span-2">
+            <h4 class="mb-1 font-medium underline text-neutral-200">Database Indices</h4>
+            <div class="space-y-1 text-neutral-400">
+              <p>Tags Index: <span class="text-neutral-300">{{ card.tags?.join(', ') || 'None' }}</span></p>
+              <p>State Index: <span class="text-neutral-300">{{ card.state }}</span></p>
+              <p>Due Date Index: <span class="text-neutral-300">{{ formatDate(card.due) }}</span></p>
+              <p>Position Index: <span class="text-neutral-300">{{ card.position }}</span></p>
             </div>
           </div>
         </div>
