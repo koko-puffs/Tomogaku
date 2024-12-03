@@ -11,7 +11,6 @@ import DeckDetails from '../../components/features/decks/DeckDetails.vue';
 import CommentSection from '../../components/features/decks/CommentSection.vue';
 import LoadingSpinner from '../../components/common/LoadingSpinner.vue';
 import StudySession from '../../components/features/study/StudySession.vue';
-import AIHelper from '../../components/features/AIHelper.vue';
 
 defineProps<{
   deckId?: string;
@@ -202,9 +201,7 @@ const scrollToTop = () => {
                 @study="handleStudyDeck" 
                 @cards="handleViewCards" 
               />
-
-              <AIHelper />
-
+              
               <template v-if="currentDeck.visibility !== 'private'">
                 <CommentSection :deck-id="currentDeck.id" />
               </template>
