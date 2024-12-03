@@ -407,7 +407,7 @@ const getStateLabel = (state: number): string => {
 
       <div v-if="showDebug"
         class="p-4 space-y-4 text-sm border-t rounded-md border-neutral-700/50 bg-neutral-800/50 motion-translate-y-in-[-1.5%] motion-opacity-in-[0%] motion-duration-[0.1s] motion-duration-[0.1s]/opacity">
-        <div class="grid grid-cols-3 gap-4">
+        <div class="grid grid-cols-2 gap-4">
           <!-- Card Info -->
           <div>
             <h4 class="mb-1 font-medium underline text-neutral-200">Card Info</h4>
@@ -416,27 +416,6 @@ const getStateLabel = (state: number): string => {
               <p>Created: <span class="text-neutral-300">{{ formatDate(card.created_at) }}</span></p>
               <p>Updated: <span class="text-neutral-300">{{ formatDate(card.updated_at) }}</span></p>
               <p>Position: <span class="text-neutral-300">{{ card.position || 'Not set' }}</span></p>
-            </div>
-          </div>
-
-          <!-- Status Info -->
-          <div>
-            <h4 class="mb-1 font-medium underline text-neutral-200">Status</h4>
-            <div class="space-y-1 text-neutral-400">
-              <p>State: <span class="text-neutral-300">{{ card.state }} ({{ getStateLabel(card.state) }})</span></p>
-              <p>Due: <span class="text-neutral-300">{{ formatDate(card.due) }}</span></p>
-              <p>Last Review: <span class="text-neutral-300">{{ formatDate(card.last_review) }}</span></p>
-              <p>Deleted: <span class="text-neutral-300">{{ card.deleted_at ? formatDate(card.deleted_at) : 'No'
-                  }}</span></p>
-            </div>
-          </div>
-
-          <!-- Review Info -->
-          <div>
-            <h4 class="mb-1 font-medium underline text-neutral-200">Review History</h4>
-            <div class="space-y-1 text-neutral-400">
-              <p>Total Reviews: <span class="text-neutral-300">{{ card.reps }}</span></p>
-              <p>Lapses: <span class="text-neutral-300">{{ card.lapses }}</span></p>
             </div>
           </div>
 
@@ -451,14 +430,24 @@ const getStateLabel = (state: number): string => {
             </div>
           </div>
 
-          <!-- Database Indices -->
-          <div class="col-span-2">
-            <h4 class="mb-1 font-medium underline text-neutral-200">Database Indices</h4>
+          <!-- Status Info -->
+          <div>
+            <h4 class="mb-1 font-medium underline text-neutral-200">Status</h4>
             <div class="space-y-1 text-neutral-400">
-              <p>Tags Index: <span class="text-neutral-300">{{ card.tags?.join(', ') || 'None' }}</span></p>
-              <p>State Index: <span class="text-neutral-300">{{ card.state }}</span></p>
-              <p>Due Date Index: <span class="text-neutral-300">{{ formatDate(card.due) }}</span></p>
-              <p>Position Index: <span class="text-neutral-300">{{ card.position }}</span></p>
+              <p>State: <span class="text-neutral-300">{{ card.state }} ({{ getStateLabel(card.state) }})</span></p>
+              <p>Due: <span class="text-neutral-300">{{ formatDate(card.due) }}</span></p>
+              <p>Deleted: <span class="text-neutral-300">{{ card.deleted_at ? formatDate(card.deleted_at) : 'No'
+                  }}</span></p>
+            </div>
+          </div>
+
+          <!-- Review Info -->
+          <div>
+            <h4 class="mb-1 font-medium underline text-neutral-200">Review History</h4>
+            <div class="space-y-1 text-neutral-400">
+              <p>Last Review: <span class="text-neutral-300">{{ formatDate(card.last_review) }}</span></p>
+              <p>Total Reviews: <span class="text-neutral-300">{{ card.reps }}</span></p>
+              <p>Lapses: <span class="text-neutral-300">{{ card.lapses }}</span></p>
             </div>
           </div>
         </div>
