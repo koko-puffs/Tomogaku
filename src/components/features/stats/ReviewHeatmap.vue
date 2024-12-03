@@ -16,19 +16,22 @@ const isLoading = ref(false);
 
 const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
+// Add new ref for daily counts
+const dailyCounts = ref(new Map<string, number>());
+
 const maxReviews = computed(() => {
   let max = 0;
-  statsStore.yearlyReviewLogs.forEach(logs => {
-    max = Math.max(max, logs.length);
+  dailyCounts.value.forEach(count => {
+    max = Math.max(max, count);
   });
   return max;
 });
 
 const minReviews = computed(() => {
   let min = Infinity;
-  statsStore.yearlyReviewLogs.forEach(logs => {
-    if (logs.length > 0) {  // Exclude zero counts
-      min = Math.min(min, logs.length);
+  dailyCounts.value.forEach(count => {
+    if (count > 0) {  // Exclude zero counts
+      min = Math.min(min, count);
     }
   });
   return min === Infinity ? 0 : min;
@@ -86,7 +89,7 @@ const generateCalendarData = computed(() => {
     const day = String(d.getDate()).padStart(2, '0');
     const dateStr = `${year}-${month}-${day}`;
     
-    const count = statsStore.getReviewCountForDate(dateStr);
+    const count = dailyCounts.value.get(dateStr) || 0;
     
     if (currentWeek.length === 7) {
       calendar.push(currentWeek);
@@ -110,7 +113,7 @@ const showAllActivity = ref(false);
 const loadYear = async (year: number) => {
   isLoading.value = true;
   try {
-    await statsStore.fetchYearlyReviewLogs(
+    dailyCounts.value = await statsStore.fetchDailyReviewCounts(
       props.userId, 
       year, 
       showAllActivity.value ? undefined : props.deckId
