@@ -10,6 +10,7 @@ import StudyCard from '../study/StudyCard.vue';
 import GenerateContentModal from './GenerateContentModal.vue';
 import { geminiService } from '../../../utils/geminiService';
 
+
 const props = defineProps<{
   card: Card;
   hasPrevious: boolean;
@@ -279,7 +280,7 @@ const generateBackFromFront = async () => {
   
   const prePrompt = `You are helping to complete the back of a flashcard. Format your response using HTML with <p> tags. The front of the card contains this content: ${editFrontContent.value}
 
-Create comprehensive but focused content for the back of the card that explains or answers what's on the front. Format using HTML with appropriate tags (<p>, <b>, <i>, <u>, <h1>, <h2>). Do not include \`\`\`html or \`\`\` in your response. Do not use <ul>, <li>, etc.`;
+Create comprehensive but focused content for the back of the card that explains or answers what's on the front. Format using HTML with appropriate tags (<p>, <b>, <i>, <u>, <h1>, <h2>). Do not include \`\`\`html or \`\`\` in your response. Do not use <ul>, <li>, etc. Do not do new lines, ever, <p> already acts as a new line in this instance. Do not include empty lines.`;
 
   try {
     isGeneratingBack.value = true;
