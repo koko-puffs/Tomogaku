@@ -34,26 +34,36 @@ const minReviews = computed(() => {
       min = Math.min(min, count);
     }
   });
-  return min === Infinity ? 0 : min;
+  return min === Infinity ? 0 : min; 
 });
 
-const getIntensityClass = (count: number, date: string) => {
-  if (count === 0) return 'bg-neutral-800/75';
-  
+const getIntensityClass = (count: number, dateStr: string) => {
+  // Check if date is in the future
+  if (dateStr) {
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    const cellDate = new Date(dateStr);
+    if (cellDate > today) {
+      return 'bg-transparent border border-neutral-800/65';
+    }
+  }
+
+  if (count === 0) return 'bg-neutral-800/60 border border-neutral-800/0';
+
   // Calculate percentage based on the range between min and max
   const range = maxReviews.value - minReviews.value;
-  const percentage = range === 0 
+  const percentage = range === 0
     ? 100  // If min equals max, show full intensity
     : ((count - minReviews.value) / range) * 100;
-  
-  if (percentage <= 5) return 'bg-emerald-900';
-  if (percentage <= 20) return 'bg-emerald-800';
-  if (percentage <= 35) return 'bg-emerald-700';
-  if (percentage <= 50) return 'bg-emerald-600';
-  if (percentage <= 65) return 'bg-emerald-500';
-  if (percentage <= 80) return 'bg-emerald-400';
-  if (percentage <= 95) return 'bg-emerald-300';
-  return 'bg-emerald-200';
+
+  if (percentage <= 5) return 'bg-emerald-900 border border-emerald-800/55';
+  if (percentage <= 20) return 'bg-emerald-800 border border-emerald-700/55';
+  if (percentage <= 35) return 'bg-emerald-700 border border-emerald-600/55';
+  if (percentage <= 50) return 'bg-emerald-600 border border-emerald-500/55';
+  if (percentage <= 65) return 'bg-emerald-500 border border-emerald-400/55';
+  if (percentage <= 80) return 'bg-emerald-400 border border-emerald-300/55';
+  if (percentage <= 95) return 'bg-emerald-300 border border-emerald-200/50';
+  return 'bg-emerald-200 border border-emerald-100/40';
 };
 
 const legendValues = computed(() => {
@@ -72,15 +82,15 @@ const generateCalendarData = computed(() => {
   const calendar: { date: string; count: number; }[][] = [];
   const startDate = new Date(year, 0, 1);
   const endDate = new Date(year, 11, 31);
-  
+
   let currentWeek: { date: string; count: number; }[] = [];
   const firstDayOfWeek = startDate.getDay();
-  
+
   // Fill in the first week with empty days if needed
   for (let i = 0; i < firstDayOfWeek; i++) {
     currentWeek.push({ date: '', count: 0 });
   }
-  
+
   // Generate calendar data
   for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
     // Format date manually to avoid timezone issues
@@ -88,23 +98,23 @@ const generateCalendarData = computed(() => {
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
     const dateStr = `${year}-${month}-${day}`;
-    
+
     const count = dailyCounts.value.get(dateStr) || 0;
-    
+
     if (currentWeek.length === 7) {
       calendar.push(currentWeek);
       currentWeek = [];
     }
-    
+
     currentWeek.push({ date: dateStr, count });
   }
-  
+
   // Fill in the last week with empty days if needed
   while (currentWeek.length < 7) {
     currentWeek.push({ date: '', count: 0 });
   }
   calendar.push(currentWeek);
-  
+
   return calendar;
 });
 
@@ -114,8 +124,8 @@ const loadYear = async (year: number) => {
   isLoading.value = true;
   try {
     dailyCounts.value = await statsStore.fetchDailyReviewCounts(
-      props.userId, 
-      year, 
+      props.userId,
+      year,
       showAllActivity.value ? undefined : props.deckId
     );
   } catch (error) {
@@ -140,16 +150,6 @@ watch(currentYear, async (newYear) => {
 onMounted(async () => {
   await loadYear(currentYear.value);
 });
-
-const isToday = (dateStr: string): boolean => {
-  if (!dateStr) return false;
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-  const todayStr = `${year}-${month}-${day}`;
-  return dateStr === todayStr;
-};
 </script>
 
 <template>
@@ -175,19 +175,13 @@ const isToday = (dateStr: string): boolean => {
       </div>
 
       <div class="flex items-center gap-2">
-        <button 
-          @click="changeYear(-1)"
-          class="p-1 rounded-md hover:bg-neutral-800"
-          :disabled="isLoading"
-        >
+        <button @click="changeYear(-1)" class="p-1 rounded-md hover:bg-neutral-800" :disabled="isLoading">
           <ChevronLeft :size="16" />
         </button>
         <span class="mt-[1px] text-sm font-medium">{{ currentYear }}</span>
-        <button 
-          @click="changeYear(1)"
+        <button @click="changeYear(1)"
           class="p-1 rounded-md disabled:opacity-50 disabled:hover:bg-transparent hover:bg-neutral-800"
-          :disabled="isLoading || currentYear >= new Date().getFullYear()"
-        >
+          :disabled="isLoading || currentYear >= new Date().getFullYear()">
           <ChevronRight :size="16" />
         </button>
       </div>
@@ -195,17 +189,14 @@ const isToday = (dateStr: string): boolean => {
 
     <!-- Heatmap -->
     <div class="relative">
-      <div v-if="isLoading" 
-           class="absolute inset-0 flex items-center justify-center rounded-lg bg-neutral-900/50">
+      <div v-if="isLoading" class="absolute inset-0 flex items-center justify-center rounded-lg bg-neutral-900/50">
         <LoadingSpinner :size="32" class="mb-8 text-neutral-500" />
       </div>
 
       <div class="flex gap-2 overflow-x-auto">
         <!-- Days of week labels -->
         <div class="flex flex-col gap-[3px] pr-0.5 items-center">
-          <div v-for="day in weekDays" 
-               :key="day" 
-               class="h-[10px] text-[10px] text-neutral-500 leading-none">
+          <div v-for="day in weekDays" :key="day" class="h-[10px] text-[10px] text-neutral-500 leading-none">
             {{ day[0] }}
           </div>
         </div>
@@ -213,18 +204,11 @@ const isToday = (dateStr: string): boolean => {
         <!-- Calendar grid -->
         <div class="flex-1">
           <div class="flex gap-[3px] mb-1">
-            <div v-for="(week, weekIndex) in generateCalendarData" 
-                 :key="weekIndex" 
-                 class="flex flex-col gap-[3px]">
-              <div v-for="(day, dayIndex) in week" 
-                   :key="`${weekIndex}-${dayIndex}`" 
-                   :class="[
-                     'w-[10px] h-[10px] rounded-sm transition-colors',
-                     day.date ? getIntensityClass(day.count, day.date) : 'bg-transparent',
-                     isToday(day.date) ? 'border border-white/60' : ''
-                   ]"
-                   :title="day.date ? `${day.date}: ${day.count} reviews` : ''"
-              ></div>
+            <div v-for="(week, weekIndex) in generateCalendarData" :key="weekIndex" class="flex flex-col gap-[3px]">
+              <div v-for="(day, dayIndex) in week" :key="`${weekIndex}-${dayIndex}`" :class="[
+                'w-[10px] h-[10px] rounded-sm transition-colors',
+                day.date ? getIntensityClass(day.count, day.date) : 'bg-transparent border border-neutral-900/0'
+              ]" :title="day.date ? `${day.date}: ${day.count} reviews` : ''"></div>
             </div>
           </div>
         </div>
@@ -234,14 +218,10 @@ const isToday = (dateStr: string): boolean => {
       <div class="flex items-center justify-end gap-2 mt-2">
         <span class="text-xs text-neutral-500">Less</span>
         <div class="flex gap-1">
-          <div v-for="(value, index) in legendValues" 
-               :key="index"
-               :class="[
-                 'w-[10px] h-[10px] rounded-sm',
-                 getIntensityClass(value, '')
-               ]"
-               :title="`${value} reviews`"
-          ></div>
+          <div v-for="(value, index) in legendValues" :key="index" :class="[
+            'w-[10px] h-[10px] rounded-sm',
+            getIntensityClass(value, '')
+          ]" :title="`${value} reviews`"></div>
         </div>
         <span class="text-xs text-neutral-500">More</span>
       </div>
