@@ -40,6 +40,8 @@ const showPreviewModal = ref(false);
 const previewCard = ref<Card | null>(null);
 const isGenerateModalOpen = ref(false);
 const isGeneratingBack = ref(false);
+const cooldownTimer = ref(0);
+const cooldownInterval = ref<number | null>(null);
 
 const authStore = useAuthStore();
 const userProfile = computed(() => authStore.userProfile);
@@ -189,6 +191,9 @@ onUnmounted(() => {
   window.removeEventListener('keydown', handleShiftDown);
   window.removeEventListener('keyup', handleShiftUp);
   document.removeEventListener('click', handleClickOutside);
+  if (cooldownInterval.value) {
+    clearInterval(cooldownInterval.value);
+  }
 });
 
 const handlePositionInput = (event: Event) => {
@@ -274,17 +279,42 @@ const canUseAI = computed(() => {
   return accountType === 'premium' || accountType === 'admin';
 });
 
-const generateBackFromFront = async () => {
-  if (!editFrontContent.value || isGeneratingBack.value) return;
-  
-  const prePrompt = `You are helping to complete the back of a flashcard. Format your response using HTML with <p> tags. The front of the card contains this content: ${editFrontContent.value}
+const startCooldown = () => {
+  cooldownTimer.value = 10;
+  cooldownInterval.value = window.setInterval(() => {
+    cooldownTimer.value--;
+    if (cooldownTimer.value <= 0) {
+      if (cooldownInterval.value) {
+        clearInterval(cooldownInterval.value);
+        cooldownInterval.value = null;
+      }
+    }
+  }, 1000);
+};
 
-Create comprehensive but focused content for the back of the card that explains or answers what's on the front. Format using HTML with appropriate tags (<p>, <b>, <i>, <u>, <h1>, <h2>). Do not include \`\`\`html or \`\`\` in your response. Do not use <ul>, <li>, etc. Do not do new lines, ever, <p> already acts as a new line in this instance. Do not include empty lines.`;
+const generateBackFromFront = async () => {
+  if (!editFrontContent.value || isGeneratingBack.value || cooldownTimer.value > 0) return;
+  
+  const prePrompt = `You are helping to complete the back of a flashcard. Follow these strict HTML formatting rules:
+1. Only use these HTML tags: <p>, <b>, <i>, <u>, <h1>, <h2>
+2. Every piece of text must be inside a <p> tag
+3. Never use empty tags or self-closing tags
+4. Never use line breaks (<br>) or empty paragraphs
+5. Always close all tags properly
+6. Do not nest headings inside paragraphs
+7. Do not include any HTML comments
+8. Do not include any attributes in the tags
+9. Do not include any text that suggests you are making the back of the card.
+
+The front of the card contains this content: ${editFrontContent.value}
+
+Create comprehensive but focused content for the back of the card that explains or answers what's on the front. Format using HTML with appropriate tags (<p>, <b>, <i>, <u>, <h1>, <h2>).`;
 
   try {
     isGeneratingBack.value = true;
     const backContent = await geminiService.generateContent(prePrompt);
     editBackContent.value = backContent;
+    startCooldown();
   } catch (error) {
     console.error('Failed to generate back content:', error);
   } finally {
@@ -407,10 +437,17 @@ Create comprehensive but focused content for the back of the card that explains 
           <button 
             v-if="editFrontContent.trim() && editFrontContent.trim() !== '<p></p>' && editFrontContent.trim() !== '<p><br></p>' && canUseAI" 
             @click="generateBackFromFront"
-            class="absolute flex items-center px-2 py-2 text-sm transition-opacity rounded-md text-neutral-400 bottom-3 right-3 bg-neutral-700/40 hover:bg-neutral-600/40"
-            :class="{ 'pointer-events-none': isGeneratingBack }"
+            class="absolute text-sm transition-opacity rounded-md w-[30px] h-[30px] text-neutral-400 bottom-3 right-3 flex justify-center items-center"
+            :class="[
+              cooldownTimer > 0 ? 'bg-neutral-800 text-neutral-600' : 'bg-neutral-700/40 hover:bg-neutral-600/40',
+              { 'pointer-events-none': isGeneratingBack || cooldownTimer > 0 }
+            ]"
+            :title="cooldownTimer > 0 ? `Wait ${cooldownTimer}s` : 'Generate back content'"
           >
             <LoadingSpinner v-if="isGeneratingBack" :size="14" />
+            <template v-else-if="cooldownTimer > 0">
+              <span class="leading-none text-center">{{ cooldownTimer }}</span>
+            </template>
             <Sparkle v-else :size="14" />
           </button>
         </div>
