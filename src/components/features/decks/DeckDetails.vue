@@ -253,15 +253,7 @@ const hasCardsToStudy = computed(() => {
                             {{ useCardStats(deck.id).availableNewCards.value }}
                         </span>
                     </div>
-                    <div class="h-px bg-neutral-800"></div>
-
-                    <div class="flex items-center justify-between py-0.5">
-                        <span class="text-neutral-400">To-review:</span>
-                        <span
-                            :class="useCardStats(deck.id).dueReviewCards.value > 0 ? 'text-green-400' : 'text-neutral-400'">
-                            {{ useCardStats(deck.id).dueReviewCards.value }}
-                        </span>
-                    </div>
+                    
                     <div class="h-px bg-neutral-800"></div>
 
                     <div class="flex items-center justify-between">
@@ -269,6 +261,16 @@ const hasCardsToStudy = computed(() => {
                         <span
                             :class="useCardStats(deck.id).dueLearningCards.value > 0 ? 'text-orange-400' : 'text-neutral-400'">
                             {{ useCardStats(deck.id).dueLearningCards.value }}
+                        </span>
+                    </div>
+
+                    <div class="h-px bg-neutral-800"></div>
+
+                    <div class="flex items-center justify-between py-0.5">
+                        <span class="text-neutral-400">To-review:</span>
+                        <span
+                            :class="useCardStats(deck.id).dueReviewCards.value > 0 ? 'text-green-400' : 'text-neutral-400'">
+                            {{ useCardStats(deck.id).dueReviewCards.value }}
                         </span>
                     </div>
                 </div>

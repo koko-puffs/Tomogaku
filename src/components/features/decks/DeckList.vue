@@ -82,16 +82,6 @@ onUnmounted(() => {
                         </div>
                     </span>
                     <span class="relative">
-                        <span class="peer" 
-                            :class="useCardStats(deck.id).dueReviewCards.value > 0 ? 'text-green-400' : 'text-neutral-400'">
-                            {{ useCardStats(deck.id).dueReviewCards.value }}
-                        </span>
-                        <div
-                            class="absolute invisible p-2 text-sm font-medium transition-all -translate-x-1/2 -translate-y-1 border rounded-md shadow-lg opacity-0 pointer-events-none border-neutral-800 left-1/2 bottom-full bg-neutral-900 w-max text-neutral-400 peer-hover:visible peer-hover:opacity-100">
-                            To-review cards due
-                        </div>
-                    </span>
-                    <span class="relative">
                         <span class="peer"
                             :class="useCardStats(deck.id).dueLearningCards.value > 0 ? 'text-orange-400' : 'text-neutral-400'">
                             {{ useCardStats(deck.id).dueLearningCards.value }}
@@ -99,6 +89,16 @@ onUnmounted(() => {
                         <div
                             class="absolute invisible p-2 text-sm font-medium transition-all -translate-x-1/2 -translate-y-1 border rounded-md shadow-lg opacity-0 pointer-events-none border-neutral-800 left-1/2 bottom-full bg-neutral-900 w-max text-neutral-400 peer-hover:visible peer-hover:opacity-100">
                             Learning cards due
+                        </div>
+                    </span>
+                    <span class="relative">
+                        <span class="peer" 
+                            :class="useCardStats(deck.id).dueReviewCards.value > 0 ? 'text-green-400' : 'text-neutral-400'">
+                            {{ useCardStats(deck.id).dueReviewCards.value }}
+                        </span>
+                        <div
+                            class="absolute invisible p-2 text-sm font-medium transition-all -translate-x-1/2 -translate-y-1 border rounded-md shadow-lg opacity-0 pointer-events-none border-neutral-800 left-1/2 bottom-full bg-neutral-900 w-max text-neutral-400 peer-hover:visible peer-hover:opacity-100">
+                            To-review cards due
                         </div>
                     </span>
                 </div>

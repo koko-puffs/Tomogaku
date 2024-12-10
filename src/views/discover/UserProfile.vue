@@ -127,12 +127,12 @@
           </div>
 
           <div v-else-if="activeTab === 'decks'">
-            <PublicDeckList :user-id="route.params.id as string" />
+            <PublicDeckList :user-id="route.params.id.toString()" />
           </div>
 
           <div v-else-if="activeTab === 'stats'">
             <div class="space-y-6">
-              <ReviewHeatmap :user-id="route.params.id as string" />
+              <ReviewHeatmap :user-id="route.params.id.toString()" />
             </div>
           </div>
         </template>

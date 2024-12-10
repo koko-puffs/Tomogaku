@@ -255,15 +255,7 @@ const studyCardRef = ref<InstanceType<typeof StudyCard> | null>(null);
               'text-neutral-400': cardStats.availableNewCards.value === 0,
               'underline underline-offset-4': currentCardType === 'new'
             }">
-              {{ cardStats.availableNewCards }}
-            </span>
-            <span>+</span>
-            <span :class="{ 
-              'text-green-400': cardStats.dueReviewCards.value > 0,
-              'text-neutral-400': cardStats.dueReviewCards.value === 0,
-              'underline underline-offset-4': currentCardType === 'review'
-            }">
-              {{ cardStats.dueReviewCards }}
+            {{ cardStats.availableNewCards }}
             </span>
             <span>+</span>
             <span :class="{ 
@@ -272,6 +264,14 @@ const studyCardRef = ref<InstanceType<typeof StudyCard> | null>(null);
               'underline underline-offset-4': currentCardType === 'learning'
             }">
               {{ cardStats.dueLearningCards }}
+            </span>
+            <span>+</span>
+            <span :class="{ 
+              'text-green-400': cardStats.dueReviewCards.value > 0,
+              'text-neutral-400': cardStats.dueReviewCards.value === 0,
+              'underline underline-offset-4': currentCardType === 'review'
+            }">
+              {{ cardStats.dueReviewCards }}
             </span>
           </div>
           
