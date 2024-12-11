@@ -99,8 +99,8 @@ const handleCreateCard = async () => {
   try {
     const newCard = await cardStore.createCard({
       deck_id: deckId,
-      front_content: '<p></p>',
-      back_content: '<p></p>',
+      front_content: '<h1 class="ql-align-center"><strong></strong></h1>', // Default to be centered and bold
+      back_content: '<h2 class="ql-align-center"><strong></strong></h2>', // Default to be centered and bold
     });
 
     if (newCard) {

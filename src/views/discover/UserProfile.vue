@@ -127,7 +127,12 @@
           </div>
 
           <div v-else-if="activeTab === 'decks'">
-            <PublicDeckList :user-id="route.params.id.toString()" />
+            <div v-if="decksLoading" class="flex justify-center mt-14 text-neutral-500">
+              <LoadingSpinner :size="32" />
+            </div>
+            <div v-else>
+              <PublicDeckList :decks="deckStore.decks" />
+            </div>
           </div>
 
           <div v-else-if="activeTab === 'stats'">
@@ -146,6 +151,7 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useUsersStore } from '../../stores/usersStore';
 import { useAuthStore } from '../../stores/authStore';
+import { useDeckStore } from '../../stores/deckStore';
 import { UserCircle2 } from 'lucide-vue-next';
 import type { Database } from '../../types/supabase';
 import PageLayout from '../../components/common/PageLayout.vue';
@@ -169,10 +175,12 @@ const route = useRoute();
 const router = useRouter();
 const usersStore = useUsersStore();
 const authStore = useAuthStore();
+const deckStore = useDeckStore();
 const userProfile = ref<UserProfile | undefined>();
 const error = ref<string | null>(null);
 const followLoading = ref(false);
 const followStatusLoading = ref(true);
+const decksLoading = ref(true);
 
 // Computed properties
 const isCurrentUser = computed(() => {
@@ -208,6 +216,15 @@ const handleFollowToggle = async () => {
   }
 };
 
+const loadUserDecks = async (userId: string) => {
+  decksLoading.value = true;
+  try {
+    await deckStore.fetchPublicDecks({ userId: userId });
+  } finally {
+    decksLoading.value = false;
+  }
+};
+
 const loadProfile = async () => {
   error.value = null;
   userProfile.value = undefined;
@@ -232,6 +249,8 @@ const loadProfile = async () => {
         await usersStore.fetchFollowing();
       }
     }
+
+    await loadUserDecks(userId);
   } catch (e) {
     router.push({ name: 'notFound' });
     console.error('Error loading profile:', e);

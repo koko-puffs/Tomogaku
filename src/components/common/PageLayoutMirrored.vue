@@ -19,11 +19,14 @@
             <div class="hidden w-px min-h-screen bg-neutral-800 md:block"></div>
 
             <!-- Sidebar - mobile from left, desktop on right -->
-            <div class="relative max-md:fixed max-md:w-[275px] md:sticky left-0 md:left-auto top-14 h-[calc(100vh-56px)] md:z-0 z-40 md:bg-transparent bg-neutral-950/75 backdrop-blur-md
-                       bg-background overflow-y-auto py-4 pr-4 pl-4 md:pl-0 md:w-[260px] transition-transform duration-200
-                       md:translate-x-0 border-r md:border-r-0 md:border-l border-neutral-800"
-                :class="[sidebarStore.isOpen ? 'translate-x-0' : '-translate-x-[275px]']">
-                <slot name="sidebar" />
+            <div class="relative max-md:fixed max-md:w-[275px] md:sticky left-0 top-14 h-[calc(100vh-56px)] md:z-0 z-40 md:bg-transparent bg-neutral-950/75 backdrop-blur-md
+                       bg-background py-4 pr-4 pl-4 md:pl-0 md:w-[260px] transition-transform duration-200
+                       md:translate-x-0 border-r border-neutral-800 md:border-none overflow-y-auto"
+                :class="[sidebarStore.isOpen ? 'translate-x-0' : '-translate-x-[275px]']"
+                style="scrollbar-gutter: stable;">
+                <div class="md:-mr-[10px]">
+                    <slot name="sidebar" />
+                </div>
             </div>
         </div>
     </div>

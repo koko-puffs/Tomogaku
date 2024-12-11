@@ -19,6 +19,15 @@ interface DeckWithStats {
   [key: string]: any; // For other deck properties
 }
 
+interface PublicDecksFilter {
+  searchQuery?: string;
+  tags?: string[];
+  sortBy?: 'most_liked' | 'most_forked' | 'newest' | 'most_popular';
+  page?: number;
+  pageSize?: number;
+  userId?: string;
+}
+
 export const useDeckStore = defineStore("decks", {
   state: (): DeckState => ({
     decks: [],
@@ -218,23 +227,63 @@ export const useDeckStore = defineStore("decks", {
       });
     },
 
-    async fetchPublicDecksByUserId(userId: string) {
+    async fetchPublicDecks(filter: PublicDecksFilter = {}) {
       this.loading.decks = true;
       try {
-        const { data, error } = await supabase
+        let query = supabase
           .from("decks")
-          .select("*")
-          .eq("user_id", userId)
+          .select("*", { count: 'exact' })
           .eq("visibility", "public")
-          .is("deleted_at", null)
-          .order("created_at", { ascending: false });
+          .is("deleted_at", null);
+
+        if (filter.userId) {
+          query = query.eq("user_id", filter.userId);
+        }
+
+        const page = filter.page || 1;
+        const pageSize = filter.pageSize || 20;
+        const start = (page - 1) * pageSize;
+        const end = start + pageSize - 1;
+
+        query = query.range(start, end);
+
+        if (filter.searchQuery) {
+          query = query.ilike("title", `%${filter.searchQuery}%`);
+        }
+
+        if (filter.tags && filter.tags.length > 0) {
+          query = query.contains("tags", filter.tags);
+        }
+
+        switch (filter.sortBy) {
+          case 'most_liked':
+            query = query.order("likes_count", { ascending: false });
+            break;
+          case 'most_forked':
+            query = query.order("fork_count", { ascending: false });
+            break;
+          case 'newest':
+            query = query.order("created_at", { ascending: false });
+            break;
+          case 'most_popular':
+            query = query
+              .order("study_count", { ascending: false })
+              .order("likes_count", { ascending: false })
+              .order("fork_count", { ascending: false });
+            break;
+          default:
+            query = query.order("likes_count", { ascending: false });
+        }
+
+        const { data, error, count } = await query;
 
         if (error) throw error;
         this.decks = data;
+        return { data, count };
       } catch (error) {
-        this.error = error instanceof Error 
-          ? error.message 
-          : "Error fetching user's public decks";
+        this.error = error instanceof Error
+          ? error.message
+          : "Error fetching public decks";
         throw error;
       } finally {
         this.loading.decks = false;
